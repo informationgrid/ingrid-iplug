@@ -15,11 +15,15 @@ import junit.framework.TestCase;
  * @author hs
  */
 public class IPlugInterfaceTest extends TestCase {
-
+    /**
+     * 
+     */
     public void testCommunicationLayerToIBus() {
         fail("INGRID-44 not yet implemented");
     }
-    
+    /**
+     * 
+     */
     public void testObjectsForDifferentViews() {
         fail("INGRID-49 not yet implemented");
     }

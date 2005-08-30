@@ -17,8 +17,14 @@ public interface IIPlug {
 
     /**
      * A network wide unique id for the IIPlug
-     * @return
+     * @return The unique IPlug identifier 
      */
-    public String geId();
+    public String getId();
+    
+    /**
+     * Allows getter access to the supported datafields
+     * @return The supported data fields
+     */
+    public String[] getFields();
 
 }

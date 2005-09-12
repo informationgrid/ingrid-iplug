@@ -17,8 +17,23 @@ import org.apache.commons.betwixt.io.BeanReader;
 import org.apache.commons.betwixt.io.BeanWriter;
 import org.xml.sax.SAXException;
 
+/**
+ * Serialize and de serialize objects to / from xml 
+ * 
+ * created on 09.08.2005
+ * @author  sg
+ * @version $Revision: 1.3 $
+ */
 public class XMLSerializer {
 
+    /**
+     * serialize a java bean as xml
+     * @param description
+     * @param target
+     * @throws IOException
+     * @throws SAXException
+     * @throws IntrospectionException
+     */
     public static void serializeAsXML(Object description, File target) throws IOException, SAXException,
             IntrospectionException {
         FileWriter writer = new FileWriter(target);
@@ -32,6 +47,14 @@ public class XMLSerializer {
         writer.close();
     }
 
+    /**
+     * @param clazz
+     * @param target
+     * @return bean loaded from a xml file
+     * @throws IntrospectionException
+     * @throws IOException
+     * @throws SAXException
+     */
     public static Object loadDescriptionFromXML(Class clazz, File target) throws IntrospectionException, IOException,
             SAXException {
         FileReader fileReader = new FileReader(target);

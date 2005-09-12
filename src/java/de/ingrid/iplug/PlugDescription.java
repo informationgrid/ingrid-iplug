@@ -6,142 +6,178 @@
 
 package de.ingrid.iplug;
 
-import java.io.File;
-
+import de.ingrid.utils.DescribableValue;
 
 public class PlugDescription {
-    
-    private String fPlugId;
-    private String fOraganisation;
-    private String fPersonName;
-    private String fPersonSureName;
-    private String fPersoneMail;
-    private IDataSourceConnection fConnection;
-    private String fDataType;
-    private String fWorkinDirectory;
-    private boolean fCronBasedIndexing;
-    private DataMapping fMapping;
-    
+
+    private DescribableValue fPlugId;
+
+    private DescribableValue fOraganisation;
+
+    private DescribableValue fPersonName;
+
+    private DescribableValue fPersonSureName;
+
+    private DescribableValue fPersoneMail;
+
+    private DescribableValue fConnection;
+
+    private DescribableValue fDataType;
+
+    private DescribableValue fWorkinDirectory;
+
+    private DescribableValue fCronBasedIndexing;
+
+    private DescribableValue fMapping;
+
     /**
      * @return Returns the connection.
      */
-    public IDataSourceConnection getConnection() {
+    public DescribableValue getConnection() {
         return this.fConnection;
     }
+
     /**
-     * @param connection The connection to set.
+     * @param connection
+     *            The connection to set.
      */
-    public void setConnection(IDataSourceConnection connection) {
+    public void setConnection(DescribableValue connection) {
         this.fConnection = connection;
     }
+
     /**
      * @return Returns the cronBasedIndexing.
      */
-    public boolean isCronBasedIndexing() {
+    public DescribableValue getCronBasedIndexing() {
         return this.fCronBasedIndexing;
     }
+
     /**
-     * @param cronBasedIndexing The cronBasedIndexing to set.
+     * @param cronBasedIndexing
+     *            The cronBasedIndexing to set.
      */
-    public void setCronBasedIndexing(boolean cronBasedIndexing) {
+    public void setCronBasedIndexing(DescribableValue cronBasedIndexing) {
         this.fCronBasedIndexing = cronBasedIndexing;
     }
+
     /**
      * @return Returns the dataType.
      */
-    public String getDataType() {
+    public DescribableValue getDataType() {
         return this.fDataType;
     }
+
     /**
-     * @param dataType The dataType to set.
+     * @param dataType
+     *            The dataType to set.
      */
-    public void setDataType(String dataType) {
+    public void setDataType(DescribableValue dataType) {
         this.fDataType = dataType;
     }
+
     /**
      * @return Returns the mapping.
      */
-    public DataMapping getMapping() {
+    public DescribableValue getMapping() {
         return this.fMapping;
     }
+
     /**
-     * @param mapping The mapping to set.
+     * @param mapping
+     *            The mapping to set.
      */
-    public void setMapping(DataMapping mapping) {
+    public void setMapping(DescribableValue mapping) {
         this.fMapping = mapping;
     }
+
     /**
      * @return Returns the oraganisation.
      */
-    public String getOraganisation() {
+    public DescribableValue getOraganisation() {
         return this.fOraganisation;
     }
+
     /**
-     * @param oraganisation The oraganisation to set.
+     * @param oraganisation
+     *            The oraganisation to set.
      */
-    public void setOraganisation(String oraganisation) {
+    public void setOraganisation(DescribableValue oraganisation) {
         this.fOraganisation = oraganisation;
     }
+
     /**
      * @return Returns the personeMail.
      */
-    public String getPersoneMail() {
+    public DescribableValue getPersoneMail() {
         return this.fPersoneMail;
     }
+
     /**
-     * @param personeMail The personeMail to set.
+     * @param personeMail
+     *            The personeMail to set.
      */
-    public void setPersoneMail(String personeMail) {
+    public void setPersoneMail(DescribableValue personeMail) {
         this.fPersoneMail = personeMail;
     }
+
     /**
      * @return Returns the personName.
      */
-    public String getPersonName() {
+    public DescribableValue getPersonName() {
         return this.fPersonName;
     }
+
     /**
-     * @param personName The personName to set.
+     * @param personName
+     *            The personName to set.
      */
-    public void setPersonName(String personName) {
+    public void setPersonName(DescribableValue personName) {
         this.fPersonName = personName;
     }
+
     /**
-     * @return Returns the personSurName.
+     * @return Returns the personSureName.
      */
-    public String getPersonSureName() {
+    public DescribableValue getPersonSureName() {
         return this.fPersonSureName;
     }
+
     /**
-     * @param personSurName The personSurName to set.
+     * @param personSureName
+     *            The personSureName to set.
      */
-    public void setPersonSureName(String personSurName) {
-        this.fPersonSureName = personSurName;
+    public void setPersonSureName(DescribableValue personSureName) {
+        this.fPersonSureName = personSureName;
     }
+
     /**
      * @return Returns the plugId.
      */
-    public String getPlugId() {
+    public DescribableValue getPlugId() {
         return this.fPlugId;
     }
+
     /**
-     * @param plugId The plugId to set.
+     * @param plugId
+     *            The plugId to set.
      */
-    public void setPlugId(String plugId) {
+    public void setPlugId(DescribableValue plugId) {
         this.fPlugId = plugId;
     }
+
     /**
      * @return Returns the workinDirectory.
      */
-    public String getWorkinDirectory() {
+    public DescribableValue getWorkinDirectory() {
         return this.fWorkinDirectory;
     }
+
     /**
-     * @param workinDirectory The workinDirectory to set.
+     * @param workinDirectory
+     *            The workinDirectory to set.
      */
-    public void setWorkinDirectory(String workinDirectory) {
+    public void setWorkinDirectory(DescribableValue workinDirectory) {
         this.fWorkinDirectory = workinDirectory;
     }
-    
-    
+
 }

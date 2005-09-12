@@ -19,67 +19,93 @@
             <name>${pom.name} User List</name>
         </mailingList>
     </mailingLists>
-	<developers>
-    <developer>
-      <id>0</id>
-      <name>Sefan Groschupf</name>
-      <email>sg(at)media-style.com</email>
-      <organization>media style GmbH</organization>
-      <organizationUrl>http://www.media-style.com</organizationUrl>
-      <roles>
-		  <role>project leader</role>
-		  <role>developer</role>
-	  </roles>
-    </developer>
-	<developer>
-      <id>1</id>
-      <name>Frank Henze</name>
-      <email>fh(at)media-style.com</email>
-      <organization>media style GmbH</organization>
-      <organizationUrl>http://www.media-style.com</organizationUrl>
-      <roles>
-		  <role>project leader</role>
-		  <role>developer</role>
-	  </roles>
-    </developer>
-	<developer>
-      <id>2</id>
-      <name>Holger Schulze</name>
-      <email>hs(at)media-style.com</email>
-      <organization>media style GmbH</organization>
-      <organizationUrl>http://www.media-style.com</organizationUrl>
-      <roles>
-		  <role>developer</role>
-	  </roles>
-    </developer>
-	<developer>
-      <id>3</id>
-      <name>Marko Bauhardt</name>
-      <email>mb(at)media-style.com</email>
-      <organization>media style GmbH</organization>
-      <organizationUrl>http://www.media-style.com</organizationUrl>
-      <roles>
-		  <role>developer</role>
-	  </roles>
-    </developer>
-  </developers>
+    <developers>
+        <developer>
+            <id>0</id>
+            <name>Sefan Groschupf</name>
+            <email>sg(at)media-style.com</email>
+            <organization>media style GmbH</organization>
+            <organizationUrl>http://www.media-style.com</organizationUrl>
+            <roles>
+                <role>project leader</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>1</id>
+            <name>Frank Henze</name>
+            <email>fh(at)media-style.com</email>
+            <organization>media style GmbH</organization>
+            <organizationUrl>http://www.media-style.com</organizationUrl>
+            <roles>
+                <role>project leader</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>2</id>
+            <name>Holger Schulze</name>
+            <email>hs(at)media-style.com</email>
+            <organization>media style GmbH</organization>
+            <organizationUrl>http://www.media-style.com</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>3</id>
+            <name>Marko Bauhardt</name>
+            <email>mb(at)media-style.com</email>
+            <organization>media style GmbH</organization>
+            <organizationUrl>http://www.media-style.com</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
     <shortDescription>todo short description</shortDescription>
     <issueTrackingUrl>http://jira.media-style.com/browse/INGRID</issueTrackingUrl>
-	<siteAddress>http://torwald.gistec-online.de/ingrid/ingrid-iplug</siteAddress>
+    <siteAddress>http://torwald.gistec-online.de/ingrid/ingrid-iplug</siteAddress>
     <siteDirectory>/srv/www/htdocs/ingrid/ingrid-iplug</siteDirectory>
     <repository>
         <connection>scm:svn:http://torwald.gistec-online.de/svn/ingrid:ingrid-iplug</connection>
     </repository>
     <dependencies>
-      <dependency>
-        <groupId>weta</groupId>
-        <artifactId>weta-g</artifactId>
-        <version>latest</version>
-        <type>zip</type>
-		<url>http://www.weta-group.net/maven</url>
-        <properties/>
-      </dependency>	
-  	</dependencies>
+        <dependency>
+            <groupId>weta</groupId>
+            <artifactId>weta-g</artifactId>
+            <version>latest</version>
+            <type>zip</type>
+            <url>http://www.weta-group.net/maven</url>
+        </dependency>
+        <dependency>
+            <groupId>commons-betwixt</groupId>
+            <artifactId>commons-betwixt</artifactId>
+            <version>0.7</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.0.2</version>
+            <type>jar</type>
+            <url>http://jakarta.apache.org/commons/logging/</url>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils-core</artifactId>
+            <version>1.7.0</version>
+            <type>jar</type>
+            <url>http://jakarta.apache.org/commons/beanutils/</url>
+        </dependency>
+        <dependency>
+            <groupId>commons-digester</groupId>
+            <artifactId>commons-digester</artifactId>
+            <version>1.6</version>
+            <type>jar</type>
+            <url>http://jakarta.apache.org/commons/digester/</url>
+        </dependency>
+    </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>
         <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
@@ -89,12 +115,13 @@
             </includes>
         </unitTest>
     </build>
-	<reports>
-		<report>maven-junit-report-plugin</report>
+    <reports>
+        <report>maven-junit-report-plugin</report>
         <!--
 		<report>maven-jcoverage-plugin</report>
 			-->
         <report>maven-tasklist-plugin</report>
-	</reports>
-    <properties/>
+    </reports>
+    <properties />
 </project>
+

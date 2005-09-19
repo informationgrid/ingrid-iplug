@@ -9,35 +9,37 @@ package de.ingrid.iplug;
 import java.io.File;
 import java.util.ArrayList;
 
-public class PlugDescription {
+import de.ingrid.utils.IngridDocument;
 
-    private String fPlugId;
+public class PlugDescription extends IngridDocument {
 
-    private String fOraganisation;
+    private static final String CONNECTION = "connection";
 
-    private String fPersonName;
+    private static final String IS_CRONBASED_INDEXING = "cronbasedIndexing";
 
-    private String fPersonSureName;
+    private static final String DATA_TYPE = "dataType";
 
-    private String fPersoneMail;
+    private static final String MAPPING = "mapping";
 
-    private IDataSourceConnection fConnection;
+    private static final String ORGANISATION = "organisation";
 
-    private String fDataType;
+    private static final String PERSONAL_MAIL = "personalMail";
 
-    private File fWorkinDirectory;
+    private static final String PERSON_NAME = "personName";
 
-    private boolean fCronBasedIndexing;
+    private static final String PERSON_SURE_NAME = "personSureName";
 
-    private IDataMapping fMapping;
+    private static final String IPLUG_ID = "plugId";
 
-    private ArrayList fFields = new ArrayList();
+    private static final String WORKING_DIRECTORY = "workingDirectory";
+
+    private static final String FIELDS = "fields";
 
     /**
      * @return Returns the connection.
      */
     public IDataSourceConnection getConnection() {
-        return fConnection;
+        return (IDataSourceConnection) get(CONNECTION);
     }
 
     /**
@@ -45,14 +47,14 @@ public class PlugDescription {
      *            The connection to set.
      */
     public void setConnection(IDataSourceConnection connection) {
-        fConnection = connection;
+        put(CONNECTION, connection);
     }
 
     /**
      * @return Returns the cronBasedIndexing.
      */
     public boolean isCronBasedIndexing() {
-        return fCronBasedIndexing;
+        return getBoolean(IS_CRONBASED_INDEXING);
     }
 
     /**
@@ -60,14 +62,14 @@ public class PlugDescription {
      *            The cronBasedIndexing to set.
      */
     public void setCronBasedIndexing(boolean cronBasedIndexing) {
-        fCronBasedIndexing = cronBasedIndexing;
+        setBoolean(IS_CRONBASED_INDEXING, cronBasedIndexing);
     }
 
     /**
      * @return Returns the dataType.
      */
     public String getDataType() {
-        return fDataType;
+        return (String) get(DATA_TYPE);
     }
 
     /**
@@ -75,14 +77,14 @@ public class PlugDescription {
      *            The dataType to set.
      */
     public void setDataType(String dataType) {
-        fDataType = dataType;
+        put(DATA_TYPE, dataType);
     }
 
     /**
      * @return Returns the mapping.
      */
     public IDataMapping getMapping() {
-        return fMapping;
+        return (IDataMapping) get(MAPPING);
     }
 
     /**
@@ -90,14 +92,14 @@ public class PlugDescription {
      *            The mapping to set.
      */
     public void setMapping(IDataMapping mapping) {
-        fMapping = mapping;
+        put(MAPPING, mapping);
     }
 
     /**
      * @return Returns the oraganisation.
      */
     public String getOraganisation() {
-        return fOraganisation;
+        return (String) get(ORGANISATION);
     }
 
     /**
@@ -105,14 +107,14 @@ public class PlugDescription {
      *            The oraganisation to set.
      */
     public void setOraganisation(String oraganisation) {
-        fOraganisation = oraganisation;
+        put(ORGANISATION, oraganisation);
     }
 
     /**
      * @return Returns the personeMail.
      */
     public String getPersoneMail() {
-        return fPersoneMail;
+        return (String) get(PERSONAL_MAIL);
     }
 
     /**
@@ -120,14 +122,14 @@ public class PlugDescription {
      *            The personeMail to set.
      */
     public void setPersoneMail(String personeMail) {
-        fPersoneMail = personeMail;
+        put(PERSONAL_MAIL, personeMail);
     }
 
     /**
      * @return Returns the personName.
      */
     public String getPersonName() {
-        return fPersonName;
+        return (String) get(PERSON_NAME);
     }
 
     /**
@@ -135,14 +137,14 @@ public class PlugDescription {
      *            The personName to set.
      */
     public void setPersonName(String personName) {
-        fPersonName = personName;
+        put(PERSON_NAME, personName);
     }
 
     /**
      * @return Returns the personSureName.
      */
     public String getPersonSureName() {
-        return fPersonSureName;
+        return (String) get(PERSON_SURE_NAME);
     }
 
     /**
@@ -150,14 +152,14 @@ public class PlugDescription {
      *            The personSureName to set.
      */
     public void setPersonSureName(String personSureName) {
-        fPersonSureName = personSureName;
+        put(PERSON_SURE_NAME, personSureName);
     }
 
     /**
      * @return Returns the plugId.
      */
     public String getPlugId() {
-        return fPlugId;
+        return (String) get(IPLUG_ID);
     }
 
     /**
@@ -165,14 +167,15 @@ public class PlugDescription {
      *            The plugId to set.
      */
     public void setPlugId(String plugId) {
-        fPlugId = plugId;
+        put(IPLUG_ID, plugId);
     }
 
     /**
      * @return Returns the workinDirectory.
      */
     public File getWorkinDirectory() {
-        return fWorkinDirectory;
+        String folder = (String) get(WORKING_DIRECTORY);
+        return new File(folder);
     }
 
     /**
@@ -180,22 +183,27 @@ public class PlugDescription {
      *            The workinDirectory to set.
      */
     public void setWorkinDirectory(File workinDirectory) {
-        fWorkinDirectory = workinDirectory;
+        put(WORKING_DIRECTORY, workinDirectory.getAbsolutePath());
     }
 
     /**
      * @return the fields of this plug
      */
     public String[] getFields() {
-        return (String[]) fFields.toArray(new String[this.fFields.size()]);
+        ArrayList arrayList = getArrayList(FIELDS);
+        if (arrayList == null) {
+            return new String[0];
+        }
+        return (String[]) arrayList.toArray(new String[arrayList.size()]);
     }
 
     /**
      * Adds a fieldName to the plug description
+     * 
      * @param fieldName
      */
     public void addField(String fieldName) {
-        this.fFields.add(fieldName);
+        addToList(FIELDS, fieldName);
     }
 
 }

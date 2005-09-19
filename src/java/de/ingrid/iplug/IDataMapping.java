@@ -6,6 +6,6 @@
 
 package de.ingrid.iplug;
 
-public class DataMapping {
+public interface IDataMapping {
 
 }

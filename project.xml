@@ -74,9 +74,8 @@
         <dependency>
             <groupId>weta</groupId>
             <artifactId>weta-g</artifactId>
-            <version>latest</version>
+            <version>SNAPSHOT</version>
             <type>zip</type>
-            <url>http://www.weta-group.net/maven</url>
         </dependency>
         <dependency>
             <groupId>commons-betwixt</groupId>

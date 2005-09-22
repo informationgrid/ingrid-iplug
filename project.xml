@@ -104,6 +104,11 @@
             <type>jar</type>
             <url>http://jakarta.apache.org/commons/digester/</url>
         </dependency>
+		<dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-utils</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>

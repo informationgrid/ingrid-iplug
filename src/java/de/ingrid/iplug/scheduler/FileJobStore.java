@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.quartz.Calendar;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -37,9 +39,11 @@ import org.quartz.spi.TriggerFiredBundle;
  * 
  * @version $Revision: $
  * @author jz
- * @author $ Author: jz ${lastedit} 
+ * @author $ Author: jz ${lastedit}
  */
 public class FileJobStore implements JobStore {
+
+    private static Log log = LogFactory.getLog(FileJobStore.class);
 
     // persistent fields
     private HashMap fJobsByName;
@@ -78,16 +82,15 @@ public class FileJobStore implements JobStore {
             throw new SchedulerConfigException("could not load persistent data ", e);
         }
         fillTransientFields();
+        log.info("FileJobStore initialized.");
     }
 
     public void schedulerStarted() throws SchedulerException {
         // nothing to do
-
     }
 
     public void shutdown() {
         // nothing to do
-
     }
 
     public boolean supportsPersistence() {
@@ -689,6 +692,7 @@ public class FileJobStore implements JobStore {
             break;
         case Trigger.INSTRUCTION_SET_TRIGGER_ERROR:
             setTriggerState(ctxt, oldTrigger, Trigger.STATE_ERROR);
+            log.info("Trigger " + oldTrigger.getFullName() + " set to ERROR state.");
             break;
         case Trigger.INSTRUCTION_SET_ALL_JOB_TRIGGERS_COMPLETE:
             Trigger[] triggers1 = getTriggersForJob(ctxt, oldTrigger.getJobName(), oldTrigger.getJobGroup());
@@ -701,6 +705,7 @@ public class FileJobStore implements JobStore {
             for (int i = 0; i < triggers2.length; i++) {
                 setTriggerState(ctxt, triggers2[i], Trigger.STATE_ERROR);
             }
+            log.info("All triggers of Job " + oldTrigger.getFullJobName() + " set to ERROR state.");
             break;
         }
     }

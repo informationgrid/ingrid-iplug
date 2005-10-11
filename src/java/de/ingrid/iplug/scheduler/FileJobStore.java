@@ -82,7 +82,7 @@ public class FileJobStore implements JobStore {
             throw new SchedulerConfigException("could not load persistent data ", e);
         }
         fillTransientFields();
-        log.info("FileJobStore initialized.");
+        log.info("FileJobStore initialized : " + this.fSerializer.getStoreDirectory().getAbsolutePath());
     }
 
     public void schedulerStarted() throws SchedulerException {

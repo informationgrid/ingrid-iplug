@@ -37,6 +37,11 @@ public class FileJobStoreIntegrationTest extends TestCase {
     private SchedulerFactory fSchedulerFactory;
 
     protected void setUp() throws Exception {
+        //clean directory
+        FileJobStore jobStore= new FileJobStore();
+        jobStore.initialize(null,null);
+        jobStore.clear();
+        
         Properties properties = new Properties();
         properties.put(StdSchedulerFactory.PROP_JOB_STORE_CLASS, FileJobStore.class.getName());
         properties.put(StdSchedulerFactory.PROP_THREAD_POOL_CLASS, "org.quartz.simpl.SimpleThreadPool");

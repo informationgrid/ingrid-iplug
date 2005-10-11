@@ -25,6 +25,11 @@ public class SchedulingServiceTest extends TestCase {
     private String fJobName = "jobName";
 
     protected void setUp() throws Exception {
+        //clean directory
+        FileJobStore jobStore= new FileJobStore();
+        jobStore.initialize(null,null);
+        jobStore.clear();
+        
         SchedulingService.init();
     }
 

@@ -131,24 +131,39 @@ import org.quartz.impl.StdSchedulerFactory;
  */
 public class SchedulingService {
 
-    private static Scheduler scheduler;
+    private Scheduler fScheduler;
 
+    private static SchedulingService fInstance;
+
+    
     /**
-     * Initialize the scheduler.
-     * 
      * @throws SchedulerException
      */
-    public static void init() throws SchedulerException {
+    public SchedulingService() throws SchedulerException {
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-        scheduler = schedulerFactory.getScheduler();
-        scheduler.start();
+        this.fScheduler = schedulerFactory.getScheduler();
+        this.fScheduler.start();
+    }
+
+    /**
+     * @return the only instance of the SchedulingService
+     * @throws SchedulerException 
+     * 
+     */
+    public static SchedulingService getInstance() throws SchedulerException {
+        if (fInstance == null) {
+            fInstance = new SchedulingService();
+        }
+
+        return fInstance;
     }
 
     /**
      * @throws SchedulerException
      */
-    public static void shutdown() throws SchedulerException {
-        scheduler.shutdown();
+    public void shutdown() throws SchedulerException {
+        this.fScheduler.shutdown();
+        fInstance=null;
     }
 
     /**
@@ -167,8 +182,8 @@ public class SchedulingService {
      * @throws ParseException
      * @throws SchedulerException
      */
-    public static void scheduleCronJob(String jobName, String jobGroup, Class jobClass, Map jobData,
-            String cronExpression) throws ParseException, SchedulerException {
+    public void scheduleCronJob(String jobName, String jobGroup, Class jobClass, Map jobData, String cronExpression)
+            throws ParseException, SchedulerException {
         JobDetail jobDetail = new JobDetail(jobName, jobGroup, jobClass);
         if (jobData != null) {
             jobDetail.setJobDataMap(new JobDataMap(jobData));
@@ -176,7 +191,7 @@ public class SchedulingService {
 
         CronTrigger trigger = new CronTrigger(jobName, jobGroup);
         trigger.setCronExpression(cronExpression);
-        scheduler.scheduleJob(jobDetail, trigger);
+        this.fScheduler.scheduleJob(jobDetail, trigger);
     }
 
     /**
@@ -207,9 +222,9 @@ public class SchedulingService {
      * @throws SchedulerException
      * @throws ParseException
      */
-    public static void scheduleCronJob(String jobName, String jobGroup, Class jobClass, Map jobData, String sec,
-            String min, String hours, String dayOfMonth, String month, String dayOfWeek, String year)
-            throws ParseException, SchedulerException {
+    public void scheduleCronJob(String jobName, String jobGroup, Class jobClass, Map jobData, String sec, String min,
+            String hours, String dayOfMonth, String month, String dayOfWeek, String year) throws ParseException,
+            SchedulerException {
         String cronExpression = getCronExpression(sec, min, hours, dayOfMonth, month, dayOfWeek, year);
         scheduleCronJob(jobName, jobGroup, jobClass, jobData, cronExpression);
     }
@@ -220,8 +235,8 @@ public class SchedulingService {
      * @return true if job exists
      * @throws SchedulerException
      */
-    public static boolean removeJob(String jobName, String groupName) throws SchedulerException {
-        return scheduler.deleteJob(jobName, groupName);
+    public boolean removeJob(String jobName, String groupName) throws SchedulerException {
+        return this.fScheduler.deleteJob(jobName, groupName);
     }
 
     /**

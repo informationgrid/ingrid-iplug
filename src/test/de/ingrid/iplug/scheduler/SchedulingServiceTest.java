@@ -25,17 +25,15 @@ public class SchedulingServiceTest extends TestCase {
     private String fJobName = "jobName";
 
     protected void setUp() throws Exception {
-        //clean directory
-        FileJobStore jobStore= new FileJobStore();
-        jobStore.initialize(null,null);
+        // clean directory
+        FileJobStore jobStore = new FileJobStore();
+        jobStore.initialize(null, null);
         jobStore.clear();
-        
-        SchedulingService.init();
     }
 
     protected void tearDown() throws Exception {
-        SchedulingService.removeJob(this.fJobName, null);
-        SchedulingService.shutdown();
+        SchedulingService.getInstance().removeJob(this.fJobName, null);
+        SchedulingService.getInstance().shutdown();
         CountJob.fExecutionCount = 0;
     }
 
@@ -43,7 +41,7 @@ public class SchedulingServiceTest extends TestCase {
      * @throws Exception
      */
     public void testScheduleCronJob1() throws Exception {
-        SchedulingService.scheduleCronJob(this.fJobName, null, CountJob.class, null, "0/1 * * * * ? *");
+        SchedulingService.getInstance().scheduleCronJob(this.fJobName, null, CountJob.class, null, "0/1 * * * * ? *");
         Thread.sleep(500);
         assertTrue(CountJob.fExecutionCount > 0);
     }
@@ -52,8 +50,8 @@ public class SchedulingServiceTest extends TestCase {
      * @throws Exception
      */
     public void testScheduleCronJob2() throws Exception {
-        SchedulingService.scheduleCronJob(this.fJobName, null, CountJob.class, null, "0/1", null, null, null, null,
-                "?", null);
+        SchedulingService.getInstance().scheduleCronJob(this.fJobName, null, CountJob.class, null, "0/1", null, null,
+                null, null, "?", null);
         Thread.sleep(500);
         assertTrue(CountJob.fExecutionCount > 0);
     }

@@ -11,6 +11,20 @@ import java.util.ArrayList;
 
 import de.ingrid.utils.IngridDocument;
 
+/**
+ * PlugDescription contains describing values of an
+ * {@link de.ingrid.iplug.IPlug}. Standard values could be stored and retrieved
+ * using the PlugDescription methods. Additional values could be stored and
+ * retrieved using the put and get methods derived from
+ * {@link java.util.HashMap}.
+ * 
+ * <p/>created on 19.09.2005
+ * 
+ * @version $Revision: $
+ * @author sg
+ * @author $Author jz ${lastedit}
+ * 
+ */
 public class PlugDescription extends IngridDocument {
 
     private static final String CONNECTION = "connection";

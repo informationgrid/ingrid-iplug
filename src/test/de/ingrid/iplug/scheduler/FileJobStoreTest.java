@@ -269,14 +269,6 @@ public class FileJobStoreTest extends TestCase {
                 .getGroup(), new Date(), new Date(), 0, 0);
         trigger.computeFirstFireTime(null);
 
-        // pause job group
-        this.fJobStore.pauseJobGroup(null, this.fJobDetail.getGroup());
-        this.fJobStore.storeTrigger(null, trigger, false);
-        // FIXME bug of RAMJobStore
-        // assertEquals(Trigger.STATE_PAUSED,
-        // this.fJobStore.getTriggerState(null, trigger.getName(),
-        // trigger.getGroup()));
-
         // pause trigger group
         this.fJobStore.removeTrigger(null, trigger.getName(), trigger.getGroup());
         this.fJobStore.pauseTriggerGroup(null, trigger.getGroup());

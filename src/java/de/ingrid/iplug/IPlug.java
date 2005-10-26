@@ -27,6 +27,6 @@ public interface IPlug {
      * @param lenght
      * @return matching documents
      */
-    IngridDocument[] search(IngridQuery query, int start, int lenght);
+    IngridDocument[] search(IngridQuery query, int start, int lenght) throws Exception;
 
 }

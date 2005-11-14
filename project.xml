@@ -80,7 +80,7 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.4</version>
             <type>jar</type>
             <url>http://jakarta.apache.org/commons/logging/</url>
         </dependency>
@@ -129,10 +129,9 @@
     </build>
     <reports>
         <report>maven-junit-report-plugin</report>
-        <!--
 		<report>maven-jcoverage-plugin</report>
-			-->
         <report>maven-tasklist-plugin</report>
+        <report>maven-checkstyle-plugin</report>
     </reports>
     <properties />
 </project>

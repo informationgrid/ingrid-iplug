@@ -12,18 +12,16 @@ import java.util.ArrayList;
 import de.ingrid.utils.IngridDocument;
 
 /**
- * PlugDescription contains describing values of an
- * {@link de.ingrid.iplug.IPlug}. Standard values could be stored and retrieved
- * using the PlugDescription methods. Additional values could be stored and
- * retrieved using the put and get methods derived from
- * {@link java.util.HashMap}.
+ * PlugDescription contains describing values of an {@link de.ingrid.iplug.IPlug}. Standard values could be stored and
+ * retrieved using the PlugDescription methods. Additional values could be stored and retrieved using the put and get
+ * methods derived from {@link java.util.HashMap}.
  * 
  * <p/>created on 19.09.2005
  * 
  * @version $Revision: $
  * @author sg
  * @author $Author jz ${lastedit}
- * 
+ *  
  */
 public class PlugDescription extends IngridDocument {
 
@@ -48,6 +46,10 @@ public class PlugDescription extends IngridDocument {
     private static final String WORKING_DIRECTORY = "workingDirectory";
 
     private static final String FIELDS = "fields";
+
+    private static final Object PROXY_SERVICE_URL = "proxyServiceUrl";
+
+    private static final Object IPLUG_CLASS = "iPlugClass";
 
     /**
      * @return Returns the connection.
@@ -220,4 +222,33 @@ public class PlugDescription extends IngridDocument {
         addToList(FIELDS, fieldName);
     }
 
+    /**
+     * @param proxyServiceUrl
+     *            The URL of the proxy service.
+     */
+    public void setProxyServiceURL(String proxyServiceUrl) {
+        put(PROXY_SERVICE_URL, proxyServiceUrl);
+    }
+
+    /**
+     * @return The URL of the proxy service.
+     */
+    public String getProxyServiceURL() {
+        return (String) get(PROXY_SERVICE_URL);
+    }
+
+    /**
+     * @param iPlugClass
+     *            The class of the used IPlug.
+     */
+    public void setIPlugClass(Class iPlugClass) {
+        put(IPLUG_CLASS, iPlugClass);
+    }
+
+    /**
+     * @return The class of the used IPlug.
+     */
+    public Class getIPlugClass() {
+        return (Class) get(IPLUG_CLASS);
+    }
 }

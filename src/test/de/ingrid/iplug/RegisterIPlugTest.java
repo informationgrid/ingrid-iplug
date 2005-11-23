@@ -12,6 +12,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import junit.framework.TestCase;
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication_sockets.SocketCommunication;
@@ -19,7 +22,6 @@ import net.weta.components.communication_sockets.util.AddressUtil;
 import net.weta.components.proxies.ProxyService;
 import net.weta.components.proxies.remote.RemoteInvocationController;
 
-import org.apache.log4j.Logger;
 
 import de.ingrid.ibus.Bus;
 import de.ingrid.ibus.registry.Registry;
@@ -30,7 +32,7 @@ import de.ingrid.utils.xml.XMLSerializer;
  */
 public class RegisterIPlugTest extends TestCase {
 
-    private Logger fLOGGER = Logger.getLogger(this.getClass());
+    private Log fLOGGER = LogFactory.getLog(this.getClass());
 
     private File fSerFile = null;
 

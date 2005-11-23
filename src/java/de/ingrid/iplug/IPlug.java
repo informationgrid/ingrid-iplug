@@ -20,12 +20,13 @@ import de.ingrid.utils.query.IngridQuery;
 public interface IPlug {
 
     /**
-     * Searchs the data source represented as plug for matching
+     * Search the data source represented as plug for matching.
      * 
      * @param query
      * @param start
      * @param lenght
      * @return matching documents
+     * @throws Exception
      */
     IngridDocument[] search(IngridQuery query, int start, int lenght) throws Exception;
 

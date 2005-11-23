@@ -112,11 +112,42 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>ingrid</groupId>
+            <artifactId>ingrid-ibus</artifactId>
+            <version>0.1-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <groupId>quartz</groupId>
             <artifactId>quartz</artifactId>
             <version>1.5.0</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+        <groupId>weta-components</groupId>
+        <artifactId>communication</artifactId>
+        <version>SNAPSHOT</version>
+	    <type>jar</type>
+      </dependency>
+      <dependency>
+        <groupId>weta-components</groupId>
+        <artifactId>remote-proxies</artifactId>
+        <version>SNAPSHOT</version>
+	    <type>jar</type>
+      </dependency>
+      <dependency>
+        <groupId>weta-components</groupId>
+        <artifactId>communication-sockets</artifactId>
+        <version>SNAPSHOT</version>
+	    <type>jar</type>
+      </dependency>
+      <dependency>
+          <groupId>cglib</groupId>
+          <artifactId>cglib-nodep</artifactId>
+          <version>2.1_3</version>
+          <type>jar</type>
+          <url>http://ibiblio.org/maven</url>
+      </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>

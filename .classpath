@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="src/java"/>
+	<classpathentry kind="src" path="src/webapps"/>
 	<classpathentry kind="src" path="src/test"/>
 	<classpathentry kind="var" path="MAVEN_REPO/junit/jars/junit-3.8.1.jar"/>
 	<classpathentry kind="src" path="src/conf"/>
@@ -18,5 +19,13 @@
 	<classpathentry sourcepath="MAVEN_REPO/ingrid/jars/ingrid-ibus-0.1-SNAPSHOT.jar" kind="var" path="MAVEN_REPO/ingrid/jars/ingrid-ibus-0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.8.jar"/>
 	<classpathentry kind="src" path="/ingrid-utils"/>
+	<classpathentry kind="var" path="MAVEN_REPO/xstream/jars/xstream-1.1.2.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/xpp3/jars/xpp3-1.1.2a.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/tomcat/jars/jasper-runtime-5.5.9.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/tomcat/jars/jasper-compiler-5.5.9.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/jetty/jars/org.mortbay.jetty-5.1.8.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/commons-el/jars/commons-el-1.0.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/ant/jars/ant-1.6.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/jetty/jars/servlet-api-2.5-6.0.0beta6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

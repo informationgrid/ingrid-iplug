@@ -47,9 +47,9 @@ public class PlugDescription extends IngridDocument {
 
     private static final String FIELDS = "fields";
 
-    private static final Object PROXY_SERVICE_URL = "proxyServiceUrl";
+    private static final String PROXY_SERVICE_URL = "proxyServiceUrl";
 
-    private static final Object IPLUG_CLASS = "iPlugClass";
+    private static final String IPLUG_CLASS = "iPlugClass";
 
     /**
      * @return Returns the connection.

@@ -6,6 +6,8 @@
 
 package de.ingrid.iplug.scheduler;
 
+import java.io.File;
+
 import junit.framework.TestCase;
 
 import org.quartz.CronTrigger;
@@ -22,50 +24,67 @@ import org.quartz.CronTrigger;
  */
 public class SchedulingServiceTest extends TestCase {
 
-    private String fJobName = "jobName";
+	private String fJobName = "jobName";
 
-    protected void setUp() throws Exception {
-        // clean directory
-        FileJobStore jobStore = new FileJobStore();
-        jobStore.initialize(null, null);
-        jobStore.clear();
-    }
+	private File fTestFolder;
 
-    protected void tearDown() throws Exception {
-        SchedulingService.getInstance().removeJob(this.fJobName, null);
-        SchedulingService.getInstance().shutdown();
-        CountJob.fExecutionCount = 0;
-    }
+	private SchedulingService fSchedulingService;
 
-    /**
-     * @throws Exception
-     */
-    public void testScheduleCronJob1() throws Exception {
-        SchedulingService.getInstance().scheduleCronJob(this.fJobName, null, CountJob.class, null, "0/1 * * * * ? *");
-        Thread.sleep(500);
-        assertTrue(CountJob.fExecutionCount > 0);
-    }
+	protected void setUp() throws Exception {
+		// clean directory
+		fTestFolder = new File("" + System.currentTimeMillis() + "");
+		fTestFolder.mkdirs();
+		fSchedulingService = new SchedulingService(fTestFolder);
+		FileJobStore jobStore = new FileJobStore();
+		jobStore.initialize(null, null);
+		jobStore.clear();
+	}
 
-    /**
-     * @throws Exception
-     */
-    public void testScheduleCronJob2() throws Exception {
-        SchedulingService.getInstance().scheduleCronJob(this.fJobName, null, CountJob.class, null, "0/1", null, null,
-                null, null, "?", null);
-        Thread.sleep(500);
-        assertTrue(CountJob.fExecutionCount > 0);
-    }
+	protected void tearDown() throws Exception {
 
-    /**
-     * @throws Throwable
-     * 
-     */
-    public void testGetCronExpression() throws Throwable {
-        String cronExpression = SchedulingService.getCronExpression("0", "0/5", null, null, null, "?", null);
-        assertEquals("0 0/5 * * * ? *", cronExpression);
-        new CronTrigger().setCronExpression(cronExpression);
-        cronExpression = SchedulingService.getCronExpression("0", "30", "10-13", "?", null, "WED,FRI", null);
-        assertEquals("0 30 10-13 ? * WED,FRI *", cronExpression);
-        new CronTrigger().setCronExpression(cronExpression);
-    }
+		fSchedulingService.removeJob(this.fJobName, null);
+		fSchedulingService.shutdown();
+		File[] files = fTestFolder.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			files[i].delete();
+		}
+		fTestFolder.delete();
+		CountJob.fExecutionCount = 0;
+
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public void testScheduleCronJob1() throws Exception {
+		fSchedulingService.scheduleCronJob(this.fJobName, null, CountJob.class,
+				null, "0/1 * * * * ? *");
+		Thread.sleep(500);
+		assertTrue(CountJob.fExecutionCount > 0);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public void testScheduleCronJob2() throws Exception {
+		fSchedulingService.scheduleCronJob(this.fJobName, null,
+				CountJob.class, null, "0/1", null, null, null, null, "?", null);
+		Thread.sleep(500);
+		assertTrue(CountJob.fExecutionCount > 0);
+	}
+
+	/**
+	 * @throws Throwable
+	 * 
+	 */
+	public void testGetCronExpression() throws Throwable {
+		String cronExpression = SchedulingService.getCronExpression("0", "0/5",
+				null, null, null, "?", null);
+		assertEquals("0 0/5 * * * ? *", cronExpression);
+		new CronTrigger().setCronExpression(cronExpression);
+		cronExpression = SchedulingService.getCronExpression("0", "30",
+				"10-13", "?", null, "WED,FRI", null);
+		assertEquals("0 30 10-13 ? * WED,FRI *", cronExpression);
+		new CronTrigger().setCronExpression(cronExpression);
+	}
 }

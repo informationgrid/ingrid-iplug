@@ -96,7 +96,7 @@ public class WebContainer implements Runnable {
             }
         }
         File infoFolder = new File(path);
-        WebContainer.startContainer(8080, infoFolder.getCanonicalPath());
+        WebContainer.startContainer(8082, infoFolder.getCanonicalPath());
     }
 
 }

@@ -14,8 +14,13 @@ import java.net.URLDecoder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.http.BasicAuthenticator;
+import org.mortbay.http.HashUserRealm;
+import org.mortbay.http.SecurityConstraint;
 import org.mortbay.http.SocketListener;
+import org.mortbay.http.handler.SecurityHandler;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.WebApplicationContext;
 
 public class WebContainer implements Runnable {
     private static Log log = LogFactory.getLog(WebContainer.class);
@@ -45,8 +50,23 @@ public class WebContainer implements Runnable {
             SocketListener listener = new SocketListener();
             listener.setPort(fPort);
             fServer.addListener(listener);
-            fServer.addWebApplication("/", fWebAppPathe);
+            WebApplicationContext context = fServer.addWebApplication("/", fWebAppPathe);
+            
+            HashUserRealm hr = new HashUserRealm();
+            hr.setName("Test Realm");
+            hr.put("admin", "admin");
+            hr.remove("admin");
+            fServer.addRealm(hr);
+            SecurityHandler handler = new SecurityHandler();
+            handler.setAuthMethod("BASIC");
+            context.addHandler(handler);
+            context.setAuthenticator(new BasicAuthenticator()); 
+            SecurityConstraint sc = new SecurityConstraint();
+            sc.setAuthenticate(true);
+            sc.addRole(SecurityConstraint.ANY_ROLE);
 
+            context.addSecurityConstraint("/", sc); 
+            
             fServer.start();
         } catch (Exception e) {
             log.error(e);

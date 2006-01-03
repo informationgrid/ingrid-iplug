@@ -146,7 +146,18 @@ public class SchedulingService {
 		InputStream resourceAsStream = SchedulingService.class
 				.getResourceAsStream("/quartz.properties");
 		Properties properties = new Properties();
-		properties.load(resourceAsStream);
+		if (resourceAsStream != null) {
+			// load values from config file
+			properties.load(resourceAsStream);
+		} else {
+			// use some default values
+			properties.put(StdSchedulerFactory.PROP_JOB_STORE_CLASS,
+					FileJobStore.class.getName());
+			properties.put(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
+					"org.quartz.simpl.SimpleThreadPool");
+			properties.put("org.quartz.threadPool.threadCount", "5");
+
+		}
 		properties.setProperty("org.quartz.jobStore.storeFilePath",
 				fileStorePath.getAbsolutePath());
 		SchedulerFactory schedulerFactory = new StdSchedulerFactory(properties);

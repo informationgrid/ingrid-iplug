@@ -6,7 +6,7 @@
 
 package de.ingrid.iplug;
 
-import de.ingrid.utils.IngridDocument;
+import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.query.IngridQuery;
 
 /**
@@ -25,9 +25,11 @@ public interface IPlug {
      * @param query
      * @param start
      * @param lenght
-     * @return matching documents
+     * @return subset of matching <code>Hit</code>s bundled with meta
+     *         information into a <code>Hits</code>
      * @throws Exception
      */
-    IngridDocument[] search(IngridQuery query, int start, int lenght) throws Exception;
+    public IngridHits search(IngridQuery query, int start, int lenght)
+            throws Exception;
 
 }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,11 +19,12 @@ import org.mortbay.http.BasicAuthenticator;
 import org.mortbay.http.HashUserRealm;
 import org.mortbay.http.SecurityConstraint;
 import org.mortbay.http.SocketListener;
+import org.mortbay.http.UserRealm;
 import org.mortbay.http.handler.SecurityHandler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 
-public class WebContainer implements Runnable {
+public class WebContainer extends Thread {
     private static Log log = LogFactory.getLog(WebContainer.class);
 
     private static final boolean WINDOWS = System.getProperty("os.name")
@@ -32,11 +34,18 @@ public class WebContainer implements Runnable {
 
     private int fPort;
 
-    private String fWebAppPathe;
+    private String fWebAppPath;
 
-    public WebContainer(int port, String webappPath) {
+    private HashUserRealm fRealm;
+
+    private boolean fSecured;
+
+    // private HashUserRealm fHashRealm;
+
+    public WebContainer(int port, String webappPath, boolean secured) {
         fPort = port;
-        fWebAppPathe = webappPath;
+        fWebAppPath = webappPath;
+        fSecured = secured;
     } /*
          * (non-Javadoc)
          * 
@@ -50,23 +59,23 @@ public class WebContainer implements Runnable {
             SocketListener listener = new SocketListener();
             listener.setPort(fPort);
             fServer.addListener(listener);
-            WebApplicationContext context = fServer.addWebApplication("/", fWebAppPathe);
-            
-            HashUserRealm hr = new HashUserRealm();
-            hr.setName("Test Realm");
-            hr.put("admin", "admin");
-            hr.remove("admin");
-            fServer.addRealm(hr);
-            SecurityHandler handler = new SecurityHandler();
-            handler.setAuthMethod("BASIC");
-            context.addHandler(handler);
-            context.setAuthenticator(new BasicAuthenticator()); 
-            SecurityConstraint sc = new SecurityConstraint();
-            sc.setAuthenticate(true);
-            sc.addRole(SecurityConstraint.ANY_ROLE);
+            WebApplicationContext context = fServer.addWebApplication("/",
+                    fWebAppPath);
+            if (fSecured) {
+                SecurityHandler handler = new SecurityHandler();
+                handler.setAuthMethod("BASIC");
+                context.addHandler(handler);
+                context.setAuthenticator(new BasicAuthenticator());
+                SecurityConstraint sc = new SecurityConstraint();
+                sc.setAuthenticate(true);
+                sc.addRole(SecurityConstraint.ANY_ROLE);
 
-            context.addSecurityConstraint("/", sc); 
-            
+                context.addSecurityConstraint("/", sc);
+
+                fRealm = new HashUserRealm("tester");
+                // fRealm.put("admin", "admin");
+                fServer.addRealm(fRealm);
+            }
             fServer.start();
         } catch (Exception e) {
             log.error(e);
@@ -79,12 +88,8 @@ public class WebContainer implements Runnable {
      * 
      * @throws IOException
      */
-    public static void startContainer(int port, String webappPath)
-            throws IOException {
-        if (fServer != null && fServer.isStarted()) {
-            throw new IOException("container is allready running");
-        }
-        new Thread(new WebContainer(port, webappPath)).start();
+    public void startContainer() throws IOException {
+        start();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ie) {
@@ -99,10 +104,32 @@ public class WebContainer implements Runnable {
      * 
      * @throws InterruptedException
      */
-    public static void stopContainer() throws InterruptedException {
+    public void stopContainer() throws InterruptedException {
         if (fServer != null && fServer.isStarted()) {
             fServer.stop();
         }
+    }
+
+    /**
+     * Adds a user allowed accessing the context
+     * 
+     * @param userName
+     * @param password
+     */
+    public void addUser(String userName, String password) {
+        // HashUserRealm hashRealm = new HashUserRealm();
+        // hashRealm.setName(userName);
+        fRealm.put(userName, password);
+        // fServer.addRealm(hashRealm);
+    }
+
+    /**
+     * Removes a user to be able to login
+     * 
+     * @param userName
+     */
+    public void removeUser(String userName) {
+        fServer.removeRealm(userName);
     }
 
     public static void main(String[] args) throws IOException {
@@ -116,7 +143,12 @@ public class WebContainer implements Runnable {
             }
         }
         File infoFolder = new File(path);
-        WebContainer.startContainer(8082, infoFolder.getCanonicalPath());
+
+        WebContainer container = new WebContainer(8082, infoFolder
+                .getCanonicalPath(), true);
+        container.startContainer();
+        container.addUser("admin2", "password");
+
     }
 
 }

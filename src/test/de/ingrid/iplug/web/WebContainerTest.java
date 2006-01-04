@@ -29,7 +29,8 @@ public class WebContainerTest extends TestCase {
             }
         }
         File infoFolder = new File(path);
-        WebContainer.startContainer(8080, infoFolder.getCanonicalPath());
+        WebContainer container = new WebContainer(8080, infoFolder.getCanonicalPath(), false);
+       container.startContainer();
         InputStream stream = new URL("http://127.0.0.1:8080/system.jsp")
                 .openStream();
         assertNotNull(stream);

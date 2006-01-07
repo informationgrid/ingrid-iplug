@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +18,6 @@ import org.mortbay.http.BasicAuthenticator;
 import org.mortbay.http.HashUserRealm;
 import org.mortbay.http.SecurityConstraint;
 import org.mortbay.http.SocketListener;
-import org.mortbay.http.UserRealm;
 import org.mortbay.http.handler.SecurityHandler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.WebApplicationContext;

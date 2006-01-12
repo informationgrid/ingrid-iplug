@@ -6,6 +6,7 @@
 
 package de.ingrid.iplug;
 
+import de.ingrid.utils.ISearcher;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.query.IngridQuery;
 
@@ -17,19 +18,8 @@ import de.ingrid.utils.query.IngridQuery;
  * @author sg
  * @version $Revision: 1.3 $
  */
-public interface IPlug {
+public interface IPlug extends ISearcher{
 
-    /**
-     * Search the data source represented as plug for matching.
-     * 
-     * @param query
-     * @param start
-     * @param lenght
-     * @return subset of matching <code>Hit</code>s bundled with meta
-     *         information into a <code>Hits</code>
-     * @throws Exception
-     */
-    public IngridHits search(IngridQuery query, int start, int lenght)
-            throws Exception;
+  
 
 }

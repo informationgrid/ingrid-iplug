@@ -44,7 +44,8 @@ public class PlugServer {
         synchronized (PlugServer.class) {
             if (fInstance == null) {
                 PlugDescription plugDescription = getPlugDescription();
-                Class plugClass = plugDescription.getIPlugClass();
+                String plugClassStr = plugDescription.getIPlugClass();
+                Class plugClass = Thread.currentThread().getContextClassLoader().loadClass(plugClassStr);
                 fInstance = (IPlug) plugClass.newInstance();
                 fInstance.configure(plugDescription);
 

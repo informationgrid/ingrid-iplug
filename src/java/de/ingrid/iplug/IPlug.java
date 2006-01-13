@@ -24,6 +24,6 @@ public interface IPlug extends ISearcher {
      * 
      * @param plugDescription
      */
-    void configure(PlugDescription plugDescription);
+    void configure(PlugDescription plugDescription) throws Exception;
 
 }

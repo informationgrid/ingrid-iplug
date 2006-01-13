@@ -334,14 +334,14 @@ public class PlugDescription extends IngridDocument {
 	 * @param iPlugClass
 	 *            The class of the used IPlug.
 	 */
-	public void setIPlugClass(Class iPlugClass) {
+	public void setIPlugClass(String iPlugClass) {
 		put(IPLUG_CLASS, iPlugClass);
 	}
 
 	/**
 	 * @return The class of the used IPlug.
 	 */
-	public Class getIPlugClass() {
-		return (Class) get(IPLUG_CLASS);
+	public String getIPlugClass() {
+		return  (String) get(IPLUG_CLASS);
 	}
 }

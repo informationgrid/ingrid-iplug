@@ -115,6 +115,14 @@ public class PlugServer {
             } catch (Throwable t) {
                 System.err.println("Cannot register IPlug: " + t.getMessage());
             }
+
+            while (true) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // can be ignored
+                }
+            }
         } catch (NumberFormatException e) {
             System.err.println(usage);
             System.exit(-1);

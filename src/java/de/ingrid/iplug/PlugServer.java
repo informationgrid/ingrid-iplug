@@ -35,7 +35,7 @@ public class PlugServer {
      * @throws IOException
      */
     public static PlugDescription getPlugDescription() throws IOException {
-        InputStream resourceAsStream = PlugServer.class.getResourceAsStream("plugdescription.xml");
+        InputStream resourceAsStream = PlugServer.class.getResourceAsStream("/plugdescription.xml");
         XMLSerializer serializer = new XMLSerializer();
         return (PlugDescription) serializer.deSerialize(resourceAsStream);
 
@@ -114,6 +114,7 @@ public class PlugServer {
                         new Object[] { plugDesc });
             } catch (Throwable t) {
                 System.err.println("Cannot register IPlug: " + t.getMessage());
+                t.printStackTrace();
             }
 
             while (true) {

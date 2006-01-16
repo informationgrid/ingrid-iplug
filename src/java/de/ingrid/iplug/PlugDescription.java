@@ -160,33 +160,33 @@ public class PlugDescription extends IngridDocument {
 	}
 
 	/**
-	 * @return Returns the oraganisation.
+	 * @return Returns the organisation.
 	 */
-	public String getOraganisation() {
+	public String getOrganisation() {
 		return (String) get(ORGANISATION);
 	}
 
 	/**
-	 * @param oraganisation
-	 *            The oraganisation abbreviation to set.
+	 * @param organisation
+	 *            The organisation abbreviation to set.
 	 */
-	public void setOraganisation(String oraganisation) {
-		put(ORGANISATION, oraganisation);
+	public void setOrganisation(String organisation) {
+		put(ORGANISATION, organisation);
 	}
 
 	/**
-	 * @return Returns the oraganisation abbreviation.
+	 * @return Returns the organisation abbreviation.
 	 */
-	public String getOraganisationAbbr() {
+	public String getOrganisationAbbr() {
 		return (String) get(ORGANISATION_ABBR);
 	}
 
 	/**
-	 * @param oraganisation
-	 *            The oraganisation to set.
+	 * @param organisationAbbr
+	 *            The organisation to set.
 	 */
-	public void setOraganisationAbbr(String oraganisationAbbr) {
-		put(ORGANISATION_ABBR, oraganisationAbbr);
+	public void setOrganisationAbbr(String organisationAbbr) {
+		put(ORGANISATION_ABBR, organisationAbbr);
 	}
 
 	/**

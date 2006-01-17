@@ -17,7 +17,7 @@ import de.ingrid.ibus.Bus;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
- * A server that starts the iplug class as defined in the plugdescription, can also be used as singleton
+ * A server that starts the iplug class as defined in the plugdescription, that can also be used as singleton.
  * 
  * created on 09.08.2005
  * 
@@ -38,7 +38,6 @@ public class PlugServer {
         InputStream resourceAsStream = PlugServer.class.getResourceAsStream("/plugdescription.xml");
         XMLSerializer serializer = new XMLSerializer();
         return (PlugDescription) serializer.deSerialize(resourceAsStream);
-
     }
 
     /**
@@ -55,7 +54,6 @@ public class PlugServer {
                 Class plugClass = Thread.currentThread().getContextClassLoader().loadClass(plugClassStr);
                 fInstance = (IPlug) plugClass.newInstance();
                 fInstance.configure(plugDescription);
-
             }
         }
         return fInstance;

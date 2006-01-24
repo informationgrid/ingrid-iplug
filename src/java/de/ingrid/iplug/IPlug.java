@@ -9,7 +9,7 @@ package de.ingrid.iplug;
 import de.ingrid.utils.ISearcher;
 
 /**
- * the offical plug interface
+ * The offical plug interface.
  * 
  * created on 09.08.2005
  * 
@@ -19,11 +19,10 @@ import de.ingrid.utils.ISearcher;
 public interface IPlug extends ISearcher {
 
     /**
-     * will be invoked directly after instantiating the Iplug Object by the IPlugServer, better use
-     * this method than a default construtor to setup fields
+     * Will be invoked directly after instantiating the Iplug Object by the IPlugServer, better use this method than a
+     * default construtor to setup fields.
      * 
      * @param plugDescription
      */
     void configure(PlugDescription plugDescription) throws Exception;
-
 }

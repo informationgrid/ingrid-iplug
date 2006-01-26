@@ -6,6 +6,7 @@
 
 package de.ingrid.iplug;
 
+import de.ingrid.utils.IDetailer;
 import de.ingrid.utils.ISearcher;
 
 /**
@@ -16,7 +17,7 @@ import de.ingrid.utils.ISearcher;
  * @author sg
  * @version $Revision: 1.3 $
  */
-public interface IPlug extends ISearcher {
+public interface IPlug extends ISearcher, IDetailer {
 
     /**
      * Will be invoked directly after instantiating the Iplug Object by the IPlugServer, better use this method than a

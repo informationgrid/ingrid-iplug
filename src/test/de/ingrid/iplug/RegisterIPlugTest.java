@@ -43,7 +43,8 @@ public class RegisterIPlugTest extends TestCase {
 
     private ProxyService fPs;
 
-    private Bus bus;
+    private RemoteInvocationController fRic;
+
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -80,19 +81,22 @@ public class RegisterIPlugTest extends TestCase {
     }
 
     /**
-     * @throws IOException
-     * @throws FileNotFoundException
+     * @throws Throwable 
+     * @throws Exception 
+     * @throws NoSuchMethodException 
+     * @throws SecurityException 
      * 
      */
-    public void testIPlugRegistration() throws FileNotFoundException, IOException {
+    public void testIPlugRegistration() throws SecurityException, NoSuchMethodException, Exception, Throwable {
         Bus bus = new Bus(null);
-        PlugDescription pd = loadXMLSerializable(new FileInputStream(this.fSerFile));
+        fRic = new RemoteInvocationController(this.fCommunication, this.fBusUrl);
+
+        PlugDescription pd = loadXMLSerializable(new FileInputStream(
+                this.fSerFile));
         registerIPlug(pd, this.fBusUrl);
 
-        Registry reg = bus.getIPlugRegistry();
-        assertNotNull(reg);
-
-        pd = reg.getIPlug(this.fPlugDesc.getPlugId());
+        System.out.println("the bus: " + bus);
+        pd = bus.getIPlug(pd.getPlugId());
         assertNotNull(pd);
     }
 
@@ -115,9 +119,9 @@ public class RegisterIPlugTest extends TestCase {
      * @param busUrl
      */
     public void registerIPlug(PlugDescription plugDesc, String busUrl) {
-        RemoteInvocationController ric = new RemoteInvocationController(this.fCommunication, busUrl);
+//        RemoteInvocationController ric = new RemoteInvocationController(this.fCommunication, busUrl);
         try {
-            bus = (Bus) ric.invoke(Bus.class, Bus.class.getMethod("getInstance", null), null);
+            Bus bus = (Bus) fRic.invoke(Bus.class, Bus.class.getMethod("getInstance", null), null);
             bus.addIPlug(plugDesc);
         } catch (Throwable t) {
             this.fLOGGER.error("Cannot register IPlug: " + t.getMessage(), t);

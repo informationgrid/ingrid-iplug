@@ -96,7 +96,7 @@ public class RegisterIPlugTest extends TestCase {
         registerIPlug(pd, this.fBusUrl);
 
         System.out.println("the bus: " + bus);
-        pd = bus.getIPlug(pd.getPlugId());
+        pd = bus.getIPlugRegistry().getIPlug(pd.getPlugId());
         assertNotNull(pd);
     }
 

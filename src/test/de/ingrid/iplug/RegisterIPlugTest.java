@@ -22,13 +22,12 @@ import net.weta.components.communication_sockets.util.AddressUtil;
 import net.weta.components.proxies.ProxyService;
 import net.weta.components.proxies.remote.RemoteInvocationController;
 
-
 import de.ingrid.ibus.Bus;
 import de.ingrid.ibus.registry.Registry;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
- *  
+ * 
  */
 public class RegisterIPlugTest extends TestCase {
 
@@ -43,6 +42,8 @@ public class RegisterIPlugTest extends TestCase {
     private PlugDescription fPlugDesc;
 
     private ProxyService fPs;
+
+    private Bus bus;
 
     /**
      * @see junit.framework.TestCase#setUp()
@@ -81,7 +82,7 @@ public class RegisterIPlugTest extends TestCase {
     /**
      * @throws IOException
      * @throws FileNotFoundException
-     *  
+     * 
      */
     public void testIPlugRegistration() throws FileNotFoundException, IOException {
         Bus bus = new Bus(null);
@@ -116,8 +117,8 @@ public class RegisterIPlugTest extends TestCase {
     public void registerIPlug(PlugDescription plugDesc, String busUrl) {
         RemoteInvocationController ric = new RemoteInvocationController(this.fCommunication, busUrl);
         try {
-            ric.invoke(Bus.class, Bus.class.getMethod("addIPlug", new Class[] { PlugDescription.class }),
-                    new Object[] { plugDesc });
+            bus = (Bus) ric.invoke(Bus.class, Bus.class.getMethod("getInstance", null), null);
+            bus.addIPlug(plugDesc);
         } catch (Throwable t) {
             this.fLOGGER.error("Cannot register IPlug: " + t.getMessage(), t);
         }

@@ -108,8 +108,8 @@ public class PlugServer {
 
             RemoteInvocationController ric = proxy.createRemoteInvocationController(iBusUrl);
             try {
-                ric.invoke(Bus.class, Bus.class.getMethod("addIPlug", new Class[] { PlugDescription.class }),
-                        new Object[] { plugDesc });
+                Bus bus = (Bus) ric.invoke(Bus.class, Bus.class.getMethod("getInstance", null), null);
+                bus.addIPlug(plugDesc);
             } catch (Throwable t) {
                 System.err.println("Cannot register IPlug: " + t.getMessage());
                 t.printStackTrace();

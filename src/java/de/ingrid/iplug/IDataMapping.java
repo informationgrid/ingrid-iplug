@@ -10,5 +10,4 @@ package de.ingrid.iplug;
  * 
  */
 public interface IDataMapping {
-
 }

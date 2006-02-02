@@ -103,7 +103,10 @@ public class PlugDescription extends IngridDocument {
 	 */
 	public String[] getDataTypes() {
         ArrayList arrayList = getArrayList(DATA_TYPE);
-        return (String[]) arrayList.toArray(new String[arrayList.size()]);
+        if (arrayList != null) {
+            return (String[]) arrayList.toArray(new String[arrayList.size()]);
+        }
+        return new String[0];
     }
 
 	/**

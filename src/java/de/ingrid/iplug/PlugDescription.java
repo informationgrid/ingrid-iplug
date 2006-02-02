@@ -98,18 +98,20 @@ public class PlugDescription extends IngridDocument {
 	}
 
 	/**
-	 * @return Returns the dataType.
+	 * @return Returns list of supported dataTypes.
+     * 
 	 */
-	public String getDataType() {
-		return (String) get(DATA_TYPE);
-	}
+	public String[] getDataTypes() {
+        ArrayList arrayList = getArrayList(DATA_TYPE);
+        return (String[]) arrayList.toArray(new String[arrayList.size()]);
+    }
 
 	/**
 	 * @param dataType
 	 *            The dataType to set.
 	 */
-	public void setDataType(String dataType) {
-		put(DATA_TYPE, dataType);
+	public void addDataType(String dataType) {
+		addToList(DATA_TYPE, dataType);
 	}
 
 	/**

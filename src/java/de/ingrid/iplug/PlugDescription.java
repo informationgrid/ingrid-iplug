@@ -27,7 +27,9 @@ import de.ingrid.utils.IngridDocument;
  */
 public class PlugDescription extends IngridDocument {
 
-	private static final String CONNECTION = "connection";
+    private static final long serialVersionUID = PlugDescription.class.getName().hashCode();
+
+    private static final String CONNECTION = "connection";
 
 	private static final String IS_CRONBASED_INDEXING = "cronbasedIndexing";
 
@@ -62,6 +64,8 @@ public class PlugDescription extends IngridDocument {
 	private static final String PROXY_SERVICE_URL = "proxyServiceUrl";
 
 	private static final String IPLUG_CLASS = "iPlugClass";
+
+    private static final String  MOTHER_IBUS_URL = "motherIbusUrl";
 
 	/**
 	 * @return Returns the connection.
@@ -329,6 +333,23 @@ public class PlugDescription extends IngridDocument {
 	public String getProxyServiceURL() {
 		return (String) get(PROXY_SERVICE_URL);
 	}
+    
+    
+    /**
+     * @param motherIbusUrl
+     *            The URL of the mother Ibus.
+     */
+    public void setMotherIBusURL(String motherIbusUrl) {
+        put(MOTHER_IBUS_URL, motherIbusUrl);
+    }
+
+    /**
+     * @return The URL of the proxy service.
+     */
+    public String getMotherIBusURL() {
+        return (String) get(MOTHER_IBUS_URL);
+    }
+    
 
 	/**
 	 * @param iPlugClass

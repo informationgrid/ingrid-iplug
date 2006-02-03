@@ -9,11 +9,6 @@ package de.ingrid.iplug;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.weta.components.communication_sockets.SocketCommunication;
-import net.weta.components.communication_sockets.util.AddressUtil;
-import net.weta.components.proxies.ProxyService;
-import net.weta.components.proxies.remote.RemoteInvocationController;
-import de.ingrid.ibus.Bus;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
@@ -28,19 +23,6 @@ import de.ingrid.utils.xml.XMLSerializer;
 public class PlugServer {
 
     private static IPlug fInstance;
-
-    /**
-     * Reads the plug description from a xml file in the classpath.
-     * 
-     * @return The plug description.
-     * @throws IOException
-     */
-    public static PlugDescription getPlugDescription() throws IOException {
-        InputStream resourceAsStream = PlugServer.class
-                .getResourceAsStream("/plugdescription.xml");
-        XMLSerializer serializer = new XMLSerializer();
-        return (PlugDescription) serializer.deSerialize(resourceAsStream);
-    }
 
     /**
      * Returns the IPlug instance.
@@ -83,59 +65,29 @@ public class PlugServer {
             iBusPort = Integer.parseInt(args[3]);
 
             PlugServer.getIPlugInstance();
-            // start the communication
-            SocketCommunication communication = new SocketCommunication();
-            communication.setMulticastPort(mPort);
-            communication.setUnicastPort(uPort);
 
-            try {
-                communication.startup();
-            } catch (IOException e) {
-                System.err.println("Cannot start the communication: "
-                        + e.getMessage());
-            }
+            HeartBeatThread thread = new HeartBeatThread(mPort, uPort,
+                    iBustHost, iBusPort);
 
-            // start the proxy server
-            ProxyService proxy = new ProxyService();
-            proxy.setCommunication(communication);
-            try {
-                proxy.startup();
-            } catch (IllegalArgumentException e) {
-                System.err
-                        .println("Wrong arguments supplied to the proxy service: "
-                                + e.getMessage());
-            } catch (Exception e) {
-                System.err.println("Cannot start the proxy server: "
-                        + e.getMessage());
-            }
-
-            // register the IPlug
-            String iBusUrl = AddressUtil.getWetagURL(iBustHost, iBusPort);
-            PlugDescription plugDesc = getPlugDescription();
-
-            RemoteInvocationController ric = proxy
-                    .createRemoteInvocationController(iBusUrl);
-            try {
-                Bus bus = (Bus) ric.invoke(Bus.class, Bus.class.getMethod(
-                        "getInstance", null), null);
-                HeartBeatThread thread = new HeartBeatThread(bus, plugDesc,
-                        1000 * 30); // FIXME we should make this configurable.
-                thread.start();
-            } catch (Throwable t) {
-                System.err.println("Cannot register IPlug: " + t.getMessage());
-                t.printStackTrace();
-            }
-
-            while (true) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    // can be ignored
-                }
-            }
-        } catch (NumberFormatException e) {
+            thread.start();
+        } catch (Throwable t) {
+            System.err.println("Cannot register IPlug: ");
+            t.printStackTrace();
             System.err.println(usage);
             System.exit(-1);
         }
+    }
+
+    /**
+     * Reads the plug description from a xml file in the classpath.
+     * 
+     * @return The plug description.
+     * @throws IOException
+     */
+    public static PlugDescription getPlugDescription() throws IOException {
+        InputStream resourceAsStream = PlugServer.class
+                .getResourceAsStream("/plugdescription.xml");
+        XMLSerializer serializer = new XMLSerializer();
+        return (PlugDescription) serializer.deSerialize(resourceAsStream);
     }
 }

@@ -17,7 +17,8 @@ import de.ingrid.ibus.Bus;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
- * A server that starts the iplug class as defined in the plugdescription, that can also be used as singleton.
+ * A server that starts the iplug class as defined in the plugdescription, that
+ * can also be used as singleton.
  * 
  * created on 09.08.2005
  * 
@@ -35,7 +36,8 @@ public class PlugServer {
      * @throws IOException
      */
     public static PlugDescription getPlugDescription() throws IOException {
-        InputStream resourceAsStream = PlugServer.class.getResourceAsStream("/plugdescription.xml");
+        InputStream resourceAsStream = PlugServer.class
+                .getResourceAsStream("/plugdescription.xml");
         XMLSerializer serializer = new XMLSerializer();
         return (PlugDescription) serializer.deSerialize(resourceAsStream);
     }
@@ -51,7 +53,8 @@ public class PlugServer {
             if (fInstance == null) {
                 PlugDescription plugDescription = getPlugDescription();
                 String plugClassStr = plugDescription.getIPlugClass();
-                Class plugClass = Thread.currentThread().getContextClassLoader().loadClass(plugClassStr);
+                Class plugClass = Thread.currentThread()
+                        .getContextClassLoader().loadClass(plugClassStr);
                 fInstance = (IPlug) plugClass.newInstance();
                 fInstance.configure(plugDescription);
             }
@@ -88,7 +91,8 @@ public class PlugServer {
             try {
                 communication.startup();
             } catch (IOException e) {
-                System.err.println("Cannot start the communication: " + e.getMessage());
+                System.err.println("Cannot start the communication: "
+                        + e.getMessage());
             }
 
             // start the proxy server
@@ -97,19 +101,26 @@ public class PlugServer {
             try {
                 proxy.startup();
             } catch (IllegalArgumentException e) {
-                System.err.println("Wrong arguments supplied to the proxy service: " + e.getMessage());
+                System.err
+                        .println("Wrong arguments supplied to the proxy service: "
+                                + e.getMessage());
             } catch (Exception e) {
-                System.err.println("Cannot start the proxy server: " + e.getMessage());
+                System.err.println("Cannot start the proxy server: "
+                        + e.getMessage());
             }
 
             // register the IPlug
             String iBusUrl = AddressUtil.getWetagURL(iBustHost, iBusPort);
             PlugDescription plugDesc = getPlugDescription();
 
-            RemoteInvocationController ric = proxy.createRemoteInvocationController(iBusUrl);
+            RemoteInvocationController ric = proxy
+                    .createRemoteInvocationController(iBusUrl);
             try {
-                Bus bus = (Bus) ric.invoke(Bus.class, Bus.class.getMethod("getInstance", null), null);
-                bus.addIPlug(plugDesc);
+                Bus bus = (Bus) ric.invoke(Bus.class, Bus.class.getMethod(
+                        "getInstance", null), null);
+                HeartBeatThread thread = new HeartBeatThread(bus, plugDesc,
+                        1000 * 30); // FIXME we should make this configurable.
+                thread.start();
             } catch (Throwable t) {
                 System.err.println("Cannot register IPlug: " + t.getMessage());
                 t.printStackTrace();

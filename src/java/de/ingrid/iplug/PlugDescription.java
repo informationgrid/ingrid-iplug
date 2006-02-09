@@ -94,7 +94,7 @@ public class PlugDescription extends IngridDocument {
 	 *            The cronBasedIndexing to set.
 	 */
 	public void setCronBasedIndexing(boolean cronBasedIndexing) {
-		setBoolean(IS_CRONBASED_INDEXING, cronBasedIndexing);
+		putBoolean(IS_CRONBASED_INDEXING, cronBasedIndexing);
 	}
 
 	/**

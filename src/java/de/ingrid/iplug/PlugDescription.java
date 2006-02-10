@@ -54,6 +54,8 @@ public class PlugDescription extends IngridDocument {
 	private static final String PERSON_PHONE = "personPhone";
 
 	private static final String PERSON_TITLE = "personTitle";
+    
+    private static final String PARTNER = "partner";
 
 	private static final String IPLUG_ID = "plugId";
 
@@ -177,11 +179,26 @@ public class PlugDescription extends IngridDocument {
 
 	/**
 	 * @param organisation
-	 *            The organisation abbreviation to set.
+	 *            The organisation  to set.
 	 */
 	public void setOrganisation(String organisation) {
 		put(ORGANISATION, organisation);
 	}
+    
+    /**
+     * @return Returns the partner.
+     */
+    public String getPartner() {
+        return (String) get(PARTNER);
+    }
+
+    /**
+     * @param partner
+     *            The partner to set.
+     */
+    public void setPartner(String partner) {
+        put(PARTNER, partner);
+    }
 
 	/**
 	 * @return Returns the organisation abbreviation.

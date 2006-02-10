@@ -99,16 +99,19 @@ public class FileJobStore implements JobStore {
 
     public void storeJobAndTrigger(SchedulingContext ctxt, JobDetail newJob, Trigger newTrigger)
             throws ObjectAlreadyExistsException, JobPersistenceException {
-        storeJob(ctxt, newJob, false);
-        storeTrigger(ctxt, newTrigger, false);
+        storeJob(ctxt, newJob, true);
+        storeTrigger(ctxt, newTrigger, true);
 
     }
 
     public void storeJob(SchedulingContext ctxt, JobDetail newJobDetail, boolean replaceExisting)
             throws ObjectAlreadyExistsException, JobPersistenceException {
         boolean jobExists = this.fJobsByName.containsKey(newJobDetail.getFullName());
-        if (!replaceExisting && jobExists)
+        if (!replaceExisting && jobExists) {
             throw new ObjectAlreadyExistsException(newJobDetail);
+        } else if (replaceExisting && jobExists) {
+            log.warn("overwriting existing job: " + newJobDetail.getFullName());
+        }
 
         synchronized (this.fJobsByName) {
             if (!jobExists) {
@@ -179,6 +182,8 @@ public class FileJobStore implements JobStore {
         if (this.fTriggersByName.containsKey(newTrigger.getFullName())) {
             if (!replaceExisting) {
                 throw new ObjectAlreadyExistsException(newTrigger);
+            } else {
+                log.warn("overwriting existing trigger: " + newTrigger.getFullName());
             }
             removeTrigger(ctxt, newTrigger.getName(), newTrigger.getGroup());
         }

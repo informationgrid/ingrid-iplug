@@ -9,6 +9,7 @@ package de.ingrid.iplug;
 import java.io.File;
 
 import junit.framework.TestCase;
+import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.xml.XMLSerializer;
 
 public class PlugDescriptionTest extends TestCase {

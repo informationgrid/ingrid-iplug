@@ -16,8 +16,8 @@ import net.weta.components.proxies.remote.RemoteInvocationController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import de.ingrid.ibus.Bus;
-import de.ingrid.iplug.scheduler.FileJobStore;
+import de.ingrid.utils.IBus;
+import de.ingrid.utils.PlugDescription;
 
 /**
  * sends the plug description as a kind heard beat continues to the ibus.
@@ -29,7 +29,7 @@ import de.ingrid.iplug.scheduler.FileJobStore;
  */
 public class HeartBeatThread extends Thread {
 
-    private final static Log fLogger = LogFactory.getLog(FileJobStore.class);
+    private final static Log fLogger = LogFactory.getLog(HeartBeatThread.class);
 
     private SocketCommunication fCommunication;
 
@@ -43,36 +43,33 @@ public class HeartBeatThread extends Thread {
 
     private int fIBusPort;
 
-    private Bus fBus;
+    private IBus fBus;
 
     private PlugDescription fPlugDescripion;
 
     private int fSleepInterval;
 
-    public HeartBeatThread(int mPort, int uPort, String iBustHost, int iBusPort)
-            throws Throwable {
+    public HeartBeatThread(int mPort, int uPort, String iBustHost, int iBusPort) throws Throwable {
         fSleepInterval = 1000 * 30; // FIXME make this configurable
         fMPort = mPort;
         fUPort = uPort;
         fIBustHost = iBustHost;
         fIBusPort = iBusPort;
         connectIBus();
-        fBus.addIPlug(fPlugDescripion);
+        fBus.addPlugDescription(fPlugDescripion);
     }
 
     public void run() {
         while (!isInterrupted()) {
             try {
-                fBus.addIPlug(fPlugDescripion);
+                fBus.addPlugDescription(fPlugDescripion);
             } catch (Throwable t) {
                 fLogger.error("unable to connect ibus: " + t.toString());
                 shutDownCommunication();
                 try {
                     connectIBus();
                 } catch (Throwable e) {
-                    fLogger
-                            .error("reconnecting IBus failed, will try again later, reason:"
-                                    + t.toString());
+                    fLogger.error("reconnecting IBus failed, will try again later, reason:" + t.toString());
                 }
             }
 
@@ -94,8 +91,7 @@ public class HeartBeatThread extends Thread {
         try {
             fCommunication.startup();
         } catch (IOException e) {
-            System.err.println("Cannot start the communication: "
-                    + e.getMessage());
+            System.err.println("Cannot start the communication: " + e.getMessage());
         }
 
         // start the proxy server
@@ -108,10 +104,8 @@ public class HeartBeatThread extends Thread {
         String iBusUrl = AddressUtil.getWetagURL(fIBustHost, fIBusPort);
         fPlugDescripion = PlugServer.getPlugDescription();
 
-        RemoteInvocationController ric = fProxy
-                .createRemoteInvocationController(iBusUrl);
-        fBus = (Bus) ric.invoke(Bus.class, Bus.class.getMethod("getInstance",
-                null), null);
+        RemoteInvocationController ric = fProxy.createRemoteInvocationController(iBusUrl);
+        fBus = (IBus) ric.invoke(IBus.class, IBus.class.getMethod("getInstance", null), null);
 
     }
 

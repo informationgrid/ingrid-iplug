@@ -24,6 +24,7 @@ import net.weta.components.proxies.remote.RemoteInvocationController;
 
 import de.ingrid.ibus.Bus;
 import de.ingrid.ibus.registry.Registry;
+import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
@@ -96,7 +97,7 @@ public class RegisterIPlugTest extends TestCase {
         registerIPlug(pd, this.fBusUrl);
 
         System.out.println("the bus: " + bus);
-        pd = bus.getIPlugRegistry().getIPlug(pd.getPlugId());
+        pd = bus.getIPlugRegistry().getPlugDescription(pd.getPlugId());
         assertNotNull(pd);
     }
 
@@ -122,7 +123,7 @@ public class RegisterIPlugTest extends TestCase {
 //        RemoteInvocationController ric = new RemoteInvocationController(this.fCommunication, busUrl);
         try {
             Bus bus = (Bus) fRic.invoke(Bus.class, Bus.class.getMethod("getInstance", null), null);
-            bus.addIPlug(plugDesc);
+            bus.addPlugDescription(plugDesc);
         } catch (Throwable t) {
             this.fLOGGER.error("Cannot register IPlug: " + t.getMessage(), t);
         }

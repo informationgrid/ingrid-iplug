@@ -9,6 +9,8 @@ package de.ingrid.iplug;
 import java.io.IOException;
 import java.io.InputStream;
 
+import de.ingrid.utils.IPlug;
+import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**

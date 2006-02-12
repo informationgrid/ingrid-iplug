@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**

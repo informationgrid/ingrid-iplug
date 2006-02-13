@@ -16,6 +16,7 @@ import net.weta.components.proxies.remote.RemoteInvocationController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import de.ingrid.ibus.Bus;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.PlugDescription;
 
@@ -105,7 +106,7 @@ public class HeartBeatThread extends Thread {
         fPlugDescripion = PlugServer.getPlugDescription();
 
         RemoteInvocationController ric = fProxy.createRemoteInvocationController(iBusUrl);
-        fBus = (IBus) ric.invoke(IBus.class, IBus.class.getMethod("getInstance", null), null);
+        fBus = (IBus) ric.invoke(Bus.class, Bus.class.getMethod("getInstance", null), null);
 
     }
 

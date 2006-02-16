@@ -78,6 +78,11 @@ public class FileJobStoreTest extends TestCase {
         // store 2nd time with overwrite option
         this.fJobStore.storeJob(null, this.fJobDetail, true);
         checkJob();
+        
+         JobDetail jobDetail = new JobDetail("job1", "jobGroup1", SampleJob.class);
+         jobDetail.setDurability(true);
+        
+        
 
         // remove job
         assertTrue(this.fJobStore.removeJob(null, this.fJobDetail.getName(), this.fJobDetail.getGroup()));

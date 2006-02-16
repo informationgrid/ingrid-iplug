@@ -198,6 +198,7 @@ public class SchedulingService {
 
 		CronTrigger trigger = new CronTrigger(jobName, jobGroup);
 		trigger.setCronExpression(cronExpression);
+		this.fScheduler.deleteJob(jobName, jobGroup);
 		this.fScheduler.scheduleJob(jobDetail, trigger);
 	}
 

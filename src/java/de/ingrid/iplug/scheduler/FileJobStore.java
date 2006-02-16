@@ -99,8 +99,8 @@ public class FileJobStore implements JobStore {
 
     public void storeJobAndTrigger(SchedulingContext ctxt, JobDetail newJob, Trigger newTrigger)
             throws ObjectAlreadyExistsException, JobPersistenceException {
-        storeJob(ctxt, newJob, true);
-        storeTrigger(ctxt, newTrigger, true);
+        storeJob(ctxt, newJob, false);
+        storeTrigger(ctxt, newTrigger, false);
 
     }
 

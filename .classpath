@@ -26,5 +26,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/ant/jars/ant-1.6.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jetty/jars/servlet-api-2.5-6.0.0beta6.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/ingrid/jars/ingrid-ibus-0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="var" path="MAVEN_REPO/weta-components/jars/communication-jxta-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

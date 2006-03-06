@@ -6,11 +6,7 @@
 
 package de.ingrid.iplug;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Method;
-
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication_sockets.SocketCommunication;
@@ -21,16 +17,10 @@ import net.weta.components.proxies.remote.RemoteInvocationController;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.InputSource;
 
 import de.ingrid.ibus.Bus;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.PlugDescription;
-import de.ingrid.utils.queryparser.ParseException;
 
 /**
  * sends the plug description as a kind heard beat continues to the ibus.

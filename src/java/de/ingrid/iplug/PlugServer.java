@@ -33,22 +33,24 @@ public class PlugServer {
      * @throws Exception
      */
     public static IPlug getIPlugInstance() throws Exception {
-        synchronized (PlugServer.class) {
-            if (fInstance == null) {
-                PlugDescription plugDescription = getPlugDescription();
-                String plugClassStr = plugDescription.getIPlugClass();
-                Class plugClass = Thread.currentThread().getContextClassLoader().loadClass(plugClassStr);
-                fInstance = (IPlug) plugClass.newInstance();
-                fInstance.configure(plugDescription);
-            }
-        }
-        return fInstance;
-    }
+		synchronized (PlugServer.class) {
+			if (fInstance != null) {
+				fInstance.close();
+			}
+			PlugDescription plugDescription = getPlugDescription();
+			String plugClassStr = plugDescription.getIPlugClass();
+			Class plugClass = Thread.currentThread().getContextClassLoader()
+					.loadClass(plugClassStr);
+			fInstance = (IPlug) plugClass.newInstance();
+			fInstance.configure(plugDescription);
+		}
+		return fInstance;
+	}
 
     /**
-     * @param args
-     * @throws Exception
-     */
+	 * @param args
+	 * @throws Exception
+	 */
     public static void main(String[] args) throws Exception {
         final String usage = "Wrong numbers of arguments. You must set --descriptor <filename> --busurl <wetag url> "
                 + "for jxta or <multicastport> <unicastport> <IBusHost> <IBusPort> for socket communication";

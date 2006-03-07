@@ -12,6 +12,7 @@ import net.weta.components.communication.ICommunication;
 import net.weta.components.communication_sockets.SocketCommunication;
 import net.weta.components.communication_sockets.util.AddressUtil;
 import net.weta.components.peer.PeerService;
+import net.weta.components.peer.StartJxtaConfig;
 import net.weta.components.proxies.ProxyService;
 import net.weta.components.proxies.remote.RemoteInvocationController;
 
@@ -91,7 +92,7 @@ public class HeartBeatThread extends Thread {
 
     private void connectJxtaBus() throws Throwable {
         try {
-            //this.fCommunication = startJxtaCommunication(this.fJxtaConf);
+            this.fCommunication = StartJxtaConfig.start(this.fJxtaConf);
             this.fCommunication.subscribeGroup(this.fPlugUrl);
             this.fCommunication.subscribeGroup(this.fIBusUrl);
         } catch (Exception e) {

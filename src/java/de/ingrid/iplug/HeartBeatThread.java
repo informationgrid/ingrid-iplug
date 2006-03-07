@@ -85,12 +85,13 @@ public class HeartBeatThread extends Thread {
         this.fSleepInterval = 1000 * 30; // FIXME make this configurable
         this.fJxtaConf = jxtaConf;
         this.fIBusUrl = busUrl;
-        this.fPlugUrl = this.fPlugDescripion.getProxyServiceURL();
         connectJxtaBus();
         this.fBus.addPlugDescription(this.fPlugDescripion);
     }
 
     private void connectJxtaBus() throws Throwable {
+        this.fPlugDescripion = PlugServer.getPlugDescription();
+        this.fPlugUrl = this.fPlugDescripion.getProxyServiceURL();
         try {
             this.fCommunication = StartJxtaConfig.start(this.fJxtaConf);
             this.fCommunication.subscribeGroup(this.fPlugUrl);
@@ -112,8 +113,6 @@ public class HeartBeatThread extends Thread {
             System.err.println("Cannot start the proxy server: " + e.getMessage());
             System.exit(1);
         }
-
-        this.fPlugDescripion = PlugServer.getPlugDescription();
 
         RemoteInvocationController ric = this.fProxy.createRemoteInvocationController(this.fIBusUrl);
         this.fBus = (IBus) ric.invoke(Bus.class, Bus.class.getMethod("getInstance", null), null);

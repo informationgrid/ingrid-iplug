@@ -98,6 +98,7 @@ public class HeartBeatThread extends Thread {
             this.fCommunication.subscribeGroup(this.fIBusUrl);
         } catch (Exception e) {
             System.err.println("Cannot start the communication: " + e.getMessage());
+            e.printStackTrace();
             System.exit(1);
         }
 

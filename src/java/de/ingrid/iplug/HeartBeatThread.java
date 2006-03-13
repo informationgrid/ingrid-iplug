@@ -67,13 +67,13 @@ public class HeartBeatThread extends Thread {
      * @throws Throwable
      */
     public HeartBeatThread(int mPort, int uPort, String iBustHost, int iBusPort) throws Throwable {
-        fSleepInterval = 1000 * 30; // FIXME make this configurable
-        fMPort = mPort;
-        fUPort = uPort;
-        fIBusHost = iBustHost;
-        fIBusPort = iBusPort;
+        this.fSleepInterval = 1000 * 30; // FIXME make this configurable
+        this.fMPort = mPort;
+        this.fUPort = uPort;
+        this.fIBusHost = iBustHost;
+        this.fIBusPort = iBusPort;
         connectIBus();
-        fBus.addPlugDescription(fPlugDescripion);
+        this.fBus.addPlugDescription(this.fPlugDescripion);
     }
 
     /**

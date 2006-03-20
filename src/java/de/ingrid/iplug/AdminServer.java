@@ -18,7 +18,7 @@ public class AdminServer {
         String password = args[2];
         
         WebContainer container = new WebContainer(port, true);
-        container.start();
+        container.startContainer();
         container.addUser("admin", password);
         File[] files = webFolder.listFiles();
         if(files!=null){

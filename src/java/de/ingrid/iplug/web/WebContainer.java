@@ -25,24 +25,22 @@ import org.mortbay.jetty.servlet.WebApplicationContext;
 public class WebContainer extends Thread {
     private static Log log = LogFactory.getLog(WebContainer.class);
 
-    private static final boolean WINDOWS = System.getProperty("os.name")
-            .startsWith("Windows");
+    private static final boolean WINDOWS = System.getProperty("os.name").startsWith("Windows");
 
     private static Server fServer;
 
     private int fPort;
 
-    private String fWebAppPath;
+    // private String fWebAppPath;
 
-    private HashUserRealm fRealm;
+    private HashUserRealm fRealm  = new HashUserRealm("HashUserRealm");;
 
     private boolean fSecured;
 
     // private HashUserRealm fHashRealm;
 
-    public WebContainer(int port, String webappPath, boolean secured) {
+    public WebContainer(int port, boolean secured) {
         fPort = port;
-        fWebAppPath = webappPath;
         fSecured = secured;
     } /*
          * (non-Javadoc)
@@ -57,20 +55,9 @@ public class WebContainer extends Thread {
             SocketListener listener = new SocketListener();
             listener.setPort(fPort);
             fServer.addListener(listener);
-            WebApplicationContext context = fServer.addWebApplication("/",
-                    fWebAppPath);
+
             if (fSecured) {
-                SecurityHandler handler = new SecurityHandler();
-                handler.setAuthMethod("BASIC");
-                context.addHandler(handler);
-                context.setAuthenticator(new BasicAuthenticator());
-                SecurityConstraint sc = new SecurityConstraint();
-                sc.setAuthenticate(true);
-                sc.addRole(SecurityConstraint.ANY_ROLE);
-
-                context.addSecurityConstraint("/", sc);
-
-                fRealm = new HashUserRealm("tester");
+              
                 // fRealm.put("admin", "admin");
                 fServer.addRealm(fRealm);
             }
@@ -79,6 +66,22 @@ public class WebContainer extends Thread {
             log.error(e);
         }
 
+    }
+
+    public void addWebapp(String name, String path) throws Exception {
+        if (fServer==null || !fServer.isStarted()) {
+            throw new IOException("web container not started");
+        }
+        WebApplicationContext context = fServer.addWebApplication("/"+name, path);
+        SecurityHandler handler = new SecurityHandler();
+        handler.setAuthMethod("BASIC");
+        context.addHandler(handler);
+        context.setAuthenticator(new BasicAuthenticator());
+        SecurityConstraint sc = new SecurityConstraint();
+        sc.setAuthenticate(true);
+        sc.addRole(SecurityConstraint.ANY_ROLE);
+        context.addSecurityConstraint("/", sc);
+        context.start();
     }
 
     /**
@@ -142,8 +145,9 @@ public class WebContainer extends Thread {
         }
         File infoFolder = new File(path);
 
-        WebContainer container = new WebContainer(8082, infoFolder
-                .getCanonicalPath(), true);
+        // WebContainer container = new WebContainer(8082, infoFolder
+        // .getCanonicalPath(), true);
+        WebContainer container = new WebContainer(8082, true);
         container.startContainer();
         container.addUser("admin2", "password");
 

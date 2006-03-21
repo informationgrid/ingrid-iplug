@@ -6,6 +6,7 @@
 
 package de.ingrid.iplug;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import net.weta.components.communication.ICommunication;
@@ -93,7 +94,8 @@ public class HeartBeatThread extends Thread {
         this.fPlugDescripion = PlugServer.getPlugDescription();
         this.fPlugUrl = this.fPlugDescripion.getProxyServiceURL();
         try {
-            this.fCommunication = StartJxtaConfig.start(this.fJxtaConf);
+            FileInputStream confIS = new FileInputStream(this.fJxtaConf);
+            this.fCommunication = StartJxtaConfig.start(confIS);
             this.fCommunication.subscribeGroup(this.fPlugUrl);
             this.fCommunication.subscribeGroup(this.fIBusUrl);
         } catch (Exception e) {

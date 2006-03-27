@@ -27,6 +27,8 @@ public class WebContainer extends Thread {
 
     private static final boolean WINDOWS = System.getProperty("os.name").startsWith("Windows");
 
+    private static final int SESSION_TIMEOUT = 60 * 60 * 8; // 8 days for timeout...
+
     private static Server fServer;
 
     private int fPort;
@@ -73,6 +75,8 @@ public class WebContainer extends Thread {
             throw new IOException("web container not started");
         }
         WebApplicationContext context = fServer.addWebApplication("/"+name, path);
+        context.getServletHandler().setSessionInactiveInterval(SESSION_TIMEOUT);
+        
         SecurityHandler handler = new SecurityHandler();
         handler.setAuthMethod("BASIC");
         context.addHandler(handler);

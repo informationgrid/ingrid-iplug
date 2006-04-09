@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.security.Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -85,6 +86,7 @@ public class WebContainer extends Thread {
         sc.setAuthenticate(true);
         sc.addRole(SecurityConstraint.ANY_ROLE);
         context.addSecurityConstraint("/", sc);
+        context.setAttribute("server", this);
         context.start();
     }
 
@@ -127,6 +129,14 @@ public class WebContainer extends Thread {
         // hashRealm.setName(userName);
         fRealm.put(userName, password);
         // fServer.addRealm(hashRealm);
+    }
+    
+    /**
+     * logout a user.
+     * @param principal
+     */
+    public  void logoutUser(Principal principal){
+        this.fRealm.logout(principal);
     }
 
     /**

@@ -160,6 +160,7 @@ public class SchedulingService {
 		}
 		properties.setProperty("org.quartz.jobStore.storeFilePath",
 				fileStorePath.getAbsolutePath());
+        System.out.println("SchedulingService.SchedulingService()"+fileStorePath.getAbsolutePath());
 		SchedulerFactory schedulerFactory = new StdSchedulerFactory(properties);
 		this.fScheduler = schedulerFactory.getScheduler();
 		this.fScheduler.start();

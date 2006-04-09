@@ -46,7 +46,6 @@ public class FileJobStoreSerializer {
      */
     public FileJobStoreSerializer(String storeDirectory) throws JobPersistenceException {
         File storeDirectoryFile = new File(storeDirectory);
-        System.out.println("FileJobStoreSerializer.FileJobStoreSerializer()"+storeDirectory);
         storeDirectoryFile.mkdirs();
         if (!storeDirectoryFile.exists()) {
             throw new JobPersistenceException("could not create the store directory " + storeDirectoryFile.getPath());
@@ -82,7 +81,6 @@ public class FileJobStoreSerializer {
      * @throws JobPersistenceException
      */
     public void saveJobs(Serializable jobs) throws JobPersistenceException {
-        System.out.println("FileJobStoreSerializer.saveJobs()"+this.fJobsFile);
         synchronized (this.fJobsFile) {
             saveObjectToFile(this.fJobsFile, jobs);
         }

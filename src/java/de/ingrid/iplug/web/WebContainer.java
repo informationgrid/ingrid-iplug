@@ -136,6 +136,7 @@ public class WebContainer extends Thread {
      * @param principal
      */
     public  void logoutUser(Principal principal){
+    	this.fRealm.disassociate(principal);
         this.fRealm.logout(principal);
     }
 

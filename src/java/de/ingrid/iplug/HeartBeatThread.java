@@ -49,7 +49,7 @@ public abstract class HeartBeatThread extends Thread {
             try {
                 this.fBus.addPlugDescription(this.fPlugDescripion);
             } catch (Throwable t) {
-                fLogger.error("unable to connect ibus: " + t.toString());
+                fLogger.error("unable to connect ibus: ",t);
                 this.fCommunication.shutdown();
                 try {
                     connectToIBus();

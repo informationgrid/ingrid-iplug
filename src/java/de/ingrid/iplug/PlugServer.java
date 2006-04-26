@@ -25,25 +25,29 @@ import de.ingrid.utils.xml.XMLSerializer;
  */
 public class PlugServer {
 
-	private static IPlug fInstance;
+	private static IPlug fPlugInstance;
 
 	/**
 	 * Returns the IPlug instance.
 	 * 
 	 * @return The IPlug instance.
+	 * @throws Exception 
 	 * @throws Exception
 	 */
-	public static IPlug getIPlugInstance() throws Exception {
+	public static IPlug getIPlugInstance() throws Exception   {
 		synchronized (PlugServer.class) {
-			if (fInstance == null) {
+			if (fPlugInstance == null) {
 				PlugDescription plugDescription = getPlugDescription();
 				String plugClassStr = plugDescription.getIPlugClass();
+                if(plugClassStr==null){
+                    throw new NullPointerException("iplug class in plugdescription not set");
+                }
 				Class plugClass = Thread.currentThread()
 						.getContextClassLoader().loadClass(plugClassStr);
-				fInstance = (IPlug) plugClass.newInstance();
-				fInstance.configure(plugDescription);
+				fPlugInstance = (IPlug) plugClass.newInstance();
+				fPlugInstance.configure(plugDescription);
 			}
-			return fInstance;
+			return fPlugInstance;
 		}
 	}
 
@@ -65,15 +69,16 @@ public class PlugServer {
 			arguments.put(args[i], args[i + 1]);
 		}
 
-		HeartBeatThread thread = null;
+		HeartBeatThread heartBeat = null;
 		if (arguments.containsKey("--descriptor")
 				&& arguments.containsKey("--busurl")) {
-			String filename = (String) arguments.get("--descriptor");
+			String jxtaConf = (String) arguments.get("--descriptor");
 			String iBusUrl = (String) arguments.get("--busurl");
 
 			try {
 				PlugServer.getIPlugInstance();
-				thread = new HeartBeatThread(filename, iBusUrl);
+				heartBeat = new JxtaHeartBeatThread(jxtaConf, iBusUrl);
+                heartBeat.connectToIBus();
 			} catch (Throwable t) {
 				System.err.println("Cannot register IPlug: ");
 				t.printStackTrace();
@@ -92,8 +97,8 @@ public class PlugServer {
 				iBusPort = Integer.parseInt(args[3]);
 
 				PlugServer.getIPlugInstance();
-
-				thread = new HeartBeatThread(mPort, uPort, iBustHost, iBusPort);
+				heartBeat = new SocketHeartBeatThread(mPort, uPort, iBustHost, iBusPort);
+                heartBeat.connectToIBus();
 			} catch (Throwable t) {
 				System.err.println("Cannot register IPlug: ");
 				t.printStackTrace();
@@ -101,8 +106,7 @@ public class PlugServer {
 				System.exit(-1);
 			}
 		}
-
-		thread.start();
+		heartBeat.start();
 	}
 
 	/**
@@ -119,8 +123,8 @@ public class PlugServer {
 	}
 
 	protected void finalize() throws Throwable {
-		if (this.fInstance != null) {
-			this.fInstance.close();
+		if (fPlugInstance != null) {
+			fPlugInstance.close();
 		}
 	}
 }

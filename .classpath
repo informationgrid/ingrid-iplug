@@ -12,7 +12,6 @@
 	<classpathentry kind="var" path="MAVEN_REPO/commons-logging/jars/commons-logging-1.0.4.jar"/>
 	<classpathentry sourcepath="/WORKSPACE/src" kind="var" path="MAVEN_REPO/quartz/jars/quartz-1.5.0.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/weta-components/jars/communication-SNAPSHOT.jar"/>
-	<classpathentry kind="var" path="MAVEN_REPO/cglib/jars/cglib-nodep-2.1_3.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/log4j/jars/log4j-1.2.8.jar"/>
 	<classpathentry kind="src" path="/ingrid-utils"/>
 	<classpathentry kind="var" path="MAVEN_REPO/xstream/jars/xstream-1.1.2.jar"/>
@@ -24,8 +23,8 @@
 	<classpathentry kind="var" path="MAVEN_REPO/ant/jars/ant-1.6.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/jetty/jars/servlet-api-2.5-6.0.0beta6.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ingrid-ibus"/>
-	<classpathentry kind="var" path="MAVEN_REPO/weta-components/jars/remote-proxies-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/weta-components/jars/communication-sockets-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/weta-components/jars/communication-jxta-SNAPSHOT.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ingrid-iplug-tamino"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

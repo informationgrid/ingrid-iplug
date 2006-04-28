@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import de.ingrid.utils.IPlug;
+import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.xml.XMLSerializer;
 
@@ -82,7 +83,6 @@ public class PlugServer {
 			} catch (Throwable t) {
 				System.err.println("Cannot register IPlug: ");
 				t.printStackTrace();
-				System.err.println(usage);
 				System.exit(-1);
 			}
 		} else {
@@ -119,7 +119,12 @@ public class PlugServer {
 		InputStream resourceAsStream = PlugServer.class
 				.getResourceAsStream("/plugdescription.xml");
 		XMLSerializer serializer = new XMLSerializer();
-		return (PlugDescription) serializer.deSerialize(resourceAsStream);
+        PlugDescription plugDescription=(PlugDescription) serializer.deSerialize(resourceAsStream);
+        if(fPlugInstance instanceof IRecordLoader){
+            plugDescription.setRecordLoader(true);
+        }
+            
+		return plugDescription;
 	}
 
 	protected void finalize() throws Throwable {

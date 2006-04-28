@@ -52,7 +52,7 @@ public class RegisterIPlugTest extends TestCase {
         this.fSerFile = File.createTempFile("RegisterIPlugTest", "ser");
 
         this.fPlugDesc = new PlugDescription();
-        this.fPlugDesc.setPlugId("plugID");
+        this.fPlugDesc.setProxyServiceURL("plugID");
 
         XMLSerializer xmlSer = new XMLSerializer();
         xmlSer.serialize(this.fPlugDesc, this.fSerFile);

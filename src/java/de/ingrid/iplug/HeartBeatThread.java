@@ -15,6 +15,7 @@ import net.weta.components.communication.reflect.ReflectMessageHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.PlugDescription;
@@ -34,23 +35,33 @@ public abstract class HeartBeatThread extends Thread {
     private ICommunication fCommunication;
 
     private IBus fBus;
+    
+    private IPlug fPlug;
 
     protected PlugDescription fPlugDescripion;
 
     private int fSleepInterval;
 
-    protected HeartBeatThread() throws IOException {
+    private PlugShutdownHook fShutdownHook;
+
+    protected HeartBeatThread(IPlug plug,PlugShutdownHook shutdownHook) throws IOException {
+        this.fPlug=plug;
+        this.fShutdownHook = shutdownHook;
         this.fSleepInterval = 1000 * 30; // FIXME make this configurable
-        this.fPlugDescripion = PlugServer.getPlugDescription();
+        this.fPlugDescripion = PlugServer.loadPlugDescription();
     }
 
     public void run() {
         while (!isInterrupted()) {
             try {
+                if (this.fBus == null) {
+                    connectToIBus();
+                }
                 this.fBus.addPlugDescription(this.fPlugDescripion);
+                this.fShutdownHook.addBus(getIBusUrl(),this.fBus);
             } catch (Throwable t) {
-                fLogger.error("unable to connect ibus: ",t);
-                this.fCommunication.shutdown();
+                fLogger.error("unable to connect ibus: ", t);
+                this.fShutdownHook.removeBus(getIBusUrl());
                 try {
                     connectToIBus();
                 } catch (Throwable e) {
@@ -70,12 +81,17 @@ public abstract class HeartBeatThread extends Thread {
     protected abstract String getIBusUrl();
 
     /**
-     * @throws Throwable
+     * @return the ibus of this heartbeat
      */
-    public void connectToIBus() throws Throwable {
+    public IBus getIBus() {
+        return this.fBus;
+    }
+
+    private void connectToIBus() throws Throwable {
         this.fCommunication = initCommunication();
         startProxyService();
         createBusProxy();
+
     }
 
     private void createBusProxy() {
@@ -85,7 +101,7 @@ public abstract class HeartBeatThread extends Thread {
 
     private void startProxyService() throws Exception {
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
-        messageHandler.addObjectToCall(IPlug.class, PlugServer.getIPlugInstance());
+        messageHandler.addObjectToCall(IPlug.class, this.fPlug);
         this.fCommunication.getMessageQueue().getProcessorRegistry().addMessageHandler(
                 ReflectMessageHandler.MESSAGE_TYPE, messageHandler);
     }

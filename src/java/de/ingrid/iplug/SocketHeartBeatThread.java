@@ -18,6 +18,10 @@
 
 package de.ingrid.iplug;
 
+import java.io.IOException;
+
+import de.ingrid.iplug.util.PlugShutdownHook;
+import de.ingrid.utils.IPlug;
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication_sockets.SocketCommunication;
 import net.weta.components.communication_sockets.util.AddressUtil;
@@ -50,9 +54,13 @@ public class SocketHeartBeatThread extends HeartBeatThread {
      * @param uPort
      * @param iBustHost
      * @param iBusPort
-     * @throws Throwable
+     * @param plug
+     * @param shutdownHook
+     * @throws IOException
      */
-    public SocketHeartBeatThread(int mPort, int uPort, String iBustHost, int iBusPort) throws Throwable {
+    public SocketHeartBeatThread(int mPort, int uPort, String iBustHost, int iBusPort, IPlug plug,
+            PlugShutdownHook shutdownHook) throws IOException {
+        super(plug, shutdownHook);
         this.fMulticastPort = mPort;
         this.fUnicastPort = uPort;
         this.fIBusHost = iBustHost;

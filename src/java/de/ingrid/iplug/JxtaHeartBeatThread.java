@@ -19,6 +19,10 @@
 package de.ingrid.iplug;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+
+import de.ingrid.iplug.util.PlugShutdownHook;
+import de.ingrid.utils.IPlug;
 
 import net.weta.components.communication.ICommunication;
 import net.weta.components.peer.StartJxtaConfig;
@@ -47,9 +51,13 @@ public class JxtaHeartBeatThread extends HeartBeatThread {
      * 
      * @param jxtaConf
      * @param busUrl
-     * @throws Throwable
+     * @param plug
+     * @param shutdownHook
+     * @throws IOException
      */
-    public JxtaHeartBeatThread(String jxtaConf, String busUrl) throws Throwable {
+    public JxtaHeartBeatThread(String jxtaConf, String busUrl, IPlug plug, PlugShutdownHook shutdownHook)
+            throws IOException {
+        super(plug, shutdownHook);
         this.fJxtaConf = jxtaConf;
         this.fIBusUrl = busUrl;
     }

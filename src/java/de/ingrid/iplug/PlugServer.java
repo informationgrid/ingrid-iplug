@@ -9,7 +9,9 @@ package de.ingrid.iplug;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
+import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
@@ -26,110 +28,75 @@ import de.ingrid.utils.xml.XMLSerializer;
  */
 public class PlugServer {
 
-	private static IPlug fPlugInstance;
+    /**
+     * @param args
+     * @throws Exception
+     */
+    public static void main(String[] args) throws Exception {
+        Map arguments = readParameters(args);
+        PlugDescription plugDescription = loadPlugDescription();
+        IPlug plug = initPlug(plugDescription);
+        PlugShutdownHook shutdownHook = new PlugShutdownHook(plug);
+        shutdownHook.setPlugDescription(plugDescription);
+        HeartBeatThread heartBeat;
+        if (arguments.containsKey("--descriptor") && arguments.containsKey("--busurl")) {
+            String jxtaConf = (String) arguments.get("--descriptor");
+            String iBusUrl = (String) arguments.get("--busurl");
+            heartBeat = new JxtaHeartBeatThread(jxtaConf, iBusUrl, plug, shutdownHook);
+        } else {
+            int mPort = Integer.parseInt(args[0]);
+            int uPort = Integer.parseInt(args[1]);
+            String iBustHost = args[2];
+            int iBusPort = Integer.parseInt(args[3]);
+            heartBeat = new SocketHeartBeatThread(mPort, uPort, iBustHost, iBusPort, plug, shutdownHook);
+        }
+        Runtime.getRuntime().addShutdownHook(shutdownHook);
+        heartBeat.start();
+    }
 
-	/**
-	 * Returns the IPlug instance.
-	 * 
-	 * @return The IPlug instance.
-	 * @throws Exception 
-	 * @throws Exception
-	 */
-	public static IPlug getIPlugInstance() throws Exception   {
-		synchronized (PlugServer.class) {
-			if (fPlugInstance == null) {
-				PlugDescription plugDescription = getPlugDescription();
-				String plugClassStr = plugDescription.getIPlugClass();
-                if(plugClassStr==null){
-                    throw new NullPointerException("iplug class in plugdescription not set");
-                }
-				Class plugClass = Thread.currentThread()
-						.getContextClassLoader().loadClass(plugClassStr);
-				fPlugInstance = (IPlug) plugClass.newInstance();
-				fPlugInstance.configure(plugDescription);
-			}
-			return fPlugInstance;
-		}
-	}
+    private static Map readParameters(String[] args) {
+        Map argumentMap = new HashMap();
+        // convert and validate the supplied arguments
+        if (4 != args.length) {
+            printUsage();
+            System.exit(1);
+        }
+        for (int i = 0; i < args.length; i = i + 2) {
+            argumentMap.put(args[i], args[i + 1]);
+        }
+        return argumentMap;
+    }
 
-	/**
-	 * @param args
-	 * @throws Exception
-	 */
-	public static void main(String[] args) throws Exception {
-		final String usage = "Wrong numbers of arguments. You must set --descriptor <filename> --busurl <wetag url> "
-				+ "for jxta or <multicastport> <unicastport> <IBusHost> <IBusPort> for socket communication";
-		HashMap arguments = new HashMap();
+    private static void printUsage() {
+        System.err
+                .println("Usage: You must set --descriptor <filename> --busurl <wetag url> for jxta or <multicastport> <unicastport> <IBusHost> <IBusPort> for socket communication");
+    }
 
-		// convert and validate the supplied arguments
-		if (4 != args.length) {
-			System.err.println(usage);
-			System.exit(1);
-		}
-		for (int i = 0; i < args.length; i = i + 2) {
-			arguments.put(args[i], args[i + 1]);
-		}
+    private static IPlug initPlug(PlugDescription plugDescription) throws Exception {
+        String plugClassStr = plugDescription.getIPlugClass();
+        if (plugClassStr == null) {
+            throw new NullPointerException("iplug class in plugdescription not set");
+        }
+        Class plugClass = Thread.currentThread().getContextClassLoader().loadClass(plugClassStr);
+        IPlug plug = (IPlug) plugClass.newInstance();
+        plug.configure(plugDescription);
+        return plug;
+    }
 
-		HeartBeatThread heartBeat = null;
-		if (arguments.containsKey("--descriptor")
-				&& arguments.containsKey("--busurl")) {
-			String jxtaConf = (String) arguments.get("--descriptor");
-			String iBusUrl = (String) arguments.get("--busurl");
+    /**
+     * Reads the plug description from a xml file in the classpath.
+     * 
+     * @return The plug description.
+     * @throws IOException
+     */
+    public static PlugDescription loadPlugDescription() throws IOException {
+        InputStream resourceAsStream = PlugServer.class.getResourceAsStream("/plugdescription.xml");
+        XMLSerializer serializer = new XMLSerializer();
+        PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);
 
-			try {
-				PlugServer.getIPlugInstance();
-				heartBeat = new JxtaHeartBeatThread(jxtaConf, iBusUrl);
-                heartBeat.connectToIBus();
-			} catch (Throwable t) {
-				System.err.println("Cannot register IPlug: ");
-				t.printStackTrace();
-				System.exit(-1);
-			}
-		} else {
-			int mPort;
-			int uPort;
-			int iBusPort;
-			String iBustHost;
-			try {
-				mPort = Integer.parseInt(args[0]);
-				uPort = Integer.parseInt(args[1]);
-				iBustHost = args[2];
-				iBusPort = Integer.parseInt(args[3]);
-
-				PlugServer.getIPlugInstance();
-				heartBeat = new SocketHeartBeatThread(mPort, uPort, iBustHost, iBusPort);
-                heartBeat.connectToIBus();
-			} catch (Throwable t) {
-				System.err.println("Cannot register IPlug: ");
-				t.printStackTrace();
-				System.err.println(usage);
-				System.exit(-1);
-			}
-		}
-		heartBeat.start();
-	}
-
-	/**
-	 * Reads the plug description from a xml file in the classpath.
-	 * 
-	 * @return The plug description.
-	 * @throws IOException
-	 */
-	public static PlugDescription getPlugDescription() throws IOException {
-		InputStream resourceAsStream = PlugServer.class
-				.getResourceAsStream("/plugdescription.xml");
-		XMLSerializer serializer = new XMLSerializer();
-        PlugDescription plugDescription=(PlugDescription) serializer.deSerialize(resourceAsStream);
-        if(fPlugInstance instanceof IRecordLoader){
+        if (IRecordLoader.class.isAssignableFrom(plugDescription.getClass())) {
             plugDescription.setRecordLoader(true);
         }
-            
-		return plugDescription;
-	}
-
-	protected void finalize() throws Throwable {
-		if (fPlugInstance != null) {
-			fPlugInstance.close();
-		}
-	}
+        return plugDescription;
+    }
 }

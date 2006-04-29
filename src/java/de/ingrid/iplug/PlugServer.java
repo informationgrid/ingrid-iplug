@@ -93,10 +93,8 @@ public class PlugServer {
         InputStream resourceAsStream = PlugServer.class.getResourceAsStream("/plugdescription.xml");
         XMLSerializer serializer = new XMLSerializer();
         PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);
-
-        if (IRecordLoader.class.isAssignableFrom(plugDescription.getClass())) {
-            plugDescription.setRecordLoader(true);
-        }
+        plugDescription.setRecordLoader(IRecordLoader.class.isAssignableFrom(plugDescription.getClass()));
+        
         return plugDescription;
     }
 }

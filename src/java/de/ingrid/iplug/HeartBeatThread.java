@@ -35,7 +35,7 @@ public abstract class HeartBeatThread extends Thread {
     private ICommunication fCommunication;
 
     private IBus fBus;
-    
+
     private IPlug fPlug;
 
     protected PlugDescription fPlugDescripion;
@@ -44,29 +44,26 @@ public abstract class HeartBeatThread extends Thread {
 
     private PlugShutdownHook fShutdownHook;
 
-    protected HeartBeatThread(IPlug plug,PlugShutdownHook shutdownHook) throws IOException {
-        this.fPlug=plug;
+    protected HeartBeatThread(IPlug plug, PlugShutdownHook shutdownHook) throws IOException {
+        this.fPlug = plug;
         this.fShutdownHook = shutdownHook;
         this.fSleepInterval = 1000 * 30; // FIXME make this configurable
         this.fPlugDescripion = PlugServer.loadPlugDescription();
     }
 
     public void run() {
+        try {
+            connectToIBus();
+        } catch (Exception e1) {
+            throw new RuntimeException(e1);
+        }
         while (!isInterrupted()) {
             try {
-                if (this.fBus == null) {
-                    connectToIBus();
-                }
                 this.fBus.addPlugDescription(this.fPlugDescripion);
-                this.fShutdownHook.addBus(getIBusUrl(),this.fBus);
+                this.fShutdownHook.addBus(getIBusUrl(), this.fBus);
             } catch (Throwable t) {
                 fLogger.error("unable to connect ibus: ", t);
                 this.fShutdownHook.removeBus(getIBusUrl());
-                try {
-                    connectToIBus();
-                } catch (Throwable e) {
-                    fLogger.error("reconnecting IBus failed, will try again later, reason:" + t.toString());
-                }
             }
             try {
                 sleep(this.fSleepInterval);
@@ -87,11 +84,10 @@ public abstract class HeartBeatThread extends Thread {
         return this.fBus;
     }
 
-    private void connectToIBus() throws Throwable {
+    private void connectToIBus() throws Exception {
         this.fCommunication = initCommunication();
         startProxyService();
         createBusProxy();
-
     }
 
     private void createBusProxy() {

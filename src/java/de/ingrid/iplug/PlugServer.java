@@ -34,7 +34,7 @@ public class PlugServer {
      */
     public static void main(String[] args) throws Exception {
         Map arguments = readParameters(args);
-        PlugDescription plugDescription = loadPlugDescription();
+        PlugDescription plugDescription = getPlugDescription();
         IPlug plug = initPlug(plugDescription);
         PlugShutdownHook shutdownHook = new PlugShutdownHook(plug);
         shutdownHook.setPlugDescription(plugDescription);
@@ -89,7 +89,7 @@ public class PlugServer {
      * @return The plug description.
      * @throws IOException
      */
-    public static PlugDescription loadPlugDescription() throws IOException {
+    public static PlugDescription getPlugDescription() throws IOException {
         InputStream resourceAsStream = PlugServer.class.getResourceAsStream("/plugdescription.xml");
         XMLSerializer serializer = new XMLSerializer();
         PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);

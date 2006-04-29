@@ -48,7 +48,7 @@ public abstract class HeartBeatThread extends Thread {
         this.fPlug = plug;
         this.fShutdownHook = shutdownHook;
         this.fSleepInterval = 1000 * 30; // FIXME make this configurable
-        this.fPlugDescripion = PlugServer.loadPlugDescription();
+        this.fPlugDescripion = PlugServer.getPlugDescription();
     }
 
     public void run() {

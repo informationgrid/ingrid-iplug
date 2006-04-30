@@ -93,8 +93,13 @@ public class PlugServer {
         InputStream resourceAsStream = PlugServer.class.getResourceAsStream("/plugdescription.xml");
         XMLSerializer serializer = new XMLSerializer();
         PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);
-        plugDescription.setRecordLoader(IRecordLoader.class.isAssignableFrom(plugDescription.getClass()));
-        
+        try {
+            plugDescription.setRecordLoader(IRecordLoader.class.isAssignableFrom(Class.forName(plugDescription
+                    .getIPlugClass())));
+        } catch (ClassNotFoundException e) {
+            new RuntimeException("iplug class not in classpath", e);
+        }
+
         return plugDescription;
     }
 }

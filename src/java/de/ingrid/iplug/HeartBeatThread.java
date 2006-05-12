@@ -52,24 +52,24 @@ public abstract class HeartBeatThread extends Thread {
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         }
-        while (!isInterrupted()) {
-            try {
-                String md5Hash = PlugServer.getPlugDescriptionMd5();
-                if (!this.fBus.containsPlugDescription(md5Hash)) {
-                    PlugDescription plugDescription=PlugServer.getPlugDescription();
-                    plugDescription.setMd5Hash(md5Hash);
-                    this.fBus.addPlugDescription(plugDescription);
+        try {
+            while (!isInterrupted()) {
+                try {
+                    String md5Hash = PlugServer.getPlugDescriptionMd5();
+                    if (!this.fBus.containsPlugDescription(md5Hash)) {
+                        PlugDescription plugDescription = PlugServer.getPlugDescription();
+                        plugDescription.setMd5Hash(md5Hash);
+                        this.fBus.addPlugDescription(plugDescription);
+                    }
+                    this.fShutdownHook.addBus(getIBusUrl(), this.fBus);
+                } catch (Throwable t) {
+                    fLogger.error("unable to connect ibus: ", t);
+                    this.fShutdownHook.removeBus(getIBusUrl());
                 }
-                this.fShutdownHook.addBus(getIBusUrl(), this.fBus);
-            } catch (Throwable t) {
-                fLogger.error("unable to connect ibus: ", t);
-                this.fShutdownHook.removeBus(getIBusUrl());
-            }
-            try {
                 sleep(this.fSleepInterval);
-            } catch (InterruptedException e) {
-                // do nothing just continue..
             }
+        } catch (InterruptedException e) {
+            // do nothing s
         }
     }
 

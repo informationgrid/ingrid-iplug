@@ -18,13 +18,12 @@
 
 package de.ingrid.iplug;
 
-import java.io.IOException;
-
-import de.ingrid.iplug.util.PlugShutdownHook;
-import de.ingrid.utils.IPlug;
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication_sockets.SocketCommunication;
 import net.weta.components.communication_sockets.util.AddressUtil;
+import de.ingrid.iplug.util.PlugShutdownHook;
+import de.ingrid.utils.IPlug;
+import de.ingrid.utils.PlugDescription;
 
 /**
  * {@link de.ingrid.iplug.HeartBeatThread} that uses an socket implementaion of
@@ -56,10 +55,9 @@ public class SocketHeartBeatThread extends HeartBeatThread {
      * @param iBusPort
      * @param plug
      * @param shutdownHook
-     * @throws IOException
      */
     public SocketHeartBeatThread(int mPort, int uPort, String iBustHost, int iBusPort, IPlug plug,
-            PlugShutdownHook shutdownHook) throws IOException {
+            PlugShutdownHook shutdownHook) {
         super(plug, shutdownHook);
         this.fMulticastPort = mPort;
         this.fUnicastPort = uPort;
@@ -67,7 +65,7 @@ public class SocketHeartBeatThread extends HeartBeatThread {
         this.fIBusPort = iBusPort;
     }
 
-    protected ICommunication initCommunication() throws Exception {
+    protected ICommunication initCommunication(PlugDescription description) throws Exception {
         SocketCommunication communication = new SocketCommunication();
         communication.setMulticastPort(this.fMulticastPort);
         communication.setUnicastPort(this.fUnicastPort);

@@ -19,13 +19,12 @@
 package de.ingrid.iplug;
 
 import java.io.FileInputStream;
-import java.io.IOException;
-
-import de.ingrid.iplug.util.PlugShutdownHook;
-import de.ingrid.utils.IPlug;
 
 import net.weta.components.communication.ICommunication;
 import net.weta.components.peer.StartJxtaConfig;
+import de.ingrid.iplug.util.PlugShutdownHook;
+import de.ingrid.utils.IPlug;
+import de.ingrid.utils.PlugDescription;
 
 /**
  * {@link de.ingrid.iplug.HeartBeatThread} that uses an jxta implementaion of
@@ -53,10 +52,8 @@ public class JxtaHeartBeatThread extends HeartBeatThread {
      * @param busUrl
      * @param plug
      * @param shutdownHook
-     * @throws IOException
      */
-    public JxtaHeartBeatThread(String jxtaConf, String busUrl, IPlug plug, PlugShutdownHook shutdownHook)
-            throws IOException {
+    public JxtaHeartBeatThread(String jxtaConf, String busUrl, IPlug plug, PlugShutdownHook shutdownHook) {
         super(plug, shutdownHook);
         this.fJxtaConf = jxtaConf;
         this.fIBusUrl = busUrl;
@@ -66,8 +63,8 @@ public class JxtaHeartBeatThread extends HeartBeatThread {
         return this.fIBusUrl;
     }
 
-    protected ICommunication initCommunication() throws Exception {
-        this.fPlugUrl = this.fPlugDescripion.getProxyServiceURL();
+    protected ICommunication initCommunication(PlugDescription plugDescription) throws Exception {
+        this.fPlugUrl = plugDescription.getProxyServiceURL();
         FileInputStream confIS = new FileInputStream(this.fJxtaConf);
         ICommunication communication = StartJxtaConfig.start(confIS);
         communication.subscribeGroup(this.fPlugUrl);

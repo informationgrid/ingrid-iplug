@@ -56,6 +56,7 @@ public class PlugShutdownHook extends Thread {
      */
     public PlugShutdownHook(IPlug plug) {
         this.fPlug = plug;
+        setDaemon(true);
     }
 
     /**

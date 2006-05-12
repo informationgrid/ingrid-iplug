@@ -15,6 +15,7 @@ import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.tool.MD5Util;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
@@ -27,6 +28,11 @@ import de.ingrid.utils.xml.XMLSerializer;
  * @version $Revision: 1.3 $
  */
 public class PlugServer {
+
+    /***/
+    public static final String PLUG_DESCRIPTION = "/plugdescription.xml";
+
+    private static String fPlugId;
 
     /**
      * @param args
@@ -90,7 +96,7 @@ public class PlugServer {
      * @throws IOException
      */
     public static PlugDescription getPlugDescription() throws IOException {
-        InputStream resourceAsStream = PlugServer.class.getResourceAsStream("/plugdescription.xml");
+        InputStream resourceAsStream = PlugServer.class.getResourceAsStream(PLUG_DESCRIPTION);
         XMLSerializer serializer = new XMLSerializer();
         PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);
         try {
@@ -99,7 +105,18 @@ public class PlugServer {
         } catch (ClassNotFoundException e) {
             new RuntimeException("iplug class not in classpath", e);
         }
-
+        fPlugId = plugDescription.getPlugId();
         return plugDescription;
+    }
+
+    /**
+     * @return the md5 hash of the plugdescription
+     * @throws IOException
+     */
+    public static String getPlugDescriptionMd5() throws IOException {
+        InputStream resourceAsStream = PlugServer.class.getResourceAsStream(PLUG_DESCRIPTION);
+        String md5 = MD5Util.getMD5(resourceAsStream);
+        md5 = md5 + fPlugId;
+        return md5;
     }
 }

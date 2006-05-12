@@ -17,6 +17,7 @@ import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication_sockets.SocketCommunication;
 import net.weta.components.communication_sockets.util.AddressUtil;
 import de.ingrid.ibus.Bus;
+import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.xml.XMLSerializer;
@@ -53,6 +54,8 @@ public class RegisterIPlugTest extends TestCase {
 
         this.fPlugDesc = new PlugDescription();
         this.fPlugDesc.setProxyServiceURL("plugID");
+        this.fPlugDesc.setRecordLoader(false);
+        
 
         XMLSerializer xmlSer = new XMLSerializer();
         xmlSer.serialize(this.fPlugDesc, this.fSerFile);
@@ -65,13 +68,14 @@ public class RegisterIPlugTest extends TestCase {
      * 
      */
     public void testIPlugRegistration() throws SecurityException, Exception, Throwable {
-        Bus bus = new Bus(null);
+        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom));
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
         this.iBusCom.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,
                 messageHandler);
 
         PlugDescription pd = loadXMLSerializable(new FileInputStream(this.fSerFile));
+        pd.setMd5Hash("fPlugDesc.getPlugId()");
         registerIPlug(pd, this.fBusUrl);
 
         System.out.println("the bus: " + bus);

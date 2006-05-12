@@ -6,8 +6,6 @@
 
 package de.ingrid.iplug;
 
-import java.io.IOException;
-
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication.reflect.ProxyService;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
@@ -38,17 +36,14 @@ public abstract class HeartBeatThread extends Thread {
 
     private IPlug fPlug;
 
-    protected PlugDescription fPlugDescripion;
-
     private int fSleepInterval;
 
     private PlugShutdownHook fShutdownHook;
 
-    protected HeartBeatThread(IPlug plug, PlugShutdownHook shutdownHook) throws IOException {
+    protected HeartBeatThread(IPlug plug, PlugShutdownHook shutdownHook) {
         this.fPlug = plug;
         this.fShutdownHook = shutdownHook;
         this.fSleepInterval = 1000 * 30; // FIXME make this configurable
-        this.fPlugDescripion = PlugServer.getPlugDescription();
     }
 
     public void run() {
@@ -59,7 +54,10 @@ public abstract class HeartBeatThread extends Thread {
         }
         while (!isInterrupted()) {
             try {
-                this.fBus.addPlugDescription(this.fPlugDescripion);
+                String md5Hash = PlugServer.getPlugDescriptionMd5();
+                if (!this.fBus.containsPlugDescription(md5Hash)) {
+                    this.fBus.addPlugDescription(PlugServer.getPlugDescription());
+                }
                 this.fShutdownHook.addBus(getIBusUrl(), this.fBus);
             } catch (Throwable t) {
                 fLogger.error("unable to connect ibus: ", t);
@@ -73,7 +71,7 @@ public abstract class HeartBeatThread extends Thread {
         }
     }
 
-    protected abstract ICommunication initCommunication() throws Exception;
+    protected abstract ICommunication initCommunication(PlugDescription description) throws Exception;
 
     protected abstract String getIBusUrl();
 
@@ -85,7 +83,7 @@ public abstract class HeartBeatThread extends Thread {
     }
 
     private void connectToIBus() throws Exception {
-        this.fCommunication = initCommunication();
+        this.fCommunication = initCommunication(PlugServer.getPlugDescription());
         startProxyService();
         createBusProxy();
     }

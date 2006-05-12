@@ -32,8 +32,6 @@ public class PlugServer {
     /***/
     public static final String PLUG_DESCRIPTION = "/plugdescription.xml";
 
-    private static String fPlugId;
-
     /**
      * @param args
      * @throws Exception
@@ -105,7 +103,6 @@ public class PlugServer {
         } catch (ClassNotFoundException e) {
             new RuntimeException("iplug class not in classpath", e);
         }
-        fPlugId = plugDescription.getPlugId();
         return plugDescription;
     }
 
@@ -116,7 +113,6 @@ public class PlugServer {
     public static String getPlugDescriptionMd5() throws IOException {
         InputStream resourceAsStream = PlugServer.class.getResourceAsStream(PLUG_DESCRIPTION);
         String md5 = MD5Util.getMD5(resourceAsStream);
-        md5 = md5 + fPlugId;
         return md5;
     }
 }

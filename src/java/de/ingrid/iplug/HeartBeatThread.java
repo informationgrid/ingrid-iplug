@@ -47,8 +47,10 @@ public abstract class HeartBeatThread extends Thread {
     }
 
     public void run() {
+        PlugDescription plugDescription;
         try {
-            connectToIBus();
+            plugDescription = PlugServer.getPlugDescription();
+            connectToIBus(plugDescription);
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         }
@@ -56,9 +58,9 @@ public abstract class HeartBeatThread extends Thread {
             while (!isInterrupted()) {
                 try {
                     String md5Hash = PlugServer.getPlugDescriptionMd5();
-                    if (!this.fBus.containsPlugDescription(md5Hash)) {
+                    if (!this.fBus.containsPlugDescription(plugDescription.getPlugId(), md5Hash)) {
                         fLogger.info("adding or updating plug description to bus '" + getIBusUrl() + "'");
-                        PlugDescription plugDescription = PlugServer.getPlugDescription();
+                        plugDescription = PlugServer.getPlugDescription();
                         plugDescription.setMd5Hash(md5Hash);
                         this.fBus.addPlugDescription(plugDescription);
                     }
@@ -85,8 +87,8 @@ public abstract class HeartBeatThread extends Thread {
         return this.fBus;
     }
 
-    private void connectToIBus() throws Exception {
-        this.fCommunication = initCommunication(PlugServer.getPlugDescription());
+    private void connectToIBus(PlugDescription plugDescription) throws Exception {
+        this.fCommunication = initCommunication(plugDescription);
         startProxyService();
         createBusProxy();
     }

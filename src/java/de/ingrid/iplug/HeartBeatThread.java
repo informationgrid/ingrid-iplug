@@ -56,7 +56,9 @@ public abstract class HeartBeatThread extends Thread {
             try {
                 String md5Hash = PlugServer.getPlugDescriptionMd5();
                 if (!this.fBus.containsPlugDescription(md5Hash)) {
-                    this.fBus.addPlugDescription(PlugServer.getPlugDescription());
+                    PlugDescription plugDescription=PlugServer.getPlugDescription();
+                    plugDescription.setMd5Hash(md5Hash);
+                    this.fBus.addPlugDescription(plugDescription);
                 }
                 this.fShutdownHook.addBus(getIBusUrl(), this.fBus);
             } catch (Throwable t) {

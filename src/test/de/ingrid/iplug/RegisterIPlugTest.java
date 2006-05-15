@@ -19,7 +19,12 @@ import net.weta.components.communication_sockets.util.AddressUtil;
 import de.ingrid.ibus.Bus;
 import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
 import de.ingrid.utils.IBus;
+import de.ingrid.utils.IPlug;
+import de.ingrid.utils.IngridHit;
+import de.ingrid.utils.IngridHitDetail;
+import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
@@ -43,6 +48,10 @@ public class RegisterIPlugTest extends TestCase {
         this.iPlugCom.setMulticastPort(9193);
         this.iPlugCom.setUnicastPort(9194);
         this.iPlugCom.startup();
+        ReflectMessageHandler messageHandler = new ReflectMessageHandler();
+        messageHandler.addObjectToCall(IPlug.class, new DummyPlug());
+        this.iPlugCom.getMessageQueue().getProcessorRegistry().addMessageHandler(
+                ReflectMessageHandler.MESSAGE_TYPE, messageHandler);
 
         // remote proxy - start
         this.iBusCom=new SocketCommunication();
@@ -53,12 +62,13 @@ public class RegisterIPlugTest extends TestCase {
         this.fSerFile = File.createTempFile("RegisterIPlugTest", "ser");
 
         this.fPlugDesc = new PlugDescription();
-        this.fPlugDesc.setProxyServiceURL("plugID");
+        this.fPlugDesc.setProxyServiceURL(AddressUtil.getWetagURL("localhost", 9194));
         this.fPlugDesc.setRecordLoader(false);
         
 
         XMLSerializer xmlSer = new XMLSerializer();
         xmlSer.serialize(this.fPlugDesc, this.fSerFile);
+        Thread.sleep(200);
     }
 
     /**
@@ -104,5 +114,34 @@ public class RegisterIPlugTest extends TestCase {
     public void registerIPlug(PlugDescription plugDesc, String busUrl) {
         IBus bus = (IBus) ProxyService.createProxy(this.iPlugCom,IBus.class, busUrl);
         bus.addPlugDescription(plugDesc);
+    }
+    
+    class DummyPlug implements IPlug{
+
+        public void configure(PlugDescription plugDescription) throws Exception {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public void close() throws Exception {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public IngridHits search(IngridQuery query, int start, int length) throws Exception {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public IngridHitDetail getDetail(IngridHit hit, IngridQuery query, String[] requestedFields) throws Exception {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public IngridHitDetail[] getDetails(IngridHit[] hits, IngridQuery query, String[] requestedFields) throws Exception {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        
     }
 }

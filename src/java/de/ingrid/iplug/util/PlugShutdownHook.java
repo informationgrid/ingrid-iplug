@@ -94,7 +94,7 @@ public class PlugShutdownHook extends Thread {
             try {
                 bus.removePlugDescription(this.fPlugDescription);
             } catch (Throwable e) {
-                fLogger.warn("problems on deregistering from ibus '" + busUrl + "'");
+                fLogger.warn("problems on deregistering from ibus '" + busUrl + "'", e);
             }
         }
 

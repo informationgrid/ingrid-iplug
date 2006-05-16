@@ -65,7 +65,7 @@ public class PlugServer {
      */
     public PlugServer(PlugDescription plugDescription, String jxtaProperties, int heartBeatIntervall) throws Exception {
         fPlugServer = this;
-        this.fCommunication = initJxtaCommunication(jxtaProperties);
+        this.fCommunication = initJxtaCommunication(jxtaProperties, plugDescription);
         initPlugServer(plugDescription, heartBeatIntervall);
     }
 
@@ -174,9 +174,11 @@ public class PlugServer {
         return plug;
     }
 
-    private ICommunication initJxtaCommunication(String jxtaProperties) throws IOException {
+    private ICommunication initJxtaCommunication(String jxtaProperties, PlugDescription plugDescription)
+            throws IOException {
         FileInputStream confIS = new FileInputStream(jxtaProperties);
-        ICommunication communication = StartJxtaConfig.start(confIS);
+        ICommunication communication = StartJxtaConfig.configureFromProperties(confIS);
+        communication.setPeerName(plugDescription.getProxyServiceURL());
         return communication;
     }
 

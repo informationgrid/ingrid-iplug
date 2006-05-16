@@ -97,6 +97,7 @@ public class PlugServer {
     }
 
     private void initPlugServer(PlugDescription plugDescription, int heartBeatIntervall) throws Exception {
+        fLogger.info("init plug-server with id '"+plugDescription.getPlugId());
         this.fPlug = initPlug(plugDescription);
         setUpCommunication(plugDescription.getProxyServiceURL());
         this.fShutdownHook = new PlugShutdownHook(this, plugDescription);

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.weta.components.communication.ICommunication;
+import net.weta.components.communication.WetagURL;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication_sockets.SocketCommunication;
 import net.weta.components.communication_sockets.util.AddressUtil;
@@ -97,7 +98,7 @@ public class PlugServer {
     }
 
     private void initPlugServer(PlugDescription plugDescription, int heartBeatIntervall) throws Exception {
-        fLogger.info("init plug-server with id '"+plugDescription.getPlugId());
+        fLogger.info("init plug-server with id '" + plugDescription.getPlugId() + "'");
         this.fPlug = initPlug(plugDescription);
         setUpCommunication(plugDescription.getProxyServiceURL());
         this.fShutdownHook = new PlugShutdownHook(this, plugDescription);
@@ -179,7 +180,10 @@ public class PlugServer {
             throws IOException {
         FileInputStream confIS = new FileInputStream(jxtaProperties);
         ICommunication communication = StartJxtaConfig.configureFromProperties(confIS);
+        // communication.setPeerName(new
+        // WetagURL(plugDescription.getProxyServiceURL()).getPeerName());
         communication.setPeerName(plugDescription.getProxyServiceURL());
+        communication.startup();
         return communication;
     }
 

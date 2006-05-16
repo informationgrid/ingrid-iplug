@@ -63,7 +63,7 @@ public class HeartBeatThread extends Thread {
             while (!isInterrupted()) {
                 try {
                     String md5Hash = PlugServer.getPlugDescriptionMd5();
-                    String plugId=plugDescription.getPlugId();
+                    String plugId = plugDescription.getPlugId();
                     if (!this.fBus.containsPlugDescription(plugId, md5Hash)) {
                         fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'");
                         plugDescription = PlugServer.getPlugDescription();
@@ -79,8 +79,9 @@ public class HeartBeatThread extends Thread {
                     } else if (t instanceof UndeclaredThrowableException
                             && t.getCause() instanceof InterruptedException) {
                         throw (InterruptedException) t.getCause();
+                    } else if (t instanceof ThreadDeath) {
+                        throw new InterruptedException("thread death");
                     }
-
                     fLogger.error("unable to connect ibus: ", t);
                 }
                 sleep(this.fSleepInterval);

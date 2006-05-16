@@ -238,7 +238,7 @@ public class PlugServer {
                         if (heartbeatThread.getLastSendHeartbeat() + heartbeatThread.getSleepInterval() * 2 < System
                                 .currentTimeMillis()) {
                             iter.remove();
-                            heartbeatThread.interrupt();
+                            heartbeatThread.stop();
                             while (heartbeatThread.isAlive()) {
                                 Thread.yield();
                             }

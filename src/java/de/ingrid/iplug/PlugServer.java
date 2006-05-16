@@ -115,7 +115,7 @@ public class PlugServer {
     }
 
     private void setUpCommunication(String plugUrl) throws Exception {
-        this.fCommunication.subscribeGroup(plugUrl);
+        this.fCommunication.subscribeGroup(new WetagURL(plugUrl).getGroupPath());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IPlug.class, this.fPlug);
         this.fCommunication.getMessageQueue().getProcessorRegistry().addMessageHandler(
@@ -180,9 +180,9 @@ public class PlugServer {
             throws IOException {
         FileInputStream confIS = new FileInputStream(jxtaProperties);
         ICommunication communication = StartJxtaConfig.configureFromProperties(confIS);
-        // communication.setPeerName(new
-        // WetagURL(plugDescription.getProxyServiceURL()).getPeerName());
-        communication.setPeerName(plugDescription.getProxyServiceURL());
+        WetagURL proxyUrl=new WetagURL(plugDescription.getProxyServiceURL());
+        communication.setPeerName(proxyUrl.getPeerName());
+//        communication.setPeerName(plugDescription.getProxyServiceURL());
         communication.startup();
         return communication;
     }
@@ -257,11 +257,9 @@ public class PlugServer {
                         HeartBeatThread heartbeatThread = (HeartBeatThread) iter.next();
                         if (heartbeatThread.getLastSendHeartbeat() + heartbeatThread.getSleepInterval() * 2 < System
                                 .currentTimeMillis()) {
+                            fLogger.warn("stopping heartbeat for '"+getName()+"'");
                             iter.remove();
                             heartbeatThread.stop();
-                            while (heartbeatThread.isAlive()) {
-                                Thread.yield();
-                            }
                             heartbeatThread = new HeartBeatThread(PlugServer.this.fCommunication, heartbeatThread
                                     .getBusUrl(), PlugServer.this.fShutdownHook);
                             heartbeatThread.start();

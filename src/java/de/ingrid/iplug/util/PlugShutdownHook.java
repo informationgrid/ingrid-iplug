@@ -26,8 +26,8 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import de.ingrid.iplug.PlugServer;
 import de.ingrid.utils.IBus;
-import de.ingrid.utils.IPlug;
 import de.ingrid.utils.PlugDescription;
 
 /**
@@ -45,18 +45,18 @@ public class PlugShutdownHook extends Thread {
 
     protected static Log fLogger = LogFactory.getLog(PlugShutdownHook.class);
 
-    private IPlug fPlug;
+    private PlugServer fPlugServer;
 
     private PlugDescription fPlugDescription;
 
     private Map fBusByUrl = new HashMap(3);
 
     /**
-     * @param plug
+     * @param plugServer
      * @param plugDescription
      */
-    public PlugShutdownHook(IPlug plug, PlugDescription plugDescription) {
-        this.fPlug = plug;
+    public PlugShutdownHook(PlugServer plugServer, PlugDescription plugDescription) {
+        this.fPlugServer = plugServer;
         this.fPlugDescription = plugDescription;
         setDaemon(true);
     }
@@ -99,9 +99,9 @@ public class PlugShutdownHook extends Thread {
         }
 
         try {
-            this.fPlug.close();
+            this.fPlugServer.shutdown();
         } catch (Exception e) {
-            fLogger.warn("problems on shutting the plug down", e);
+            fLogger.warn("problems on shutting the plug sever down", e);
         }
         fLogger.info("Plug shutdown in " + (System.currentTimeMillis() - time) + " ms");
     }

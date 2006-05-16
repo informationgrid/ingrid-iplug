@@ -47,7 +47,7 @@ public class PlugShutdownHook extends Thread {
 
     private PlugServer fPlugServer;
 
-    private PlugDescription fPlugDescription;
+    protected PlugDescription fPlugDescription;
 
     private Map fBusByUrl = new HashMap(3);
 
@@ -85,24 +85,54 @@ public class PlugShutdownHook extends Thread {
 
     public void run() {
         long time = System.currentTimeMillis();
-        fLogger.info("Shutting plug '" + this.fPlugDescription.getId() + "' down");
+        fLogger.info("Shutting plug '" + this.fPlugDescription.getPlugId() + "' down");
 
         Set busUrls = this.fBusByUrl.keySet();
         for (Iterator iter = busUrls.iterator(); iter.hasNext();) {
             String busUrl = (String) iter.next();
             IBus bus = (IBus) this.fBusByUrl.get(busUrl);
-            try {
-                bus.removePlugDescription(this.fPlugDescription);
-            } catch (Throwable e) {
-                fLogger.warn("problems on deregistering from ibus '" + busUrl + "'", e);
-            }
+            PlugRemovalThread removalThread = new PlugRemovalThread(bus);
+            removalThread.setName(busUrl);
+            removalThread.start();
         }
 
         try {
+            Thread.sleep(500);
             this.fPlugServer.shutdown();
         } catch (Exception e) {
             fLogger.warn("problems on shutting the plug sever down", e);
         }
         fLogger.info("Plug shutdown in " + (System.currentTimeMillis() - time) + " ms");
+    }
+
+    /**
+     * For removel of plug from bus.
+     * 
+     * <p/>created on 16.05.2006
+     * 
+     * @version $Revision: $
+     * @author jz
+     * @author $Author: ${lastedit}
+     *  
+     */
+    public class PlugRemovalThread extends Thread {
+
+        private IBus fBus;
+
+        /**
+         * @param bus
+         */
+        public PlugRemovalThread(IBus bus) {
+            this.fBus = bus;
+            setDaemon(true);
+        }
+
+        public void run() {
+            try {
+                this.fBus.removePlugDescription(PlugShutdownHook.this.fPlugDescription);
+            } catch (Throwable e) {
+                fLogger.warn("problems on deregistering from ibus '" + getName() + "'", e);
+            }
+        }
     }
 }

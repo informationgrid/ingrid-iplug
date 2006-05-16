@@ -6,16 +6,17 @@
 
 package de.ingrid.iplug;
 
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
+
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication.reflect.ProxyService;
-import net.weta.components.communication.reflect.ReflectMessageHandler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IBus;
-import de.ingrid.utils.IPlug;
 import de.ingrid.utils.PlugDescription;
 
 /**
@@ -26,31 +27,35 @@ import de.ingrid.utils.PlugDescription;
  * @author sg
  * @version $Revision: 1.3 $
  */
-public abstract class HeartBeatThread extends Thread {
+public class HeartBeatThread extends Thread {
 
     protected final static Log fLogger = LogFactory.getLog(HeartBeatThread.class);
 
     private ICommunication fCommunication;
 
+    private String fBusUrl;
+
     private IBus fBus;
 
-    private IPlug fPlug;
-
-    private int fSleepInterval;
+    private int fSleepInterval = 1000 * 30;
 
     private PlugShutdownHook fShutdownHook;
 
-    protected HeartBeatThread(IPlug plug, PlugShutdownHook shutdownHook) {
-        this.fPlug = plug;
+    private long fLastSendHeartbeat = System.currentTimeMillis();
+
+    protected HeartBeatThread(ICommunication communication, String busUrl, PlugShutdownHook shutdownHook) {
+        this.fCommunication = communication;
+        this.fBusUrl = busUrl;
         this.fShutdownHook = shutdownHook;
-        this.fSleepInterval = 1000 * 30; // FIXME make this configurable
     }
 
     public void run() {
+        fLogger.info("heartbeat for '" + this.fBusUrl + "' started");
         PlugDescription plugDescription;
         try {
             plugDescription = PlugServer.getPlugDescription();
-            connectToIBus(plugDescription);
+            this.fBus = (IBus) ProxyService.createProxy(this.fCommunication, IBus.class, this.fBusUrl);
+            this.fCommunication.subscribeGroup(this.fBusUrl);
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         }
@@ -58,27 +63,44 @@ public abstract class HeartBeatThread extends Thread {
             while (!isInterrupted()) {
                 try {
                     String md5Hash = PlugServer.getPlugDescriptionMd5();
-                    if (!this.fBus.containsPlugDescription(plugDescription.getPlugId(), md5Hash)) {
-                        fLogger.info("adding or updating plug description to bus '" + getIBusUrl() + "'");
+                    String plugId=plugDescription.getPlugId();
+                    if (!this.fBus.containsPlugDescription(plugId, md5Hash)) {
+                        fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'");
                         plugDescription = PlugServer.getPlugDescription();
                         plugDescription.setMd5Hash(md5Hash);
                         this.fBus.addPlugDescription(plugDescription);
                     }
-                    this.fShutdownHook.addBus(getIBusUrl(), this.fBus);
+                    this.fLastSendHeartbeat = System.currentTimeMillis();
+                    this.fShutdownHook.addBus(this.fBusUrl, this.fBus);
                 } catch (Throwable t) {
+                    this.fShutdownHook.removeBus(this.fBusUrl);
+                    if (t instanceof InterruptedException) {
+                        throw (InterruptedException) t;
+                    } else if (t instanceof UndeclaredThrowableException
+                            && t.getCause() instanceof InterruptedException) {
+                        throw (InterruptedException) t.getCause();
+                    }
+
                     fLogger.error("unable to connect ibus: ", t);
-                    this.fShutdownHook.removeBus(getIBusUrl());
                 }
                 sleep(this.fSleepInterval);
             }
         } catch (InterruptedException e) {
-            // do nothing s
+            fLogger.warn("interrupt heartbeat thread from '" + this.fBusUrl + "'");
+            try {
+                this.fCommunication.closeConnection(this.fBusUrl);
+            } catch (IOException e1) {
+                fLogger.warn("problems on closing connection to " + this.fBusUrl);
+            }
         }
     }
 
-    protected abstract ICommunication initCommunication(PlugDescription description) throws Exception;
-
-    protected abstract String getIBusUrl();
+    /**
+     * @return the url of the bus
+     */
+    public String getBusUrl() {
+        return this.fBusUrl;
+    }
 
     /**
      * @return the ibus of this heartbeat
@@ -87,21 +109,24 @@ public abstract class HeartBeatThread extends Thread {
         return this.fBus;
     }
 
-    private void connectToIBus(PlugDescription plugDescription) throws Exception {
-        this.fCommunication = initCommunication(plugDescription);
-        startProxyService();
-        createBusProxy();
+    /**
+     * @return the time of the last send heartbeat
+     */
+    public long getLastSendHeartbeat() {
+        return this.fLastSendHeartbeat;
     }
 
-    private void createBusProxy() {
-        String iBusUrl = getIBusUrl();
-        this.fBus = (IBus) ProxyService.createProxy(this.fCommunication, IBus.class, iBusUrl);
+    /**
+     * @return how long the heart sleeps between the beats
+     */
+    public int getSleepInterval() {
+        return this.fSleepInterval;
     }
 
-    private void startProxyService() throws Exception {
-        ReflectMessageHandler messageHandler = new ReflectMessageHandler();
-        messageHandler.addObjectToCall(IPlug.class, this.fPlug);
-        this.fCommunication.getMessageQueue().getProcessorRegistry().addMessageHandler(
-                ReflectMessageHandler.MESSAGE_TYPE, messageHandler);
+    /**
+     * @param sleepIntervall
+     */
+    public void setSleepInterval(int sleepIntervall) {
+        this.fSleepInterval = sleepIntervall;
     }
 }

@@ -6,10 +6,23 @@
 
 package de.ingrid.iplug;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import net.weta.components.communication.ICommunication;
+import net.weta.components.communication.reflect.ReflectMessageHandler;
+import net.weta.components.communication_sockets.SocketCommunication;
+import net.weta.components.communication_sockets.util.AddressUtil;
+import net.weta.components.peer.StartJxtaConfig;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
@@ -29,8 +42,67 @@ import de.ingrid.utils.xml.XMLSerializer;
  */
 public class PlugServer {
 
+    protected final static Log fLogger = LogFactory.getLog(PlugServer.class);
+
     /***/
     public static final String PLUG_DESCRIPTION = "/plugdescription.xml";
+
+    protected ICommunication fCommunication;
+
+    private IPlug fPlug;
+
+    private HeartBeatTimeOutThread fTimeOutThread;
+
+    protected PlugShutdownHook fShutdownHook;
+
+    private static PlugServer fPlugServer;
+
+    /**
+     * @param plugDescription
+     * @param jxtaProperties
+     * @param heartBeatIntervall
+     * @throws Exception
+     */
+    public PlugServer(PlugDescription plugDescription, String jxtaProperties, int heartBeatIntervall) throws Exception {
+        fPlugServer = this;
+        this.fCommunication = initJxtaCommunication(jxtaProperties);
+        initPlugServer(plugDescription, heartBeatIntervall);
+    }
+
+    /**
+     * @param plugDescription
+     * @param unicastPort
+     * @param multicastPort
+     * @param heartBeatIntervall
+     * @throws Exception
+     */
+    public PlugServer(PlugDescription plugDescription, int unicastPort, int multicastPort, int heartBeatIntervall)
+            throws Exception {
+        fPlugServer = this;
+        this.fPlug = initPlug(plugDescription);
+        this.fCommunication = initSocketCommunication(unicastPort, multicastPort);
+        initPlugServer(plugDescription, heartBeatIntervall);
+    }
+
+    private void initPlugServer(PlugDescription plugDescription, int heartBeatIntervall) throws Exception {
+        setUpCommunication(plugDescription.getProxyServiceURL());
+        this.fShutdownHook = new PlugShutdownHook(this.fPlug, plugDescription);
+        Runtime.getRuntime().addShutdownHook(this.fShutdownHook);
+        String[] busUrls = plugDescription.getBusUrls();
+        this.fTimeOutThread = new HeartBeatTimeOutThread();
+        for (int i = 0; i < busUrls.length; i++) {
+            HeartBeatThread heartBeat = new HeartBeatThread(this.fCommunication, busUrls[i], this.fShutdownHook);
+            heartBeat.setSleepInterval(heartBeatIntervall);
+            this.fTimeOutThread.addHearBeatThread(heartBeat);
+            heartBeat.start();
+        }
+        this.fTimeOutThread.start();
+    }
+
+    private void setUpCommunication(String plugUrl) throws Exception {
+        this.fCommunication.subscribeGroup(plugUrl);
+        startProxyService();
+    }
 
     /**
      * @param args
@@ -39,23 +111,22 @@ public class PlugServer {
     public static void main(String[] args) throws Exception {
         Map arguments = readParameters(args);
         PlugDescription plugDescription = getPlugDescription();
-        IPlug plug = initPlug(plugDescription);
-        PlugShutdownHook shutdownHook = new PlugShutdownHook(plug);
-        shutdownHook.setPlugDescription(plugDescription);
-        HeartBeatThread heartBeat;
         if (arguments.containsKey("--descriptor") && arguments.containsKey("--busurl")) {
             String jxtaConf = (String) arguments.get("--descriptor");
-            String iBusUrl = (String) arguments.get("--busurl");
-            heartBeat = new JxtaHeartBeatThread(jxtaConf, iBusUrl, plug, shutdownHook);
+            String busUrl = (String) arguments.get("--busurl");
+            // TODO remove 2 lines below
+            plugDescription.remove(PlugDescription.BUSES);
+            plugDescription.addBusUrl(busUrl);
+            new PlugServer(plugDescription, jxtaConf, 30 * 1000);
         } else {
             int mPort = Integer.parseInt(args[0]);
             int uPort = Integer.parseInt(args[1]);
-            String iBustHost = args[2];
-            int iBusPort = Integer.parseInt(args[3]);
-            heartBeat = new SocketHeartBeatThread(mPort, uPort, iBustHost, iBusPort, plug, shutdownHook);
+            String busUrl = AddressUtil.getWetagURL(args[2], Integer.parseInt(args[3]));
+            // TODO remove 2 lines below
+            plugDescription.remove(PlugDescription.BUSES);
+            plugDescription.addBusUrl(busUrl);
+            new PlugServer(plugDescription, uPort, mPort, 30 * 1000);
         }
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
-        heartBeat.start();
     }
 
     private static Map readParameters(String[] args) {
@@ -87,6 +158,27 @@ public class PlugServer {
         return plug;
     }
 
+    private ICommunication initJxtaCommunication(String jxtaProperties) throws IOException {
+        FileInputStream confIS = new FileInputStream(jxtaProperties);
+        ICommunication communication = StartJxtaConfig.start(confIS);
+        return communication;
+    }
+
+    private ICommunication initSocketCommunication(int unicastPort, int multicastPort) throws IOException {
+        SocketCommunication communication = new SocketCommunication();
+        communication.setMulticastPort(multicastPort);
+        communication.setUnicastPort(unicastPort);
+        communication.startup();
+        return communication;
+    }
+
+    private void startProxyService() throws Exception {
+        ReflectMessageHandler messageHandler = new ReflectMessageHandler();
+        messageHandler.addObjectToCall(IPlug.class, this.fPlug);
+        this.fCommunication.getMessageQueue().getProcessorRegistry().addMessageHandler(
+                ReflectMessageHandler.MESSAGE_TYPE, messageHandler);
+    }
+
     /**
      * Reads the plug description from a xml file in the classpath.
      * 
@@ -94,6 +186,17 @@ public class PlugServer {
      * @throws IOException
      */
     public static PlugDescription getPlugDescription() throws IOException {
+        if (fPlugServer != null) {
+            return fPlugServer.loadPlugDescription();
+        }
+        return loadPlugDescriptionFromFile();
+    }
+
+    protected PlugDescription loadPlugDescription() throws IOException {
+        return loadPlugDescriptionFromFile();
+    }
+
+    private static PlugDescription loadPlugDescriptionFromFile() throws IOException {
         InputStream resourceAsStream = PlugServer.class.getResourceAsStream(PLUG_DESCRIPTION);
         XMLSerializer serializer = new XMLSerializer();
         PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);
@@ -115,4 +218,59 @@ public class PlugServer {
         String md5 = MD5Util.getMD5(resourceAsStream);
         return md5;
     }
+
+    class HeartBeatTimeOutThread extends Thread {
+
+        private List fHeartBeatThreads = new ArrayList();
+
+        private int fHeartBeatIntervall = 2000;
+
+        /**
+         * @param beatThread
+         */
+        public void addHearBeatThread(HeartBeatThread beatThread) {
+            this.fHeartBeatThreads.add(beatThread);
+            this.fHeartBeatIntervall = beatThread.getSleepInterval();
+        }
+
+        public void run() {
+            try {
+                while (true) {
+                    List beatsToAdd = new ArrayList(3);
+                    for (Iterator iter = this.fHeartBeatThreads.iterator(); iter.hasNext();) {
+                        HeartBeatThread heartbeatThread = (HeartBeatThread) iter.next();
+                        if (heartbeatThread.getLastSendHeartbeat() + heartbeatThread.getSleepInterval() * 2 < System
+                                .currentTimeMillis()) {
+                            iter.remove();
+                            heartbeatThread.interrupt();
+                            while (heartbeatThread.isAlive()) {
+                                Thread.yield();
+                            }
+                            heartbeatThread = new HeartBeatThread(PlugServer.this.fCommunication, heartbeatThread
+                                    .getBusUrl(), PlugServer.this.fShutdownHook);
+                            heartbeatThread.start();
+                            beatsToAdd.add(heartbeatThread);
+                        }
+                    }
+                    this.fHeartBeatThreads.addAll(beatsToAdd);
+                    sleep(this.fHeartBeatIntervall * 2);
+                }
+            } catch (InterruptedException e) {
+                fLogger.info("stopping heartbeat timeout thread");
+                for (Iterator iter = this.fHeartBeatThreads.iterator(); iter.hasNext();) {
+                    HeartBeatThread heartbeatThread = (HeartBeatThread) iter.next();
+                    heartbeatThread.interrupt();
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     */
+    public void shutdown() {
+        this.fTimeOutThread.interrupt();
+        this.fCommunication.shutdown();
+    }
+
 }

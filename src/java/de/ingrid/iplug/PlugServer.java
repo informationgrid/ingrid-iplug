@@ -79,12 +79,12 @@ public class PlugServer {
     public PlugServer(PlugDescription plugDescription, int unicastPort, int multicastPort, int heartBeatIntervall)
             throws Exception {
         fPlugServer = this;
-        this.fPlug = initPlug(plugDescription);
         this.fCommunication = initSocketCommunication(unicastPort, multicastPort);
         initPlugServer(plugDescription, heartBeatIntervall);
     }
 
     private void initPlugServer(PlugDescription plugDescription, int heartBeatIntervall) throws Exception {
+        this.fPlug = initPlug(plugDescription);
         setUpCommunication(plugDescription.getProxyServiceURL());
         this.fShutdownHook = new PlugShutdownHook(this.fPlug, plugDescription);
         Runtime.getRuntime().addShutdownHook(this.fShutdownHook);
@@ -101,7 +101,10 @@ public class PlugServer {
 
     private void setUpCommunication(String plugUrl) throws Exception {
         this.fCommunication.subscribeGroup(plugUrl);
-        startProxyService();
+        ReflectMessageHandler messageHandler = new ReflectMessageHandler();
+        messageHandler.addObjectToCall(IPlug.class, this.fPlug);
+        this.fCommunication.getMessageQueue().getProcessorRegistry().addMessageHandler(
+                ReflectMessageHandler.MESSAGE_TYPE, messageHandler);
     }
 
     /**
@@ -170,13 +173,6 @@ public class PlugServer {
         communication.setUnicastPort(unicastPort);
         communication.startup();
         return communication;
-    }
-
-    private void startProxyService() throws Exception {
-        ReflectMessageHandler messageHandler = new ReflectMessageHandler();
-        messageHandler.addObjectToCall(IPlug.class, this.fPlug);
-        this.fCommunication.getMessageQueue().getProcessorRegistry().addMessageHandler(
-                ReflectMessageHandler.MESSAGE_TYPE, messageHandler);
     }
 
     /**

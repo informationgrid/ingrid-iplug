@@ -83,10 +83,23 @@ public class PlugServer {
         initPlugServer(plugDescription, heartBeatIntervall);
     }
 
+    /**
+     * 
+     */
+    public void shutdown() {
+        this.fTimeOutThread.interrupt();
+        this.fCommunication.shutdown();
+        try {
+            this.fPlug.close();
+        } catch (Exception e) {
+            fLogger.warn("problems closing iplug", e);
+        }
+    }
+
     private void initPlugServer(PlugDescription plugDescription, int heartBeatIntervall) throws Exception {
         this.fPlug = initPlug(plugDescription);
         setUpCommunication(plugDescription.getProxyServiceURL());
-        this.fShutdownHook = new PlugShutdownHook(this.fPlug, plugDescription);
+        this.fShutdownHook = new PlugShutdownHook(this, plugDescription);
         Runtime.getRuntime().addShutdownHook(this.fShutdownHook);
         String[] busUrls = plugDescription.getBusUrls();
         this.fTimeOutThread = new HeartBeatTimeOutThread();
@@ -259,14 +272,6 @@ public class PlugServer {
                 }
             }
         }
-    }
-
-    /**
-     * 
-     */
-    public void shutdown() {
-        this.fTimeOutThread.interrupt();
-        this.fCommunication.shutdown();
     }
 
 }

@@ -257,7 +257,7 @@ public class PlugServer {
                         HeartBeatThread heartbeatThread = (HeartBeatThread) iter.next();
                         if (heartbeatThread.getLastSendHeartbeat() + heartbeatThread.getSleepInterval() * 2 < System
                                 .currentTimeMillis()) {
-                            fLogger.warn("stopping heartbeat for '"+getName()+"'");
+                            fLogger.warn("stopping heartbeat for '"+heartbeatThread.getBusUrl()+"'");
                             iter.remove();
                             heartbeatThread.stop();
                             heartbeatThread = new HeartBeatThread(PlugServer.this.fCommunication, heartbeatThread
@@ -267,7 +267,7 @@ public class PlugServer {
                         }
                     }
                     this.fHeartBeatThreads.addAll(beatsToAdd);
-                    sleep(this.fHeartBeatIntervall * 2);
+                    sleep(this.fHeartBeatIntervall * 3);
                 }
             } catch (InterruptedException e) {
                 fLogger.info("stopping heartbeat timeout thread");

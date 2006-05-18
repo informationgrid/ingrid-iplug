@@ -65,10 +65,11 @@ public class HeartBeatThread extends Thread {
                     String md5Hash = PlugServer.getPlugDescriptionMd5();
                     String plugId = plugDescription.getPlugId();
                     if (!this.fBus.containsPlugDescription(plugId, md5Hash)) {
-                        fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'");
+                        fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'...");
                         plugDescription = PlugServer.getPlugDescription();
                         plugDescription.setMd5Hash(md5Hash);
                         this.fBus.addPlugDescription(plugDescription);
+                        fLogger.info("added or updated plug description to bus '" + this.fBusUrl + "'");
                     }
                     this.fLastSendHeartbeat = System.currentTimeMillis();
                     this.fShutdownHook.addBus(this.fBusUrl, this.fBus);

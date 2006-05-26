@@ -45,7 +45,7 @@ public class PlugShutdownHook extends Thread {
 
     protected static Log fLogger = LogFactory.getLog(PlugShutdownHook.class);
 
-    private PlugServer fPlugServer;
+    protected PlugServer fPlugServer;
 
     protected PlugDescription fPlugDescription;
 
@@ -98,7 +98,9 @@ public class PlugShutdownHook extends Thread {
 
         try {
             Thread.sleep(500);
-            this.fPlugServer.shutdown();
+            PlugServerShutdownThread shutdownThread = new PlugServerShutdownThread();
+            shutdownThread.start();
+            shutdownThread.join(500);
         } catch (Exception e) {
             fLogger.warn("problems on shutting the plug sever down", e);
         }
@@ -106,7 +108,7 @@ public class PlugShutdownHook extends Thread {
     }
 
     /**
-     * For removel of plug from bus.
+     * Thread for non-blocking removel of plug from bus.
      * 
      * <p/>created on 16.05.2006
      * 
@@ -132,6 +134,34 @@ public class PlugShutdownHook extends Thread {
                 this.fBus.removePlugDescription(PlugShutdownHook.this.fPlugDescription);
             } catch (Throwable e) {
                 fLogger.warn("problems on deregistering from ibus '" + getName() + "'", e);
+            }
+        }
+    }
+    
+    /**
+     * Thread for non-blockin plug server shutdown.
+     * 
+     * <p/>created on 26.05.2006
+     * 
+     * @version $Revision: $
+     * @author jz
+     * @author $Author: ${lastedit}
+     *  
+     */
+    public class PlugServerShutdownThread extends Thread {
+        
+      
+        /**
+         */
+        public PlugServerShutdownThread() {
+            setDaemon(true);
+        }
+
+        public void run() {
+            try {
+                PlugShutdownHook.this.fPlugServer.shutdown();
+            } catch (Throwable e) {
+                fLogger.warn("problems on shutting plug server down '" + getName() + "'", e);
             }
         }
     }

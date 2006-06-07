@@ -146,7 +146,7 @@ public class PlugServer {
     private static Map readParameters(String[] args) {
         Map argumentMap = new HashMap();
         // convert and validate the supplied arguments
-        if (4 != args.length) {
+        if (2 != args.length && 4 != args.length) {
             printUsage();
             System.exit(1);
         }

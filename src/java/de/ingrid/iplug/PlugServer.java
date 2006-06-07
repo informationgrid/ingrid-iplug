@@ -129,12 +129,8 @@ public class PlugServer {
     public static void main(String[] args) throws Exception {
         Map arguments = readParameters(args);
         PlugDescription plugDescription = getPlugDescription();
-        if (arguments.containsKey("--descriptor") && arguments.containsKey("--busurl")) {
+        if (arguments.containsKey("--descriptor")) {
             String jxtaConf = (String) arguments.get("--descriptor");
-            String busUrl = (String) arguments.get("--busurl");
-            // TODO remove 2 lines below
-            plugDescription.remove(PlugDescription.BUSES);
-            plugDescription.addBusUrl(busUrl);
             new PlugServer(plugDescription, jxtaConf, 30 * 1000);
         } else {
             int mPort = Integer.parseInt(args[0]);
@@ -162,7 +158,7 @@ public class PlugServer {
 
     private static void printUsage() {
         System.err
-                .println("Usage: You must set --descriptor <filename> --busurl <wetag url> for jxta or <multicastport> <unicastport> <IBusHost> <IBusPort> for socket communication");
+                .println("Usage: You must set --descriptor <filename> for jxta or <multicastport> <unicastport> <IBusHost> <IBusPort> for socket communication");
     }
 
     private static IPlug initPlug(PlugDescription plugDescription) throws Exception {
@@ -182,7 +178,6 @@ public class PlugServer {
         ICommunication communication = StartJxtaConfig.configureFromProperties(confIS);
         WetagURL proxyUrl=new WetagURL(plugDescription.getProxyServiceURL());
         communication.setPeerName(proxyUrl.getPeerName());
-//        communication.setPeerName(plugDescription.getProxyServiceURL());
         communication.startup();
         return communication;
     }

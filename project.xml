@@ -9,10 +9,10 @@
     <logo>/images/logo.gif</logo>
     <shortDescription>short description</shortDescription>
     <issueTrackingUrl>http://jira.media-style.com/browse/INGRID</issueTrackingUrl>
-    <siteAddress>http://torwald.gistec-online.de/ingrid/ingrid-iplug</siteAddress>
+    <siteAddress>http://213.144.28.209/ingrid/ingrid-iplug</siteAddress>
     <siteDirectory>/srv/www/htdocs/ingrid/ingrid-iplug</siteDirectory>
     <repository>
-        <connection>scm:svn:http://torwald.gistec-online.de/svn/ingrid:ingrid-iplug</connection>
+        <connection>scm:svn:https://mb@213.144.28.209:444/svn/ingrid/ingrid-iplug</connection>
     </repository>
     <mailingLists>
         <mailingList>

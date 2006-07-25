@@ -32,8 +32,8 @@ import org.quartz.spi.TriggerFiredBundle;
 
 /**
  * 
- * This class implements a <code>{@link org.quartz.spi.JobStore}</code> that
- * utilizes the FileSystem as its storage device.
+ * This class implements a <code>{@link org.quartz.spi.JobStore}</code> that utilizes the FileSystem as its storage
+ * device.
  * 
  * <p/>created on 11.10.2005
  * 
@@ -135,9 +135,8 @@ public class FileJobStore implements JobStore {
      * 
      * @param group
      * @param name
-     * @return the full name of a job or a trigger (i.e.
-     *         'getFullName(trigger.getGroup(),trigger.getName())' should equal
-     *         'trigger.getFullName()')
+     * @return the full name of a job or a trigger (i.e. 'getFullName(trigger.getGroup(),trigger.getName())' should
+     *         equal 'trigger.getFullName()')
      */
     private static String getFullName(String group, String name) {
         StringBuffer buffer = new StringBuffer(group);
@@ -182,9 +181,8 @@ public class FileJobStore implements JobStore {
         if (this.fTriggersByName.containsKey(newTrigger.getFullName())) {
             if (!replaceExisting) {
                 throw new ObjectAlreadyExistsException(newTrigger);
-            } else {
-                log.warn("overwriting existing trigger: " + newTrigger.getFullName());
             }
+            log.warn("overwriting existing trigger: " + newTrigger.getFullName());
             removeTrigger(ctxt, newTrigger.getName(), newTrigger.getGroup());
         }
 
@@ -385,11 +383,11 @@ public class FileJobStore implements JobStore {
         return (Trigger[]) triggers.toArray(new Trigger[triggers.size()]);
     }
 
-    /*
+    /**
      * trigger_states and their intern implementation
      * 
      * STATE_NONE - not in TriggersByName .................................
-     * STATE_NORMAL - not in TriggerStatesByName ..........................
+	 * STATE_NORMAL - not in TriggerStatesByName ..........................
      * STATE_COMPLETE - with int value in TriggerStatesByName .............
      * STATE_ERROR - with int value in TriggerStatesByName ................
      * STATE_PAUSED - with int value in TriggerStatesByName ...............
@@ -712,14 +710,16 @@ public class FileJobStore implements JobStore {
             }
             log.info("All triggers of Job " + oldTrigger.getFullJobName() + " set to ERROR state.");
             break;
+        default:
+            log.debug("unknown trigger instruction: " + triggerInstruction);
+            break;
         }
     }
 
     // -------------------------non-interface---------------------
 
     /**
-     * @return the number of milliseconds in those the job would be executed
-     *         delayed before misfired.
+     * @return the number of milliseconds in those the job would be executed delayed before misfired.
      */
     public long getMisfireThreshold() {
 
@@ -728,8 +728,7 @@ public class FileJobStore implements JobStore {
 
     /**
      * @param misfireThreshold
-     *            the number of milliseconds in those the job would be executed
-     *            delayed before misfired
+     *            the number of milliseconds in those the job would be executed delayed before misfired
      */
     public void setMisfireThreshold(long misfireThreshold) {
         this.fMisfireThreshold = misfireThreshold;

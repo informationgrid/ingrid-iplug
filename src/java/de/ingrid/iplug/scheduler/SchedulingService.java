@@ -19,6 +19,7 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
+import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
@@ -135,159 +136,170 @@ import org.quartz.impl.StdSchedulerFactory;
  */
 public class SchedulingService {
 
-	private Scheduler fScheduler;
+    private Scheduler fScheduler;
 
-	/**
-	 * @throws SchedulerException
-	 * @throws IOException
-	 */
-	public SchedulingService(File fileStorePath) throws SchedulerException,
-			IOException {
-		InputStream resourceAsStream = SchedulingService.class
-				.getResourceAsStream("/quartz.properties");
-		Properties properties = new Properties();
-		if (resourceAsStream != null) {
-			// load values from config file
-			properties.load(resourceAsStream);
-		} else {
-			// use some default values
-			properties.put(StdSchedulerFactory.PROP_JOB_STORE_CLASS,
-					FileJobStore.class.getName());
-			properties.put(StdSchedulerFactory.PROP_THREAD_POOL_CLASS,
-					"org.quartz.simpl.SimpleThreadPool");
-			properties.put("org.quartz.threadPool.threadCount", "5");
+    /**
+     * @param fileStorePath 
+     * @throws SchedulerException
+     * @throws IOException
+     */
+    public SchedulingService(File fileStorePath) throws SchedulerException, IOException {
+        InputStream resourceAsStream = SchedulingService.class.getResourceAsStream("/quartz.properties");
+        Properties properties = new Properties();
+        if (resourceAsStream != null) {
+            // load values from config file
+            properties.load(resourceAsStream);
+        } else {
+            // use some default values
+            properties.put(StdSchedulerFactory.PROP_JOB_STORE_CLASS, FileJobStore.class.getName());
+            properties.put(StdSchedulerFactory.PROP_THREAD_POOL_CLASS, "org.quartz.simpl.SimpleThreadPool");
+            properties.put("org.quartz.threadPool.threadCount", "5");
 
-		}
-		properties.setProperty("org.quartz.jobStore.storeFilePath",
-				fileStorePath.getAbsolutePath());
-		SchedulerFactory schedulerFactory = new StdSchedulerFactory(properties);
-		this.fScheduler = schedulerFactory.getScheduler();
-		this.fScheduler.start();
-	}
+        }
+        properties.setProperty("org.quartz.jobStore.storeFilePath", fileStorePath.getAbsolutePath());
+        SchedulerFactory schedulerFactory = new StdSchedulerFactory(properties);
+        this.fScheduler = schedulerFactory.getScheduler();
+        this.fScheduler.start();
+    }
 
-	/**
-	 * @throws SchedulerException
-	 */
-	public void shutdown() throws SchedulerException {
-		this.fScheduler.shutdown();
-	}
+    /**
+     * @throws SchedulerException
+     */
+    public void shutdown() throws SchedulerException {
+        this.fScheduler.shutdown();
+    }
 
-	/**
-	 * There will be one trigger for job, with the same name and group as the
-	 * job. All optional parameters could be left blank (null). For
-	 * cron-expression-examples see class description.
-	 * 
-	 * @param jobName
-	 * @param jobGroup
-	 *            (optional)
-	 * @param jobClass
-	 * @param jobData
-	 *            (optional), will be availible in
-	 *            Job#execute(org.quartz.JobExecutionContext)
-	 * @param cronExpression
-	 * @throws ParseException
-	 * @throws SchedulerException
-	 */
-	public void scheduleCronJob(String jobName, String jobGroup,
-			Class jobClass, Map jobData, String cronExpression)
-			throws ParseException, SchedulerException {
-		JobDetail jobDetail = new JobDetail(jobName, jobGroup, jobClass);
-		if (jobData != null) {
-			jobDetail.setJobDataMap(new JobDataMap(jobData));
-		}
+    /**
+     * There will be one trigger for job, with the same name and group as the
+     * job. All optional parameters could be left blank (null). For
+     * cron-expression-examples see class description.
+     * 
+     * @param jobName
+     * @param jobGroup
+     *            (optional)
+     * @param jobClass
+     * @param jobData
+     *            (optional), will be availible in
+     *            Job#execute(org.quartz.JobExecutionContext)
+     * @param cronExpression
+     * @throws ParseException
+     * @throws SchedulerException
+     */
+    public void scheduleCronJob(String jobName, String jobGroup, Class jobClass, Map jobData, String cronExpression)
+            throws ParseException, SchedulerException {
+        JobDetail jobDetail = new JobDetail(jobName, jobGroup, jobClass);
+        if (jobData != null) {
+            jobDetail.setJobDataMap(new JobDataMap(jobData));
+        }
 
-		CronTrigger trigger = new CronTrigger(jobName, jobGroup);
-		trigger.setCronExpression(cronExpression);
-		this.fScheduler.deleteJob(jobName, jobGroup);
-		this.fScheduler.scheduleJob(jobDetail, trigger);
-	}
+        CronTrigger trigger = new CronTrigger(jobName, jobGroup);
+        trigger.setCronExpression(cronExpression);
+        this.fScheduler.deleteJob(jobName, jobGroup);
+        this.fScheduler.scheduleJob(jobDetail, trigger);
+    }
 
-	/**
-	 * Schedule job with striped cronExpression. The cron expression will be
-	 * integrated from the single parameters sec - year. If you leave those
-	 * parameter blank, the "*"-character will be inserted. For
-	 * cron-expression-examples see class description.
-	 * 
-	 * There will be one trigger for job, with the same name and group as the
-	 * job.
-	 * 
-	 * All optional parameters could be left blank (null).
-	 * 
-	 * @param jobName
-	 * @param jobGroup
-	 *            (optional)
-	 * @param jobClass
-	 * @param jobData
-	 *            (optional), will be availible in
-	 *            Job#execute(org.quartz.JobExecutionContext)
-	 * @param sec
-	 * @param min
-	 * @param hours
-	 * @param dayOfMonth
-	 * @param month
-	 * @param dayOfWeek
-	 * @param year
-	 * @throws SchedulerException
-	 * @throws ParseException
-	 */
-	public void scheduleCronJob(String jobName, String jobGroup,
-			Class jobClass, Map jobData, String sec, String min, String hours,
-			String dayOfMonth, String month, String dayOfWeek, String year)
-			throws ParseException, SchedulerException {
-		String cronExpression = getCronExpression(sec, min, hours, dayOfMonth,
-				month, dayOfWeek, year);
-		scheduleCronJob(jobName, jobGroup, jobClass, jobData, cronExpression);
-	}
+    /**
+     * Schedule job with striped cronExpression. The cron expression will be
+     * integrated from the single parameters sec - year. If you leave those
+     * parameter blank, the "*"-character will be inserted. For
+     * cron-expression-examples see class description.
+     * 
+     * There will be one trigger for job, with the same name and group as the
+     * job.
+     * 
+     * All optional parameters could be left blank (null).
+     * 
+     * @param jobName
+     * @param jobGroup
+     *            (optional)
+     * @param jobClass
+     * @param jobData
+     *            (optional), will be availible in
+     *            Job#execute(org.quartz.JobExecutionContext)
+     * @param sec
+     * @param min
+     * @param hours
+     * @param dayOfMonth
+     * @param month
+     * @param dayOfWeek
+     * @param year
+     * @throws SchedulerException
+     * @throws ParseException
+     */
+    public void scheduleCronJob(String jobName, String jobGroup, Class jobClass, Map jobData, String sec, String min,
+            String hours, String dayOfMonth, String month, String dayOfWeek, String year) throws ParseException,
+            SchedulerException {
+        String cronExpression = getCronExpression(sec, min, hours, dayOfMonth, month, dayOfWeek, year);
+        scheduleCronJob(jobName, jobGroup, jobClass, jobData, cronExpression);
+    }
 
-	/**
-	 * @param jobName
-	 * @param groupName
-	 * @return true if job exists
-	 * @throws SchedulerException
-	 */
-	public boolean removeJob(String jobName, String groupName)
-			throws SchedulerException {
-		return this.fScheduler.deleteJob(jobName, groupName);
-	}
+    /**
+     * @param jobName
+     * @param groupName
+     * @return true if job exists
+     * @throws SchedulerException
+     */
+    public boolean removeJob(String jobName, String groupName) throws SchedulerException {
+        return this.fScheduler.deleteJob(jobName, groupName);
+    }
 
-	/**
-	 * The cron expression will be integrated from the single parameters sec -
-	 * year. If you leave those parameter blank, the "*"-character will be
-	 * inserted. For cron-expression-examples see class description.
-	 * 
-	 * @param sec
-	 * @param min
-	 * @param hours
-	 * @param dayOfMonth
-	 * @param month
-	 * @param dayOfWeek
-	 * @param year
-	 * @return the integrated cron expression
-	 */
-	public static String getCronExpression(String sec, String min,
-			String hours, String dayOfMonth, String month, String dayOfWeek,
-			String year) {
-		StringBuffer buffer = new StringBuffer();
-		appendNextExpression(buffer, sec);
-		appendNextExpression(buffer, min);
-		appendNextExpression(buffer, hours);
-		appendNextExpression(buffer, dayOfMonth);
-		appendNextExpression(buffer, month);
-		appendNextExpression(buffer, dayOfWeek);
-		appendNextExpression(buffer, year);
+    /**
+     * @param jobName
+     * @param groupName
+     * @return the job
+     * @throws SchedulerException
+     */
+    public JobDetail getJob(String jobName, String groupName) throws SchedulerException {
+        return this.fScheduler.getJobDetail(jobName, groupName);
+    }
 
-		return buffer.toString();
-	}
+    /**
+     * @param triggerG
+     * @param groupName
+     * @return the trigger
+     * @throws SchedulerException
+     */
+    public Trigger getTrigger(String triggerG, String groupName) throws SchedulerException {
+        return this.fScheduler.getTrigger(triggerG, groupName);
+    }
 
-	private static void appendNextExpression(StringBuffer buffer,
-			String expression) {
-		if (buffer.length() > 0) {
-			buffer.append(" ");
-		}
-		if (expression == null) {
-			buffer.append("*");
-		} else {
-			buffer.append(expression);
-		}
-	}
+    /**
+     * The cron expression will be integrated from the single parameters sec -
+     * year. If you leave those parameter blank, the "*"-character will be
+     * inserted. For cron-expression-examples see class description.
+     * 
+     * @param sec
+     * @param min
+     * @param hours
+     * @param dayOfMonth
+     * @param month
+     * @param dayOfWeek
+     * @param year
+     * @return the integrated cron expression
+     */
+    public static String getCronExpression(String sec, String min, String hours, String dayOfMonth, String month,
+            String dayOfWeek, String year) {
+        StringBuffer buffer = new StringBuffer();
+        appendNextExpression(buffer, sec);
+        appendNextExpression(buffer, min);
+        appendNextExpression(buffer, hours);
+        appendNextExpression(buffer, dayOfMonth);
+        appendNextExpression(buffer, month);
+        appendNextExpression(buffer, dayOfWeek);
+        appendNextExpression(buffer, year);
+
+        return buffer.toString();
+    }
+
+    private static void appendNextExpression(StringBuffer buffer, String expression) {
+        if (buffer.length() > 0) {
+            buffer.append(" ");
+        }
+        if (expression == null) {
+            buffer.append("*");
+        } else {
+            buffer.append(expression);
+        }
+    }
+
 }

@@ -19,7 +19,6 @@ import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
-import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 /**
@@ -139,11 +138,12 @@ public class SchedulingService {
     private Scheduler fScheduler;
 
     /**
-     * @param fileStorePath 
+     * @param fileStorePath
      * @throws SchedulerException
      * @throws IOException
+     * @throws ParseException
      */
-    public SchedulingService(File fileStorePath) throws SchedulerException, IOException {
+    public SchedulingService(File fileStorePath) throws SchedulerException, IOException, ParseException {
         InputStream resourceAsStream = SchedulingService.class.getResourceAsStream("/quartz.properties");
         Properties properties = new Properties();
         if (resourceAsStream != null) {
@@ -159,7 +159,30 @@ public class SchedulingService {
         properties.setProperty("org.quartz.jobStore.storeFilePath", fileStorePath.getAbsolutePath());
         SchedulerFactory schedulerFactory = new StdSchedulerFactory(properties);
         this.fScheduler = schedulerFactory.getScheduler();
+        reinitiateJobs();
         this.fScheduler.start();
+    }
+
+    /**
+     * Removes all jobs and add them again to avoid a bug which executes already
+     * defined jobs at scheduler startup.
+     * 
+     * @throws SchedulerException
+     * @throws ParseException
+     */
+    private void reinitiateJobs() throws SchedulerException, ParseException {
+        String[] jobGroupNames = this.fScheduler.getJobGroupNames();
+        for (int i = 0; i < jobGroupNames.length; i++) {
+            String[] jobNames = this.fScheduler.getJobNames(jobGroupNames[i]);
+            for (int j = 0; j < jobNames.length; j++) {
+                JobDetail jobDetail = this.fScheduler.getJobDetail(jobNames[i], jobGroupNames[i]);
+                CronTrigger trigger = (CronTrigger) this.fScheduler.getTrigger(jobDetail.getName(), jobDetail
+                        .getGroup());
+                removeJob(jobDetail.getName(), jobDetail.getGroup());
+                scheduleCronJob(jobDetail.getName(), jobDetail.getGroup(), jobDetail.getJobClass(), jobDetail
+                        .getJobDataMap(), trigger.getCronExpression());
+            }
+        }
     }
 
     /**
@@ -244,26 +267,6 @@ public class SchedulingService {
     }
 
     /**
-     * @param jobName
-     * @param groupName
-     * @return the job
-     * @throws SchedulerException
-     */
-    public JobDetail getJob(String jobName, String groupName) throws SchedulerException {
-        return this.fScheduler.getJobDetail(jobName, groupName);
-    }
-
-    /**
-     * @param triggerG
-     * @param groupName
-     * @return the trigger
-     * @throws SchedulerException
-     */
-    public Trigger getTrigger(String triggerG, String groupName) throws SchedulerException {
-        return this.fScheduler.getTrigger(triggerG, groupName);
-    }
-
-    /**
      * The cron expression will be integrated from the single parameters sec -
      * year. If you leave those parameter blank, the "*"-character will be
      * inserted. For cron-expression-examples see class description.
@@ -301,5 +304,4 @@ public class SchedulingService {
             buffer.append(expression);
         }
     }
-
 }

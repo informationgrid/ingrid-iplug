@@ -51,6 +51,9 @@ public class IngridRealm implements UserRealm {
             return this.fUserName;
         }
 
+        /**
+         * @see de.ingrid.iplug.web.IngridRealm.User#isAuthenticated()
+         */
         public boolean isAuthenticated() {
             return true;
         }
@@ -129,8 +132,12 @@ public class IngridRealm implements UserRealm {
     }
 
     /**
+     * Is for authentication with jetty. Can also be used outsside from jetty.
+     * 
      * @param bus
+     *            A "bus" ;-).
      * @param algorithm
+     *            E.g. "SHA-1".
      * @throws NoSuchAlgorithmException
      */
     public IngridRealm(final IBus bus, final String algorithm) throws NoSuchAlgorithmException {
@@ -139,9 +146,14 @@ public class IngridRealm implements UserRealm {
     }
 
     /**
+     * Is for authentication with the jetty. Can also be used outsside from jetty.
+     * 
      * @param realmName
+     *            A name for the realm.
      * @param bus
+     *            A "bus" ;-).
      * @param algorithm
+     *            E.g. "SHA-1".
      * @throws NoSuchAlgorithmException
      */
     public IngridRealm(final String realmName, final IBus bus, final String algorithm) throws NoSuchAlgorithmException {
@@ -154,6 +166,11 @@ public class IngridRealm implements UserRealm {
         return this.fRealmName;
     }
 
+    /**
+     * The user object if it is authenticated otherwise a user object for a anonymous user.
+     * 
+     * @see org.mortbay.http.UserRealm#getPrincipal(java.lang.String)
+     */
     public Principal getPrincipal(final String userName) {
         Principal result = null;
 
@@ -179,6 +196,9 @@ public class IngridRealm implements UserRealm {
     }
 
     /**
+     * Authenticates a user with its password. If the user can be authenticated it returns a user object with all
+     * partners and providers and knows the roles.
+     * 
      * @param userName
      * @return The principal to the username and credential.
      */
@@ -279,10 +299,16 @@ public class IngridRealm implements UserRealm {
         return result;
     }
 
+    /**
+     * @see org.mortbay.http.UserRealm#reauthenticate(java.security.Principal)
+     */
     public boolean reauthenticate(Principal user) {
         return ((User) user).isAuthenticated();
     }
 
+    /**
+     * @see org.mortbay.http.UserRealm#isUserInRole(java.security.Principal, java.lang.String)
+     */
     public boolean isUserInRole(final Principal principal, final String roleName) {
         boolean result = false;
 
@@ -294,20 +320,36 @@ public class IngridRealm implements UserRealm {
         return result;
     }
 
+    /**
+     * Isn't implemented.
+     * @see org.mortbay.http.UserRealm#disassociate(java.security.Principal)
+     */
     public void disassociate(Principal principal) {
         // Nothing todo.
     }
 
+    /**
+     * Isn't implemented.
+     * @see org.mortbay.http.UserRealm#pushRole(java.security.Principal, java.lang.String)
+     */
     public Principal pushRole(Principal arg0, String arg1) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * Isn't implemented.
+     * @see org.mortbay.http.UserRealm#popRole(java.security.Principal)
+     */
     public Principal popRole(Principal arg0) {
         // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * Isn't implemented.
+     * @see org.mortbay.http.UserRealm#logout(java.security.Principal)
+     */
     public void logout(Principal arg0) {
         // Nothing todo.
     }
@@ -315,7 +357,7 @@ public class IngridRealm implements UserRealm {
     /**
      * @param principal
      * @param roleName
-     * @return
+     * @return All partners for a user in a given role.
      */
     public String[] getPartner(Principal principal, String roleName) {
         String[] result = new String[0];
@@ -334,7 +376,7 @@ public class IngridRealm implements UserRealm {
     /**
      * @param principal
      * @param roleName
-     * @return
+     * @return All providers for a user in a given role.
      */
     public String[] getProvider(Principal principal, String roleName) {
         String[] result = new String[0];

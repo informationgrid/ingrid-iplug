@@ -128,12 +128,23 @@ public class IngridRealm implements UserRealm {
         }
     }
 
-    IngridRealm(final IBus bus, final String algorithm) throws NoSuchAlgorithmException {
+    /**
+     * @param bus
+     * @param algorithm
+     * @throws NoSuchAlgorithmException
+     */
+    public IngridRealm(final IBus bus, final String algorithm) throws NoSuchAlgorithmException {
         this.fMessageDigest = MessageDigest.getInstance(algorithm);
         this.fIBus = bus;
     }
 
-    IngridRealm(final String realmName, final IBus bus, final String algorithm) throws NoSuchAlgorithmException {
+    /**
+     * @param realmName
+     * @param bus
+     * @param algorithm
+     * @throws NoSuchAlgorithmException
+     */
+    public IngridRealm(final String realmName, final IBus bus, final String algorithm) throws NoSuchAlgorithmException {
         this.fMessageDigest = MessageDigest.getInstance(algorithm);
         this.fRealmName = realmName;
         this.fIBus = bus;

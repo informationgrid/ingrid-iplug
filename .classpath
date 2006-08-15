@@ -25,5 +25,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/ingrid-ibus"/>
 	<classpathentry kind="var" path="MAVEN_REPO/weta-components/jars/communication-sockets-SNAPSHOT.jar"/>
 	<classpathentry kind="var" path="MAVEN_REPO/weta-components/jars/communication-jxta-SNAPSHOT.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ingrid-ibus-client"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

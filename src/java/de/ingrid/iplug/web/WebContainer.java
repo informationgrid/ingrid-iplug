@@ -6,27 +6,25 @@
 
 package de.ingrid.iplug.web;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.security.Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.http.BasicAuthenticator;
-import org.mortbay.http.HashUserRealm;
 import org.mortbay.http.SecurityConstraint;
 import org.mortbay.http.SocketListener;
+import org.mortbay.http.UserRealm;
 import org.mortbay.http.handler.SecurityHandler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 
+/**
+ * 
+ */
 public class WebContainer extends Thread {
-    private static Log log = LogFactory.getLog(WebContainer.class);
 
-    private static final boolean WINDOWS = System.getProperty("os.name").startsWith("Windows");
+    private static Log log = LogFactory.getLog(WebContainer.class);
 
     private static final int SESSION_TIMEOUT = 60 * 60 * 8; // 8 days for timeout...
 
@@ -34,36 +32,36 @@ public class WebContainer extends Thread {
 
     private int fPort;
 
-    // private String fWebAppPath;
-
-    private HashUserRealm fRealm  = new HashUserRealm("HashUserRealm");;
+    private UserRealm fRealm;
 
     private boolean fSecured;
 
-    // private HashUserRealm fHashRealm;
-
+    /**
+     * @param port
+     * @param secured
+     */
     public WebContainer(int port, boolean secured) {
-        fPort = port;
-        fSecured = secured;
-    } /*
-         * (non-Javadoc)
-         * 
-         * @see java.lang.Runnable#run()
-         */
+        this.fPort = port;
+        this.fSecured = secured;
+    }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Runnable#run()
+     */
     public void run() {
         try {
             fServer = new Server();
             // Create a port listener
             SocketListener listener = new SocketListener();
-            listener.setPort(fPort);
+            listener.setPort(this.fPort);
             fServer.addListener(listener);
 
-            if (fSecured) {
-              
-                // fRealm.put("admin", "admin");
-                fServer.addRealm(fRealm);
+            if (this.fSecured) {
+                fServer.addRealm(this.fRealm);
             }
+
             fServer.start();
         } catch (Exception e) {
             log.error(e);
@@ -71,27 +69,34 @@ public class WebContainer extends Thread {
 
     }
 
+    /**
+     * @param name
+     * @param path
+     * @throws Exception
+     */
     public void addWebapp(String name, String path) throws Exception {
-        if (fServer==null || !fServer.isStarted()) {
+        if (fServer == null || !fServer.isStarted()) {
             throw new IOException("web container not started");
         }
-        WebApplicationContext context = fServer.addWebApplication("/"+name, path);
+        WebApplicationContext context = fServer.addWebApplication('/' + name, path);
         context.getServletHandler().setSessionInactiveInterval(SESSION_TIMEOUT);
-        
-        SecurityHandler handler = new SecurityHandler();
-        handler.setAuthMethod("BASIC");
-        context.addHandler(handler);
-        context.setAuthenticator(new BasicAuthenticator());
-        SecurityConstraint sc = new SecurityConstraint();
-        sc.setAuthenticate(true);
-        sc.addRole(SecurityConstraint.ANY_ROLE);
-        context.addSecurityConstraint("/", sc);
+
+        if (this.fSecured) {
+            SecurityHandler handler = new SecurityHandler();
+            handler.setAuthMethod("BASIC");
+            context.addHandler(handler);
+            context.setAuthenticator(new BasicAuthenticator());
+            SecurityConstraint sc = new SecurityConstraint();
+            sc.setAuthenticate(true);
+            sc.addRole(SecurityConstraint.ANY_ROLE);
+            context.addSecurityConstraint("/", sc);
+        }
         context.setAttribute("server", this);
         context.start();
     }
 
     /**
-     * starts the webcontainer
+     * Starts the webContainer.
      * 
      * @throws IOException
      */
@@ -100,7 +105,7 @@ public class WebContainer extends Thread {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException ie) {
-            ie.printStackTrace();
+            log.error(ie.getMessage(), ie);
         }
         if (!fServer.isStarted()) {
             throw new IOException("Could not start web container");
@@ -119,25 +124,17 @@ public class WebContainer extends Thread {
     }
 
     /**
-     * Adds a user allowed accessing the context
-     * 
-     * @param userName
-     * @param password
-     */
-    public void addUser(String userName, String password) {
-        // HashUserRealm hashRealm = new HashUserRealm();
-        // hashRealm.setName(userName);
-        fRealm.put(userName, password);
-        // fServer.addRealm(hashRealm);
-    }
-    
-    /**
      * logout a user.
+     * 
      * @param principal
      */
-    public  void logoutUser(Principal principal){
-    	this.fRealm.disassociate(principal);
-        this.fRealm.logout(principal);
+    public void logoutUser(Principal principal) {
+        if (this.fRealm != null) {
+            this.fRealm.disassociate(principal);
+            this.fRealm.logout(principal);
+        } else {
+            log.warn("No realm is set.");
+        }
     }
 
     /**
@@ -149,24 +146,17 @@ public class WebContainer extends Thread {
         fServer.removeRealm(userName);
     }
 
-    public static void main(String[] args) throws IOException {
-        URL url = WebContainer.class.getClassLoader().getResource("info");
-        String path = url.getPath();
-        if (WINDOWS && path.startsWith("/")) {
-            path = path.substring(1);
-            try {
-                path = URLDecoder.decode(path, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-            }
-        }
-        File infoFolder = new File(path);
-
-        // WebContainer container = new WebContainer(8082, infoFolder
-        // .getCanonicalPath(), true);
-        WebContainer container = new WebContainer(8082, true);
-        container.startContainer();
-        container.addUser("admin2", "password");
-
+    /**
+     * @return
+     */
+    public UserRealm getRealm() {
+        return this.fRealm;
     }
 
+    /**
+     * @param realm
+     */
+    public void setRealm(UserRealm realm) {
+        this.fRealm = realm;
+    }
 }

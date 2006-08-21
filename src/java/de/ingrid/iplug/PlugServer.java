@@ -6,6 +6,7 @@
 
 package de.ingrid.iplug;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +25,7 @@ import net.weta.components.peer.StartJxtaConfig;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mortbay.http.HashUserRealm;
 
 import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
@@ -33,8 +35,7 @@ import de.ingrid.utils.tool.MD5Util;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
- * A server that starts the iplug class as defined in the plugdescription, that
- * can also be used as singleton.
+ * A server that starts the iplug class as defined in the plugdescription, that can also be used as singleton.
  * 
  * created on 09.08.2005
  * 
@@ -67,6 +68,11 @@ public class PlugServer {
     public PlugServer(PlugDescription plugDescription, String jxtaProperties, int heartBeatIntervall) throws Exception {
         fPlugServer = this;
         this.fCommunication = initJxtaCommunication(jxtaProperties, plugDescription);
+        if (plugDescription.getBusUrls().length > 0) {
+            HashUserRealm realm = new HashUserRealm(plugDescription.getProxyServiceURL());
+            realm.put("admin", plugDescription.getIplugAdminPassword());
+            AdminServer.startWebContainer(8082, new File("./webapp"), true, realm);
+        }
         initPlugServer(plugDescription, heartBeatIntervall);
     }
 
@@ -98,7 +104,7 @@ public class PlugServer {
     }
 
     private void initPlugServer(PlugDescription plugDescription, int heartBeatIntervall) throws Exception {
-        fLogger.info("init plug-server with id '" + plugDescription.getPlugId() + "'");
+        fLogger.info("init plug-server with id '" + plugDescription.getPlugId() + '\'');
         this.fPlug = initPlug(plugDescription);
         setUpCommunication(plugDescription.getProxyServiceURL());
         this.fShutdownHook = new PlugShutdownHook(this, plugDescription);
@@ -176,7 +182,7 @@ public class PlugServer {
             throws IOException {
         FileInputStream confIS = new FileInputStream(jxtaProperties);
         ICommunication communication = StartJxtaConfig.configureFromProperties(confIS);
-        WetagURL proxyUrl=new WetagURL(plugDescription.getProxyServiceURL());
+        WetagURL proxyUrl = new WetagURL(plugDescription.getProxyServiceURL());
         communication.setPeerName(proxyUrl.getPeerName());
         communication.startup();
         return communication;
@@ -252,7 +258,7 @@ public class PlugServer {
                         HeartBeatThread heartbeatThread = (HeartBeatThread) iter.next();
                         if (heartbeatThread.getLastSendHeartbeat() + heartbeatThread.getSleepInterval() * 2 < System
                                 .currentTimeMillis()) {
-                            fLogger.warn("stopping heartbeat for '"+heartbeatThread.getBusUrl()+"'");
+                            fLogger.warn("stopping heartbeat for '" + heartbeatThread.getBusUrl() + '\'');
                             iter.remove();
                             heartbeatThread.stop();
                             heartbeatThread = new HeartBeatThread(PlugServer.this.fCommunication, heartbeatThread

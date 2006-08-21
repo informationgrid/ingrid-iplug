@@ -69,7 +69,7 @@ public class HeartBeatThread extends Thread {
                         plugDescription = PlugServer.getPlugDescription();
                         plugDescription.setMd5Hash(md5Hash);
                         this.fBus.addPlugDescription(plugDescription);
-                        fLogger.info("added or updated plug description to bus '" + this.fBusUrl + "'");
+                        fLogger.info("added or updated plug description to bus '" + this.fBusUrl + '\'');
                     }
                     this.fLastSendHeartbeat = System.currentTimeMillis();
                     this.fShutdownHook.addBus(this.fBusUrl, this.fBus);

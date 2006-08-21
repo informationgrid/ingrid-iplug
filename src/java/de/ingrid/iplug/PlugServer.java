@@ -68,10 +68,12 @@ public class PlugServer {
     public PlugServer(PlugDescription plugDescription, String jxtaProperties, int heartBeatIntervall) throws Exception {
         fPlugServer = this;
         this.fCommunication = initJxtaCommunication(jxtaProperties, plugDescription);
-        if (plugDescription.getBusUrls().length > 0) {
+        if ((plugDescription.getIplugAdminPassword() != null)
+                && (plugDescription.getIplugAdminPassword().trim().length() > 0)
+                && (plugDescription.getIplugAdminGuiPort() != 0)) {
             HashUserRealm realm = new HashUserRealm(plugDescription.getProxyServiceURL());
             realm.put("admin", plugDescription.getIplugAdminPassword());
-            AdminServer.startWebContainer(8082, new File("./webapp"), true, realm);
+            AdminServer.startWebContainer(plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm);
         }
         initPlugServer(plugDescription, heartBeatIntervall);
     }
@@ -258,7 +260,7 @@ public class PlugServer {
                         HeartBeatThread heartbeatThread = (HeartBeatThread) iter.next();
                         if (heartbeatThread.getLastSendHeartbeat() + heartbeatThread.getSleepInterval() * 2 < System
                                 .currentTimeMillis()) {
-                            fLogger.warn("stopping heartbeat for '" + heartbeatThread.getBusUrl() + '\'');
+                            fLogger.warn("stopping heartbeat for '".concat(heartbeatThread.getBusUrl()) + '\'');
                             iter.remove();
                             heartbeatThread.stop();
                             heartbeatThread = new HeartBeatThread(PlugServer.this.fCommunication, heartbeatThread

@@ -225,7 +225,7 @@ public class IngridRealm implements UserRealm {
             if (null != hitA) {
                 KnownUser user = new KnownUser(userName, credentials);
                 for (int i = 0; i < hitA.length; i++) {
-                    String roleName = (String) hitA[i].get("role");
+                    String roleName = (String) hitA[i].get("permission");
 
                     String[] ps = (String[]) hitA[i].getArray("provider");
                     if (null != ps) {
@@ -272,6 +272,7 @@ public class IngridRealm implements UserRealm {
         final String digest = encode(userName, (String) credentials);
 
         try {
+            //management_request_type:815; für testdaten 0 für echte daten
             IngridQuery query = QueryStringParser.parse("datatype:management management_request_type:815 login: "
                     + userName + " digest:" + digest);
 

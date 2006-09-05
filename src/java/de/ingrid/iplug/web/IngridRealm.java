@@ -3,6 +3,7 @@
  */
 package de.ingrid.iplug.web;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
@@ -16,6 +17,7 @@ import org.mortbay.http.HttpRequest;
 import org.mortbay.http.UserRealm;
 
 import sun.misc.BASE64Encoder;
+import de.ingrid.ibus.client.BusClient;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHits;
@@ -146,6 +148,21 @@ public class IngridRealm implements UserRealm {
         this.fMessageDigest = MessageDigest.getInstance(algorithm);
         this.fIBus = bus;
     }
+    
+    /**
+     * @param busUrl 
+     * @param propertyFile 
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     */
+    public IngridRealm(String busUrl, String propertyFile) throws NoSuchAlgorithmException, IOException {
+      BusClient client = BusClient.instance();
+      client.setBusUrl(busUrl);
+      client.setJxtaConfigurationPath("/jxta.properties");
+      this.fIBus = client.getBus();
+      this.fMessageDigest = MessageDigest.getInstance("SHA-1");
+      this.fRealmName = "Ingrid Realm";
+  }
 
     /**
      * Is for authentication with the jetty. Can also be used outsside from jetty.

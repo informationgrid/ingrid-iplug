@@ -7,7 +7,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.mortbay.http.HttpRequest;
@@ -273,7 +275,7 @@ public class IngridRealm implements UserRealm {
 
         try {
             //management_request_type:815; für testdaten 0 für echte daten
-            IngridQuery query = QueryStringParser.parse("datatype:management management_request_type:815 login: "
+            IngridQuery query = QueryStringParser.parse("datatype:management management_request_type:0 login: "
                     + userName + " digest:" + digest);
 
             result = this.fIBus.search(query, 1000, 0, 0, 120000);
@@ -391,5 +393,58 @@ public class IngridRealm implements UserRealm {
         }
 
         return result;
+    }
+    
+    
+    /**
+     * @return all partners
+     */
+    private String[] getPartner() {
+      Collection ret = new ArrayList();
+      Collection collection = this.fUser.values();
+      for (Iterator iter = collection.iterator(); iter.hasNext();) {
+        KnownUser user = (KnownUser) iter.next();
+        HashMap roleToPartners = user.fRoleToPartners;
+        Collection partners = roleToPartners.values();
+        ret.addAll(partners);
+      }
+      return (String[]) ret.toArray(new String[ret.size()]);
+    }
+    
+    /**
+     * @return all partners
+     */
+    private String[] getProviders() {
+      Collection ret = new ArrayList();
+      Collection collection = this.fUser.values();
+      for (Iterator iter = collection.iterator(); iter.hasNext();) {
+        KnownUser user = (KnownUser) iter.next();
+        HashMap roleToProviders = user.fRoleToProviders;
+        Collection provider = roleToProviders.values();
+        ret.addAll(provider);
+      }
+      return (String[]) ret.toArray(new String[ret.size()]);
+    }
+    
+    /**
+     * @return the hirarchie of partner/provider
+     */
+    public List getHierarchie() {
+      String[] partner = getPartner();
+      String[] providers = getProviders();
+      List ret = new ArrayList();
+      for (int i = 0; i < partner.length; i++) {
+        HashMap partnerMap = new HashMap();
+        partnerMap.put("partnerid", partner[i]);
+        partnerMap.put("providers", new ArrayList());
+        List providerList = (List) partnerMap.get("providers");
+        for (int j = 0; j < providers.length; j++) {
+          HashMap providerMap = new HashMap();
+          providerMap.put("providerid", providers[j]);
+          providerList.add(providerMap);
+        }
+        ret.add(partnerMap);
+      }
+      return ret;
     }
 }

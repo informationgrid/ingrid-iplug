@@ -158,7 +158,7 @@ public class IngridRealm implements UserRealm {
     public IngridRealm(String busUrl, String propertyFile) throws NoSuchAlgorithmException, IOException {
       BusClient client = BusClient.instance();
       client.setBusUrl(busUrl);
-      client.setJxtaConfigurationPath("/jxta.properties");
+      client.setJxtaConfigurationPath(propertyFile);
       this.fIBus = client.getBus();
       this.fMessageDigest = MessageDigest.getInstance("SHA-1");
       this.fRealmName = "Ingrid Realm";

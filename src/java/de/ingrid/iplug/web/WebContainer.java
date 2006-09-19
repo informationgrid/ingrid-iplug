@@ -104,7 +104,7 @@ public class WebContainer extends Thread {
         int i = 3;
         start();
 
-        while (!fServer.isStarted()) {
+        while ((null == fServer) || (!fServer.isStarted())) {
             i--;
             try {
                 Thread.sleep(3000);

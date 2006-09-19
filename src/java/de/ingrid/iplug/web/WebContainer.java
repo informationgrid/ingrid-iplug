@@ -101,14 +101,20 @@ public class WebContainer extends Thread {
      * @throws IOException
      */
     public void startContainer() throws IOException {
+        int i = 3;
         start();
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException ie) {
-            log.error(ie.getMessage(), ie);
-        }
-        if (!fServer.isStarted()) {
-            throw new IOException("Could not start web container");
+
+        while (!fServer.isStarted()) {
+            i--;
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ie) {
+                log.error(ie.getMessage(), ie);
+            }
+            
+            if (0 == i) {
+                throw new IOException("Could not start web container");
+            }
         }
     }
 

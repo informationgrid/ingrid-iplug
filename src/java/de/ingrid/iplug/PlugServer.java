@@ -57,6 +57,10 @@ public class PlugServer {
 
     protected PlugShutdownHook fShutdownHook;
 
+    private PlugDescription fPlugDescription;
+
+    private int fHeartBeatInterval;
+
     private static PlugServer fPlugServer;
 
     /**
@@ -75,7 +79,8 @@ public class PlugServer {
             realm.put("admin", plugDescription.getIplugAdminPassword());
             AdminServer.startWebContainer(plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm);
         }
-        initPlugServer(plugDescription, heartBeatIntervall);
+        this.fPlugDescription = plugDescription;
+        this.fHeartBeatInterval = heartBeatIntervall;
     }
 
     /**
@@ -96,7 +101,8 @@ public class PlugServer {
             throws Exception {
         fPlugServer = this;
         this.fCommunication = initSocketCommunication(unicastPort, multicastPort);
-        initPlugServer(plugDescription, heartBeatIntervall);
+        this.fPlugDescription = plugDescription;
+        this.fHeartBeatInterval = heartBeatIntervall;
     }
 
     /**
@@ -112,17 +118,17 @@ public class PlugServer {
         }
     }
 
-    private void initPlugServer(PlugDescription plugDescription, int heartBeatIntervall) throws Exception {
-        fLogger.info("init plug-server with id '" + plugDescription.getPlugId() + '\'');
-        this.fPlug = initPlug(plugDescription);
-        setUpCommunication(plugDescription.getProxyServiceURL());
-        this.fShutdownHook = new PlugShutdownHook(this, plugDescription);
+    public void initPlugServer() throws Exception {
+        fLogger.info("init plug-server with id '" + this.fPlugDescription.getPlugId() + '\'');
+        this.fPlug = initPlug(this.fPlugDescription);
+        setUpCommunication(this.fPlugDescription.getProxyServiceURL());
+        this.fShutdownHook = new PlugShutdownHook(this, this.fPlugDescription);
         Runtime.getRuntime().addShutdownHook(this.fShutdownHook);
-        String[] busUrls = plugDescription.getBusUrls();
+        String[] busUrls = this.fPlugDescription.getBusUrls();
         this.fTimeOutThread = new HeartBeatTimeOutThread();
         for (int i = 0; i < busUrls.length; i++) {
             HeartBeatThread heartBeat = new HeartBeatThread(this.fCommunication, busUrls[i], this.fShutdownHook);
-            heartBeat.setSleepInterval(heartBeatIntervall);
+            heartBeat.setSleepInterval(this.fHeartBeatInterval);
             this.fTimeOutThread.addHearBeatThread(heartBeat);
             heartBeat.start();
         }
@@ -144,9 +150,10 @@ public class PlugServer {
     public static void main(String[] args) throws Exception {
         Map arguments = readParameters(args);
         PlugDescription plugDescription = getPlugDescription();
+        PlugServer server = null;
         if (arguments.containsKey("--descriptor")) {
             String jxtaConf = (String) arguments.get("--descriptor");
-            new PlugServer(plugDescription, jxtaConf, 30 * 1000);
+            server = new PlugServer(plugDescription, jxtaConf, 30 * 1000);
         } else {
             int mPort = Integer.parseInt(args[0]);
             int uPort = Integer.parseInt(args[1]);
@@ -154,7 +161,10 @@ public class PlugServer {
             // TODO remove 2 lines below
             plugDescription.remove(PlugDescription.BUSES);
             plugDescription.addBusUrl(busUrl);
-            new PlugServer(plugDescription, uPort, mPort, 30 * 1000);
+            server = new PlugServer(plugDescription, uPort, mPort, 30 * 1000);
+        }
+        if(server != null) {
+          server.initPlugServer();
         }
     }
 

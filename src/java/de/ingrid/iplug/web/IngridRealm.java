@@ -291,9 +291,11 @@ public class IngridRealm implements UserRealm {
         final String digest = encode(userName, (String) credentials);
 
         try {
+          String qury = "datatype:management management_request_type:0 login: "
+            + userName + " digest:" + digest;
+          System.out.println("Qury: "+qury);
             //management_request_type:815; für testdaten 0 für echte daten
-            IngridQuery query = QueryStringParser.parse("datatype:management management_request_type:0 login: "
-                    + userName + " digest:" + digest);
+            IngridQuery query = QueryStringParser.parse(qury);
 
             result = this.fIBus.search(query, 1000, 0, 0, 120000);
         } catch (Exception e) {

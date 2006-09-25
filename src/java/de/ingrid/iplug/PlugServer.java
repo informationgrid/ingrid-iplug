@@ -79,6 +79,13 @@ public class PlugServer {
     }
 
     /**
+     * @return the communication
+     */
+    public ICommunication getCommunication() {
+      return this.fCommunication;
+    }
+    
+    /**
      * @param plugDescription
      * @param unicastPort
      * @param multicastPort

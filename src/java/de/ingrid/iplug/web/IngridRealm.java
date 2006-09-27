@@ -425,8 +425,13 @@ public class IngridRealm implements UserRealm {
         KnownUser user = (KnownUser) iter.next();
         HashMap roleToPartners = user.fRoleToPartners;
         Collection partners = roleToPartners.values();
-        ret.addAll(partners);
+        for (Iterator iterator = partners.iterator(); iterator.hasNext();) {
+          List partnerList = (List) iterator.next();
+          ret.addAll(partnerList);  
+        }
+        
       }
+      
       return (String[]) ret.toArray(new String[ret.size()]);
     }
     
@@ -440,7 +445,10 @@ public class IngridRealm implements UserRealm {
         KnownUser user = (KnownUser) iter.next();
         HashMap roleToProviders = user.fRoleToProviders;
         Collection provider = roleToProviders.values();
-        ret.addAll(provider);
+        for (Iterator iterator = provider.iterator(); iterator.hasNext();) {
+          List providerList = (List) iterator.next();
+          ret.addAll(providerList);          
+        }
       }
       return (String[]) ret.toArray(new String[ret.size()]);
     }

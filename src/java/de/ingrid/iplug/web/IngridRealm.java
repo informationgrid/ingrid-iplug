@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.UserRealm;
@@ -32,6 +33,8 @@ import de.ingrid.utils.queryparser.QueryStringParser;
  */
 public class IngridRealm implements UserRealm {
 
+	private static final Logger LOG = Logger.getLogger(IngridRealm.class.getName());
+	
 	/***/
 	private static final String ROLE_PARTNER = "admin.portal.partner";
 	
@@ -234,6 +237,7 @@ public class IngridRealm implements UserRealm {
      * @return The principal to the username and credential.
      */
     public Principal authenticate(String userName, Object credentials, HttpRequest request) {
+    	LOG.fine("IngridRealm.authenticate() " + userName);
         Principal result = new User();
 
         if ((userName != null) && (credentials != null)) {

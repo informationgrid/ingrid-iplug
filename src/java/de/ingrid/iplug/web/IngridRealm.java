@@ -36,6 +36,9 @@ public class IngridRealm implements UserRealm {
 	private static final Logger LOG = Logger.getLogger(IngridRealm.class.getName());
 	
 	/***/
+	private static final String ROLE_PORTAL = "admin.portal";
+	
+	/***/
 	private static final String ROLE_PARTNER = "admin.portal.partner";
 	
 	/***/
@@ -252,45 +255,77 @@ public class IngridRealm implements UserRealm {
     }
 
     private Principal createPrincipal(String userName, String credentials, IngridHits authData) {
-        Principal result = new User();
+		Principal result = new User();
 
-        if (authData != null) {
-            IngridHit[] hitA = authData.getHits();
+		if (authData != null) {
+			IngridHit[] hitA = authData.getHits();
 
-            if (null != hitA) {
-                KnownUser user = new KnownUser(userName, credentials);
-                for (int i = 0; i < hitA.length; i++) {
-                    String roleName = (String) hitA[i].get("permission");
+			if (null != hitA) {
+				KnownUser user = new KnownUser(userName, credentials);
+				for (int i = 0; i < hitA.length; i++) {
+					String roleName = (String) hitA[i].get("permission");
+					
+					String[] ps = null;
+					if (ROLE_PORTAL.equals(roleName)) {
+						System.out.println("IngridRealm.createPrincipal()");
+						addAllPartnerAndProvider(user, roleName);
+					} else if (ROLE_PARTNER.equals(roleName)) {
+						ps = (String[]) hitA[i].getArray("partner");
+						if (null != ps) {
+							for (int j = 0; j < ps.length; j++) {
+								user.addPartnerToRole(roleName, ps[j]);
+							}
+						}
+						addProviderRole(user, userName, roleName);
+					} else if (ROLE_PROVIDER_CATALOG.equals(roleName) || ROLE_PROVIDER_INDEX.equals(roleName)) {
+						ps = (String[]) hitA[i].getArray("provider");
+						if (null != ps) {
+							for (int j = 0; j < ps.length; j++) {
+								user.addProviderToRole(roleName, ps[j]);
+							}
+						}
+					}
 
-                    String[] ps = (String[]) hitA[i].getArray("partner");
-                    if (null != ps) {
-                        for (int j = 0; j < ps.length; j++) {
-                            user.addPartnerToRole(roleName, ps[j]);
-                        }
-                    }
+					result = user;
 
-                    if(ROLE_PARTNER.equals(roleName)) {
-                    	addProviderRole(user, userName, roleName);
-                    } else if(ROLE_PROVIDER_CATALOG.equals(roleName) || ROLE_PROVIDER_INDEX.equals(roleName)){
-                    	ps = (String[]) hitA[i].getArray("provider");
-                        if (null != ps) {
-                            for (int j = 0; j < ps.length; j++) {
-                                user.addProviderToRole(roleName, ps[j]);
-                            }
-                        }	
-                    }
+					addUserToRole(roleName, user);
+					this.fUser.put(userName, user);
+				}
+			}
+		}
 
-                    result = user;
+		return result;
+	}
 
-                    addUserToRole(roleName, user);
-                    this.fUser.put(userName, user);
-                }
-            }
-        }
-
-        return result;
-    }
-
+    
+    /**
+	 * @param user
+	 * @param roleName
+	 */
+	private void addAllPartnerAndProvider(KnownUser user, String roleName) {
+		// get all partner and provider by a new query
+		try {
+			String query = "datatype:management management_request_type:1";
+			IngridQuery ingridQuery = QueryStringParser.parse(query);
+			IngridHits hits = this.fIBus.search(ingridQuery, 1000, 0, 0, 120000);
+			IngridHit hit = hits.getHits()[0];
+			ArrayList arrayList = hit.getArrayList("partner");
+			for (int j = 0, length = arrayList.size(); j < length; j++) {
+				Map partnerMap = (Map) arrayList.get(j);
+				String partnerId = (String) partnerMap.get("partnerid");
+				user.addPartnerToRole(roleName, partnerId);
+				ArrayList providerList = (ArrayList) partnerMap.get("providers");
+				for (int k = 0, providerLength = providerList.size(); k < providerLength; k++) {
+					Map providerMap = (Map) providerList.get(k);
+					String providerId = (String) providerMap.get("providerid");
+					user.addProviderToRole(roleName, providerId);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+    
 	/**
 	 * @param user
 	 * @param userName
@@ -306,7 +341,8 @@ public class IngridRealm implements UserRealm {
 			ArrayList arrayList = hit.getArrayList("partner");
 			for (int j = 0, length = arrayList.size(); j < length; j++) {
 				Map partnerMap = (Map) arrayList.get(j);
-				if (((String) partnerMap.get("partnerid")).equals(userName)) {
+				String partnerId = (String) partnerMap.get("partnerid");
+				if (partnerId.equals(userName)) {
 					ArrayList providerList = (ArrayList) partnerMap.get("providers");
 					for (int k = 0, providerLength = providerList.size(); k < providerLength; k++) {
 						Map providerMap = (Map) providerList.get(k);

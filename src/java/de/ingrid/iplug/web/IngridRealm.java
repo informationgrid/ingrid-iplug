@@ -419,7 +419,16 @@ public class IngridRealm implements UserRealm {
      * @see org.mortbay.http.UserRealm#logout(java.security.Principal)
      */
     public void logout(Principal arg0) {
-        // Nothing todo.
+    	User user = (User) arg0;
+    	System.out.println("IngridRealm.logout() " + user.getName());
+    	this.fUser.remove(user);
+    	Collection collection = this.fRolesToUser.values();
+    	for (Iterator iter = collection.iterator(); iter.hasNext();) {
+			ArrayList users = (ArrayList) iter.next();
+			if(users.contains(user)) {
+				users.remove(user);
+			}
+		}
     }
 
     /**

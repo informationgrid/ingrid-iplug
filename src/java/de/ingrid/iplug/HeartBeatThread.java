@@ -8,6 +8,7 @@ package de.ingrid.iplug;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Random;
 
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication.reflect.ProxyService;
@@ -37,6 +38,8 @@ public class HeartBeatThread extends Thread {
 
     private IBus fBus;
 
+    private Random fRandom = new Random(System.currentTimeMillis());
+
     private int fSleepInterval = 1000 * 30;
 
     private PlugShutdownHook fShutdownHook;
@@ -50,7 +53,9 @@ public class HeartBeatThread extends Thread {
     }
 
     public void run() {
-        fLogger.info("heartbeat for '" + this.fBusUrl + "' started");
+        if (fLogger.isInfoEnabled()) {
+            fLogger.info("heartbeat for '" + this.fBusUrl + "' started");
+        }
         PlugDescription plugDescription;
         try {
             plugDescription = PlugServer.getPlugDescription();
@@ -65,11 +70,20 @@ public class HeartBeatThread extends Thread {
                     String md5Hash = PlugServer.getPlugDescriptionMd5();
                     String plugId = plugDescription.getPlugId();
                     if (!this.fBus.containsPlugDescription(plugId, md5Hash)) {
-                        fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'...");
+                        if (fLogger.isInfoEnabled()) {
+                            fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'...");
+                        }
                         plugDescription = PlugServer.getPlugDescription();
                         plugDescription.setMd5Hash(md5Hash);
                         this.fBus.addPlugDescription(plugDescription);
-                        fLogger.info("added or updated plug description to bus '" + this.fBusUrl + '\'');
+                        if (fLogger.isInfoEnabled()) {
+                            fLogger.info("added or updated plug description to bus '" + this.fBusUrl + '\'');
+                        }
+                    } else {
+                        if (fLogger.isDebugEnabled()) {
+                            fLogger.debug("I am currently connected. Higher the heartbeat intervall.");
+                        }
+                        this.fSleepInterval = this.fRandom.nextInt(60) + 30;
                     }
                     this.fLastSendHeartbeat = System.currentTimeMillis();
                     this.fShutdownHook.addBus(this.fBusUrl, this.fBus);
@@ -83,16 +97,23 @@ public class HeartBeatThread extends Thread {
                     } else if (t instanceof ThreadDeath) {
                         throw new InterruptedException("thread death");
                     }
-                    fLogger.error("unable to connect ibus: ", t);
+                    if (fLogger.isErrorEnabled()) {
+                        fLogger.error("unable to connect ibus: ", t);
+                    }
+                    this.fSleepInterval = 1000 * 30;
                 }
                 sleep(this.fSleepInterval);
             }
         } catch (InterruptedException e) {
-            fLogger.warn("interrupt heartbeat thread from '" + this.fBusUrl + "'");
+            if (fLogger.isWarnEnabled()) {
+                fLogger.warn("interrupt heartbeat thread from '" + this.fBusUrl + "'");
+            }
             try {
                 this.fCommunication.closeConnection(this.fBusUrl);
             } catch (IOException e1) {
-                fLogger.warn("problems on closing connection to " + this.fBusUrl);
+                if (fLogger.isWarnEnabled()) {
+                    fLogger.warn("problems on closing connection to " + this.fBusUrl);
+                }
             }
         }
     }

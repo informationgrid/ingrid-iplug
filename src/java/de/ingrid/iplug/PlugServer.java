@@ -114,12 +114,19 @@ public class PlugServer {
         try {
             this.fPlug.close();
         } catch (Exception e) {
-            fLogger.warn("problems closing iplug", e);
+            if (fLogger.isWarnEnabled()) {
+                fLogger.warn("problems closing iplug", e);
+            }
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public void initPlugServer() throws Exception {
-        fLogger.info("init plug-server with id '" + this.fPlugDescription.getPlugId() + '\'');
+        if (fLogger.isInfoEnabled()) {
+            fLogger.info("init plug-server with id '" + this.fPlugDescription.getPlugId() + '\'');
+        }
         this.fPlug = initPlug(this.fPlugDescription);
         setUpCommunication(this.fPlugDescription.getProxyServiceURL());
         this.fShutdownHook = new PlugShutdownHook(this, this.fPlugDescription);
@@ -277,7 +284,9 @@ public class PlugServer {
                         HeartBeatThread heartbeatThread = (HeartBeatThread) iter.next();
                         if (heartbeatThread.getLastSendHeartbeat() + heartbeatThread.getSleepInterval() * 2 < System
                                 .currentTimeMillis()) {
-                            fLogger.warn("stopping heartbeat for '".concat(heartbeatThread.getBusUrl()) + '\'');
+                            if (fLogger.isWarnEnabled()) {
+                                fLogger.warn("stopping heartbeat for '".concat(heartbeatThread.getBusUrl()) + '\'');
+                            }
                             iter.remove();
                             heartbeatThread.stop();
                             heartbeatThread = new HeartBeatThread(PlugServer.this.fCommunication, heartbeatThread
@@ -290,7 +299,9 @@ public class PlugServer {
                     sleep(this.fHeartBeatIntervall * 3);
                 }
             } catch (InterruptedException e) {
-                fLogger.info("stopping heartbeat timeout thread");
+                if (fLogger.isInfoEnabled()) {
+                    fLogger.info("stopping heartbeat timeout thread");
+                }
                 for (Iterator iter = this.fHeartBeatThreads.iterator(); iter.hasNext();) {
                     HeartBeatThread heartbeatThread = (HeartBeatThread) iter.next();
                     heartbeatThread.interrupt();

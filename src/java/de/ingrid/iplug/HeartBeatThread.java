@@ -83,7 +83,7 @@ public class HeartBeatThread extends Thread {
                         if (fLogger.isDebugEnabled()) {
                             fLogger.debug("I am currently connected. Higher the heartbeat intervall.");
                         }
-                        this.fSleepInterval = this.fRandom.nextInt(60) + 30;
+                        this.fSleepInterval = (this.fRandom.nextInt(60) + 30) * 1000;
                     }
                     this.fLastSendHeartbeat = System.currentTimeMillis();
                     this.fShutdownHook.addBus(this.fBusUrl, this.fBus);

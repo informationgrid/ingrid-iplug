@@ -318,7 +318,9 @@ public class IngridRealm implements UserRealm {
 						map.put("partnerid", partnerMap.get("partnerid"));
 						Map map2 = new HashMap();
 						map2.put("providerid", providerId);
-						map.put("providers", map2);
+						List list = new ArrayList();
+						list.add(map2);
+						map.put("providers", list);
 						this.fHierarchie.add(map);
 					}
 				}
@@ -390,7 +392,6 @@ public class IngridRealm implements UserRealm {
         try {
           String qury = "datatype:management management_request_type:0 login: "
             + userName + " digest:" + digest;
-          System.out.println("Qury: "+qury);
             //management_request_type:815; für testdaten 0 für echte daten
             IngridQuery query = QueryStringParser.parse(qury);
 

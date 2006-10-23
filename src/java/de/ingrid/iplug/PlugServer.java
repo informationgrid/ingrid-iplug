@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.http.HashUserRealm;
 
+import de.ingrid.ibus.client.BusClient;
 import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
@@ -77,7 +78,12 @@ public class PlugServer {
                 && (plugDescription.getIplugAdminGuiPort() != 0)) {
             HashUserRealm realm = new HashUserRealm(plugDescription.getProxyServiceURL());
             realm.put("admin", plugDescription.getIplugAdminPassword());
-            AdminServer.startWebContainer(plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm);
+
+            BusClient busClient = BusClient.instance();
+            busClient.setCommunication(this.fCommunication);
+
+            AdminServer.startWebContainer(plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm,
+                    busClient);
         }
         this.fPlugDescription = plugDescription;
         this.fHeartBeatInterval = heartBeatIntervall;
@@ -87,9 +93,9 @@ public class PlugServer {
      * @return the communication
      */
     public ICommunication getCommunication() {
-      return this.fCommunication;
+        return this.fCommunication;
     }
-    
+
     /**
      * @param plugDescription
      * @param unicastPort
@@ -170,8 +176,8 @@ public class PlugServer {
             plugDescription.addBusUrl(busUrl);
             server = new PlugServer(plugDescription, uPort, mPort, 30 * 1000);
         }
-        if(server != null) {
-          server.initPlugServer();
+        if (server != null) {
+            server.initPlugServer();
         }
     }
 
@@ -288,7 +294,7 @@ public class PlugServer {
                                 fLogger.warn("stopping heartbeat for '".concat(heartbeatThread.getBusUrl()) + '\'');
                             }
                             iter.remove();
-                            heartbeatThread.stop();
+                            heartbeatThread.interrupt();
                             heartbeatThread = new HeartBeatThread(PlugServer.this.fCommunication, heartbeatThread
                                     .getBusUrl(), PlugServer.this.fShutdownHook);
                             heartbeatThread.start();

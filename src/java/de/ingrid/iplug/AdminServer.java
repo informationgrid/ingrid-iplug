@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.mortbay.http.UserRealm;
 
+import de.ingrid.ibus.client.BusClient;
 import de.ingrid.iplug.web.WebContainer;
 
 /**
@@ -27,7 +28,7 @@ public class AdminServer {
         int port = Integer.parseInt(args[0]);
         File webFolder = new File(args[1]);
 
-        WebContainer container = startWebContainer(port, webFolder, false, null);
+        WebContainer container = startWebContainer(port, webFolder, false, null, null);
         container.join();
     }
 
@@ -36,13 +37,14 @@ public class AdminServer {
      * @param webFolder
      * @param secure
      * @param realm
+     * @param busClient 
      * @return The started WebContainer.
      * @throws IOException
      * @throws NoSuchAlgorithmException
      * @throws Exception
      * @throws InterruptedException
      */
-    public static WebContainer startWebContainer(int port, File webFolder, boolean secure, UserRealm realm)
+    public static WebContainer startWebContainer(int port, File webFolder, boolean secure, UserRealm realm, BusClient busClient)
             throws IOException, NoSuchAlgorithmException, Exception, InterruptedException {
         WebContainer container = new WebContainer(port, secure);
 
@@ -55,6 +57,7 @@ public class AdminServer {
             for (int i = 0; i < files.length; i++) {
                 String file = files[i].getCanonicalPath();
                 container.addWebapp(files[i].getName(), file);
+                container.setBusClient(busClient);
             }
         }
 

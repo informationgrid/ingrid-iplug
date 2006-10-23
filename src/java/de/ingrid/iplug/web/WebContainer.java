@@ -19,6 +19,8 @@ import org.mortbay.http.handler.SecurityHandler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 
+import de.ingrid.ibus.client.BusClient;
+
 /**
  * 
  */
@@ -30,6 +32,8 @@ public class WebContainer extends Thread {
 
     private static Server fServer;
 
+    private BusClient fBusClient;
+    
     private int fPort;
 
     private UserRealm fRealm;
@@ -164,5 +168,19 @@ public class WebContainer extends Thread {
      */
     public void setRealm(UserRealm realm) {
         this.fRealm = realm;
+    }
+
+    /**
+     * @return
+     */
+    public BusClient getBusClient() {
+        return this.fBusClient;
+    }
+
+    /**
+     * @param communication
+     */
+    public void setBusClient(BusClient communication) {
+        this.fBusClient = communication;
     }
 }

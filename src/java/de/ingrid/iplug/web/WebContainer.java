@@ -17,6 +17,7 @@ import org.mortbay.http.SocketListener;
 import org.mortbay.http.UserRealm;
 import org.mortbay.http.handler.SecurityHandler;
 import org.mortbay.jetty.Server;
+import org.mortbay.jetty.servlet.HashSessionManager;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 
 import de.ingrid.ibus.client.BusClient;
@@ -70,7 +71,6 @@ public class WebContainer extends Thread {
         } catch (Exception e) {
             log.error(e);
         }
-
     }
 
     /**
@@ -83,6 +83,7 @@ public class WebContainer extends Thread {
             throw new IOException("web container not started");
         }
         WebApplicationContext context = fServer.addWebApplication('/' + name, path);
+        ((HashSessionManager) context.getServletHandler().getSessionManager()).setCrossContextSessionIDs(true);
         context.getServletHandler().setSessionInactiveInterval(SESSION_TIMEOUT);
 
         if (this.fSecured) {

@@ -239,7 +239,8 @@ public class IngridRealm implements UserRealm {
      * @return The principal to the username and credential.
      */
     public Principal authenticate(String userName, Object credentials, HttpRequest request) {
-        Principal result = new User();
+        System.out.println("IngridRealm.authenticate()");
+    	Principal result = new User();
 
         if ((userName != null) && (credentials != null)) {
             IngridHits authData = getAuthenticationData(userName, credentials);

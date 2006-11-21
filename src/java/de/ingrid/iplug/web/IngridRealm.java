@@ -9,12 +9,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.UserRealm;
@@ -54,7 +57,7 @@ public class IngridRealm implements UserRealm {
 	/***/
 	private static final String ROLE_PROVIDER_CATALOG = "admin.portal.partner.provider.catalog";
 
-	private Set fHierarchie = new HashSet();
+	private List fHierarchie = new ArrayList();
 
     private class KnownUser extends User {
 
@@ -555,7 +558,16 @@ public class IngridRealm implements UserRealm {
     /**
      * @return the hirarchie of partner/provider
      */
-    public Set getHierarchie() {
+    public Collection getHierarchie() {
+    	Collections.sort(this.fHierarchie, new Comparator() {
+			public int compare(Object arg0, Object arg1) {
+				Map map1 = (Map) arg0;
+				Map map2 = (Map) arg1;
+				String name1 = (String) map1.get("name");
+				String name2 = (String) map2.get("name");
+				return name1.compareTo(name2);
+			}
+		});
     	return this.fHierarchie;
     }
 }

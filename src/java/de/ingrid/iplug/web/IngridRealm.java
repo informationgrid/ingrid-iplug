@@ -559,7 +559,35 @@ public class IngridRealm implements UserRealm {
      * @return the hirarchie of partner/provider
      */
     public Collection getHierarchie() {
-    	Collections.sort(this.fHierarchie, new Comparator() {
+    	sortByPartnerName();
+    	sortByProviderName();
+    	return this.fHierarchie;
+    }
+
+	/**
+	 * 
+	 */
+	private void sortByProviderName() {
+		for (Iterator iter = this.fHierarchie.iterator(); iter.hasNext();) {
+			Map partnerMap = (Map) iter.next();
+			List providerList = (List) partnerMap.get("providers");
+			Collections.sort(providerList, new Comparator() {
+				public int compare(Object arg0, Object arg1) {
+					Map map1 = (Map) arg0;
+					Map map2 = (Map) arg1;
+					String name1 = (String) map1.get("name");
+					String name2 = (String) map2.get("name");
+					return name1.compareTo(name2);
+				}
+			});
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void sortByPartnerName() {
+		Collections.sort(this.fHierarchie, new Comparator() {
 			public int compare(Object arg0, Object arg1) {
 				Map map1 = (Map) arg0;
 				Map map2 = (Map) arg1;
@@ -568,6 +596,5 @@ public class IngridRealm implements UserRealm {
 				return name1.compareTo(name2);
 			}
 		});
-    	return this.fHierarchie;
-    }
+	}
 }

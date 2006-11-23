@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.mortbay.http.HashSSORealm;
 import org.mortbay.http.HttpRequest;
 import org.mortbay.http.HttpResponse;
 import org.mortbay.http.SSORealm;
@@ -35,7 +34,7 @@ import de.ingrid.utils.queryparser.QueryStringParser;
 /**
  * 
  */
-public class IngridRealm implements UserRealm {
+public class IngridRealm implements UserRealm, SSORealm {
 
     private IBus fIBus;
 
@@ -602,4 +601,25 @@ public class IngridRealm implements UserRealm {
 		});
 	}
 
+    public void setSSORealm(SSORealm ssoRealm) {
+        _ssoRealm = ssoRealm;
+    }
+    
+    public Credential getSingleSignOn(HttpRequest request, HttpResponse response) {
+        return _ssoRealm != null ? _ssoRealm.getSingleSignOn(request,response) : null;
+    }
+    
+    public void setSingleSignOn(HttpRequest request, HttpResponse response, Principal principal,
+                                Credential credential) {
+        if(_ssoRealm != null) {
+        	_ssoRealm.setSingleSignOn(request,response,principal,credential);
+        }
+    }
+    
+    public void clearSingleSignOn(String username)
+    {
+        if (_ssoRealm!=null) {
+        	_ssoRealm.clearSingleSignOn(username);
+        }
+    }
 }

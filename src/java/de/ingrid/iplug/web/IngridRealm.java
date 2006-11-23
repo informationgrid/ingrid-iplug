@@ -35,7 +35,7 @@ import de.ingrid.utils.queryparser.QueryStringParser;
 /**
  * 
  */
-public class IngridRealm implements UserRealm, SSORealm {
+public class IngridRealm implements UserRealm {
 
     private IBus fIBus;
 
@@ -602,25 +602,4 @@ public class IngridRealm implements UserRealm, SSORealm {
 		});
 	}
 
-    public void setSSORealm(SSORealm ssoRealm) {
-        _ssoRealm = ssoRealm;
-    }
-    
-    public Credential getSingleSignOn(HttpRequest request, HttpResponse response) {
-        return _ssoRealm != null ? _ssoRealm.getSingleSignOn(request,response) : null;
-    }
-    
-    public void setSingleSignOn(HttpRequest request, HttpResponse response, Principal principal,
-                                Credential credential) {
-        if(_ssoRealm != null) {
-        	_ssoRealm.setSingleSignOn(request,response,principal,credential);
-        }
-    }
-    
-    public void clearSingleSignOn(String username)
-    {
-        if (_ssoRealm!=null) {
-        	_ssoRealm.clearSingleSignOn(username);
-        }
-    }
 }

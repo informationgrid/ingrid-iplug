@@ -16,11 +16,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
+import org.mortbay.http.HashSSORealm;
 import org.mortbay.http.HttpRequest;
+import org.mortbay.http.HttpResponse;
+import org.mortbay.http.SSORealm;
 import org.mortbay.http.UserRealm;
+import org.mortbay.util.Credential;
 
 import sun.misc.BASE64Encoder;
 import de.ingrid.ibus.client.BusClient;
@@ -33,7 +35,7 @@ import de.ingrid.utils.queryparser.QueryStringParser;
 /**
  * 
  */
-public class IngridRealm implements UserRealm {
+public class IngridRealm implements UserRealm, SSORealm {
 
     private IBus fIBus;
 
@@ -58,6 +60,8 @@ public class IngridRealm implements UserRealm {
 	private static final String ROLE_PROVIDER_CATALOG = "admin.portal.partner.provider.catalog";
 
 	private List fHierarchie = new ArrayList();
+
+	private SSORealm _ssoRealm;
 
     private class KnownUser extends User {
 
@@ -597,4 +601,26 @@ public class IngridRealm implements UserRealm {
 			}
 		});
 	}
+
+    public void setSSORealm(SSORealm ssoRealm) {
+        _ssoRealm = ssoRealm;
+    }
+    
+    public Credential getSingleSignOn(HttpRequest request, HttpResponse response) {
+        return _ssoRealm != null ? _ssoRealm.getSingleSignOn(request,response) : null;
+    }
+    
+    public void setSingleSignOn(HttpRequest request, HttpResponse response, Principal principal,
+                                Credential credential) {
+        if(_ssoRealm != null) {
+        	_ssoRealm.setSingleSignOn(request,response,principal,credential);
+        }
+    }
+    
+    public void clearSingleSignOn(String username)
+    {
+        if (_ssoRealm!=null) {
+        	_ssoRealm.clearSingleSignOn(username);
+        }
+    }
 }

@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.queryparser.QueryStringParser;
 
 /**
- * 
+ * Is for authentication with the jetty. Can also be used outsside from jetty. It can be used for single sign on.
  */
 public class IngridRealm implements UserRealm, SSORealm {
 
@@ -46,16 +45,12 @@ public class IngridRealm implements UserRealm, SSORealm {
 
     private HashMap fUser = new HashMap();
 	
-    /***/
 	private static final String ROLE_PORTAL = "admin.portal";
 	
-	/***/
 	private static final String ROLE_PARTNER = "admin.portal.partner";
 	
-	/***/
 	private static final String ROLE_PROVIDER_INDEX = "admin.portal.partner.provider.index";
 	
-	/***/
 	private static final String ROLE_PROVIDER_CATALOG = "admin.portal.partner.provider.catalog";
 
 	private List fHierarchie = new ArrayList();
@@ -136,6 +131,7 @@ public class IngridRealm implements UserRealm, SSORealm {
         }
 
         /**
+         * Returns whether the User is autheticated or not.
          * @return True if it is authenticated otherwise false.
          */
         public boolean isAuthenticated() {
@@ -173,8 +169,9 @@ public class IngridRealm implements UserRealm, SSORealm {
     }
     
     /**
-     * @param busUrl 
-     * @param propertyFile 
+     * Is for authentication with the jetty. Can also be used outsside from jetty.
+     * @param busUrl The bus url.
+     * @param propertyFile  A property file with the jxta configuration.
      * @throws NoSuchAlgorithmException
      * @throws IOException
      */
@@ -241,7 +238,7 @@ public class IngridRealm implements UserRealm, SSORealm {
      * Authenticates a user with its password. If the user can be authenticated it returns a user object with all
      * partners and providers and knows the roles.
      * 
-     * @param userName
+     * @param userName A user name.
      * @return The principal to the username and credential.
      */
     public Principal authenticate(String userName, Object credentials, HttpRequest request) {
@@ -338,7 +335,6 @@ public class IngridRealm implements UserRealm, SSORealm {
 	}
 
 	private void createPartnerHierarchie(String partnerName) {
-//    	 get all partner and provider by a new query
 		try {
 			String query = "datatype:management management_request_type:1";
 			IngridQuery ingridQuery = QueryStringParser.parse(query);
@@ -361,7 +357,6 @@ public class IngridRealm implements UserRealm, SSORealm {
 	}
 
 	private void createAdminHierarchie() {
-//    	 get all partner and provider by a new query
 		try {
 			String query = "datatype:management management_request_type:1";
 			IngridQuery ingridQuery = QueryStringParser.parse(query);
@@ -460,7 +455,6 @@ public class IngridRealm implements UserRealm, SSORealm {
      * @see org.mortbay.http.UserRealm#pushRole(java.security.Principal, java.lang.String)
      */
     public Principal pushRole(Principal arg0, String arg1) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -469,7 +463,6 @@ public class IngridRealm implements UserRealm, SSORealm {
      * @see org.mortbay.http.UserRealm#popRole(java.security.Principal)
      */
     public Principal popRole(Principal arg0) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -482,8 +475,9 @@ public class IngridRealm implements UserRealm, SSORealm {
     }
 
     /**
-     * @param principal
-     * @param roleName
+     * Returns all partner for a user in a given role.
+     * @param principal The user.
+     * @param roleName The role name.
      * @return All partners for a user in a given role.
      */
     public String[] getPartner(Principal principal, String roleName) {
@@ -501,8 +495,9 @@ public class IngridRealm implements UserRealm, SSORealm {
     }
 
     /**
-     * @param principal
-     * @param roleName
+     * All providers for a user in a given role.
+     * @param principal The user.
+     * @param roleName The role name.
      * @return All providers for a user in a given role.
      */
     public String[] getProvider(Principal principal, String roleName) {
@@ -519,47 +514,9 @@ public class IngridRealm implements UserRealm, SSORealm {
         return result;
     }
     
-    
     /**
-     * @return all partners
-     */
-    private String[] getPartner() {
-      Collection ret = new HashSet();
-      Collection collection = this.fUser.values();
-      for (Iterator iter = collection.iterator(); iter.hasNext();) {
-        KnownUser user = (KnownUser) iter.next();
-        HashMap roleToPartners = user.fRoleToPartners;
-        Collection partners = roleToPartners.values();
-        for (Iterator iterator = partners.iterator(); iterator.hasNext();) {
-          List partnerList = (List) iterator.next();
-          ret.addAll(partnerList);  
-        }
-        
-      }
-      
-      return (String[]) ret.toArray(new String[ret.size()]);
-    }
-    
-    /**
-     * @return all partners
-     */
-    private String[] getProviders() {
-      Collection ret = new HashSet();
-      Collection collection = this.fUser.values();
-      for (Iterator iter = collection.iterator(); iter.hasNext();) {
-        KnownUser user = (KnownUser) iter.next();
-        HashMap roleToProviders = user.fRoleToProviders;
-        Collection provider = roleToProviders.values();
-        for (Iterator iterator = provider.iterator(); iterator.hasNext();) {
-          List providerList = (List) iterator.next();
-          ret.addAll(providerList);          
-        }
-      }
-      return (String[]) ret.toArray(new String[ret.size()]);
-    }
-    
-    /**
-     * @return the hirarchie of partner/provider
+     * Gets the hirachie of partners and providers.
+     * @return The hirachie of partners and providers.
      */
     public Collection getHierarchie() {
     	sortByPartnerName();
@@ -567,9 +524,6 @@ public class IngridRealm implements UserRealm, SSORealm {
     	return this.fHierarchie;
     }
 
-	/**
-	 * 
-	 */
 	private void sortByProviderName() {
 		for (Iterator iter = this.fHierarchie.iterator(); iter.hasNext();) {
 			Map partnerMap = (Map) iter.next();
@@ -601,25 +555,29 @@ public class IngridRealm implements UserRealm, SSORealm {
 		});
 	}
 
+    /**
+     * Sets the single sign on realm.
+     * @param ssoRealm Single sign on realm to use.
+     */
     public void setSSORealm(SSORealm ssoRealm) {
-        _ssoRealm = ssoRealm;
+        this._ssoRealm = ssoRealm;
     }
     
     public Credential getSingleSignOn(HttpRequest request, HttpResponse response) {
-        return _ssoRealm != null ? _ssoRealm.getSingleSignOn(request,response) : null;
+        return this._ssoRealm != null ? this._ssoRealm.getSingleSignOn(request,response) : null;
     }
     
     public void setSingleSignOn(HttpRequest request, HttpResponse response, Principal principal,
                                 Credential credential) {
-        if(_ssoRealm != null) {
-        	_ssoRealm.setSingleSignOn(request,response,principal,credential);
+        if(this._ssoRealm != null) {
+        	this._ssoRealm.setSingleSignOn(request,response,principal,credential);
         }
     }
     
     public void clearSingleSignOn(String username)
     {
-        if (_ssoRealm!=null) {
-        	_ssoRealm.clearSingleSignOn(username);
+        if (this._ssoRealm!=null) {
+        	this._ssoRealm.clearSingleSignOn(username);
         }
     }
 }

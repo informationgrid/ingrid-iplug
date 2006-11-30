@@ -36,9 +36,7 @@ import de.ingrid.utils.tool.MD5Util;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
- * A server that starts the iplug class as defined in the plugdescription, that can also be used as singleton.
- * 
- * created on 09.08.2005
+ * A server that starts the iplug as defined in the plugdescription.
  * 
  * @author sg
  * @version $Revision: 1.3 $
@@ -47,7 +45,9 @@ public class PlugServer {
 
     protected final static Log fLogger = LogFactory.getLog(PlugServer.class);
 
-    /***/
+    /**
+     * Plugdescription resource location.
+     */
     public static final String PLUG_DESCRIPTION = "/plugdescription.xml";
 
     protected ICommunication fCommunication;
@@ -65,6 +65,7 @@ public class PlugServer {
     private static PlugServer fPlugServer;
 
     /**
+     * Starts the admin server and initializes the plug server.
      * @param plugDescription
      * @param jxtaProperties
      * @param heartBeatIntervall
@@ -90,18 +91,21 @@ public class PlugServer {
     }
 
     /**
-     * @return the communication
+     * Returns the setted communication.
+     * @return The used communication.
      */
     public ICommunication getCommunication() {
         return this.fCommunication;
     }
 
     /**
+     * Starts the admin server with the socket communication.
      * @param plugDescription
      * @param unicastPort
      * @param multicastPort
      * @param heartBeatIntervall
      * @throws Exception
+     * @deprecated
      */
     public PlugServer(PlugDescription plugDescription, int unicastPort, int multicastPort, int heartBeatIntervall)
             throws Exception {
@@ -112,7 +116,7 @@ public class PlugServer {
     }
 
     /**
-     * 
+     * Shuts down the plug server and its heart beat threads and communication. 
      */
     public void shutdown() {
         this.fTimeOutThread.interrupt();
@@ -127,7 +131,9 @@ public class PlugServer {
     }
 
     /**
-     * @throws Exception
+     * Registers the shutdwon hook, starts the heart beats and initializes the communication to the ibus(sses)
+     * for the iplug.
+     * @throws Exception If something goes wrong.
      */
     public void initPlugServer() throws Exception {
         if (fLogger.isInfoEnabled()) {
@@ -157,8 +163,9 @@ public class PlugServer {
     }
 
     /**
-     * @param args
-     * @throws Exception
+     * To start the plug server from the commandline.
+     * @param args Arguments for the plug server e.g. --descriptor .
+     * @throws Exception If something goes wrong.
      */
     public static void main(String[] args) throws Exception {
         Map arguments = readParameters(args);
@@ -259,7 +266,8 @@ public class PlugServer {
     }
 
     /**
-     * @return the md5 hash of the plugdescription
+     * Returns the md5 hash of the plugdescription.
+     * @return The md5 hash of the plugdescription.
      * @throws IOException
      */
     public static String getPlugDescriptionMd5() throws IOException {
@@ -275,7 +283,8 @@ public class PlugServer {
         private int fHeartBeatIntervall = 2000;
 
         /**
-         * @param beatThread
+         * To add a heart beat thread.
+         * @param beatThread A heart beat thread.
          */
         public void addHearBeatThread(HeartBeatThread beatThread) {
             this.fHeartBeatThreads.add(beatThread);

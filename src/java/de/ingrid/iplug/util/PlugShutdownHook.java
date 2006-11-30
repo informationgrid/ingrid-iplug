@@ -52,8 +52,9 @@ public class PlugShutdownHook extends Thread {
     private Map fBusByUrl = new HashMap(3);
 
     /**
-     * @param plugServer
-     * @param plugDescription
+     * Initializes the the PlugShutdownHook.
+     * @param plugServer The plug server.
+     * @param plugDescription The plug description.
      */
     public PlugShutdownHook(PlugServer plugServer, PlugDescription plugDescription) {
         this.fPlugServer = plugServer;
@@ -62,22 +63,25 @@ public class PlugShutdownHook extends Thread {
     }
 
     /**
-     * @param plugDescription
+     * Sets the PlugDescription.
+     * @param plugDescription A PlugDescrption
      */
     public void setPlugDescription(PlugDescription plugDescription) {
         this.fPlugDescription = plugDescription;
     }
 
     /**
-     * @param busUrl
-     * @param bus
+     * Add a Bus.
+     * @param busUrl The bus url.
+     * @param bus The bus instance.
      */
     public void addBus(String busUrl, IBus bus) {
         this.fBusByUrl.put(busUrl, bus);
     }
 
     /**
-     * @param busUrl
+     * Removes a bus.
+     * @param busUrl The bus to remove by its url.
      */
     public void removeBus(String busUrl) {
         this.fBusByUrl.remove(busUrl);
@@ -108,20 +112,14 @@ public class PlugShutdownHook extends Thread {
     }
 
     /**
-     * Thread for non-blocking removel of plug from bus.
-     * 
-     * <p/>created on 16.05.2006
-     * 
-     * @version $Revision: $
-     * @author jz
-     * @author $Author: ${lastedit}
-     *  
-     */
+     * Thread for non-blocking removal of a plug from a bus.
+     */ 
     public class PlugRemovalThread extends Thread {
 
         private IBus fBus;
 
         /**
+         * Initilaizes the PlugRemovalThread.
          * @param bus
          */
         public PlugRemovalThread(IBus bus) {
@@ -139,19 +137,13 @@ public class PlugShutdownHook extends Thread {
     }
     
     /**
-     * Thread for non-blockin plug server shutdown.
-     * 
-     * <p/>created on 26.05.2006
-     * 
-     * @version $Revision: $
-     * @author jz
-     * @author $Author: ${lastedit}
-     *  
+     * Thread for non-blocking plug server shutdown.
      */
     public class PlugServerShutdownThread extends Thread {
         
       
         /**
+         * Initializes the PlugServerShutdownThread.
          */
         public PlugServerShutdownThread() {
             setDaemon(true);

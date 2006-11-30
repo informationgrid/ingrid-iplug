@@ -21,9 +21,7 @@ import de.ingrid.utils.IBus;
 import de.ingrid.utils.PlugDescription;
 
 /**
- * sends the plug description as a kind heard beat continues to the ibus.
- * 
- * created on 09.08.2005
+ * Sends the plug description as a heart beat continuesly to the ibus.
  * 
  * @author sg
  * @version $Revision: 1.3 $
@@ -126,28 +124,32 @@ public class HeartBeatThread extends Thread {
     }
 
     /**
-     * @return the ibus of this heartbeat
+     * Returns the ibus for this heartbeat
+     * @return The ibus for this heartbeat.
      */
     public IBus getIBus() {
         return this.fBus;
     }
 
     /**
-     * @return the time of the last send heartbeat
+     * Returns the time of the last sent heartbeat.
+     * @return The time of the last sent heartbeat.
      */
     public long getLastSendHeartbeat() {
         return this.fLastSendHeartbeat;
     }
 
     /**
-     * @return how long the heart sleeps between the beats
+     * Returns the time between two heart beats.
+     * @return How long the heart sleeps between the beats.
      */
     public int getSleepInterval() {
         return this.fSleepInterval;
     }
 
     /**
-     * @param sleepIntervall
+     * Sets the time between two heart beats.
+     * @param sleepIntervall The time between two heart beats.
      */
     public void setSleepInterval(int sleepIntervall) {
         this.fSleepInterval = sleepIntervall;

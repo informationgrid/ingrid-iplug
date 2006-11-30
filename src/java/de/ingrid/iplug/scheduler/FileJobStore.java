@@ -131,13 +131,6 @@ public class FileJobStore implements JobStore {
         groupMap.put(newJob.getName(), newJob);
     }
 
-    /**
-     * 
-     * @param group
-     * @param name
-     * @return the full name of a job or a trigger (i.e. 'getFullName(trigger.getGroup(),trigger.getName())' should
-     *         equal 'trigger.getFullName()')
-     */
     private static String getFullName(String group, String name) {
         StringBuffer buffer = new StringBuffer(group);
         buffer.append(".");
@@ -384,7 +377,7 @@ public class FileJobStore implements JobStore {
     }
 
     /**
-     * trigger_states and their intern implementation
+     * Return a trigger state.
      * 
      * STATE_NONE - not in TriggersByName .................................
 	 * STATE_NORMAL - not in TriggerStatesByName ..........................
@@ -392,6 +385,7 @@ public class FileJobStore implements JobStore {
      * STATE_ERROR - with int value in TriggerStatesByName ................
      * STATE_PAUSED - with int value in TriggerStatesByName ...............
      * STATE_BLOCKED - has job in BlockedJobs .............................
+     * @return The trigger state.
      */
     public int getTriggerState(SchedulingContext ctxt, String triggerName, String triggerGroup)
             throws JobPersistenceException {
@@ -719,7 +713,8 @@ public class FileJobStore implements JobStore {
     // -------------------------non-interface---------------------
 
     /**
-     * @return the number of milliseconds in those the job would be executed delayed before misfired.
+     * Returns the number of milliseconds in those the job would be executed delayed before misfired.
+     * @return The number of milliseconds in those the job would be executed delayed before misfired.
      */
     public long getMisfireThreshold() {
 
@@ -727,21 +722,24 @@ public class FileJobStore implements JobStore {
     }
 
     /**
+     * Sets the number of milliseconds in those the job would be executed delayed before misfired.
      * @param misfireThreshold
-     *            the number of milliseconds in those the job would be executed delayed before misfired
+     *            The number of milliseconds in those the job would be executed delayed before misfired.
      */
     public void setMisfireThreshold(long misfireThreshold) {
         this.fMisfireThreshold = misfireThreshold;
     }
 
     /**
-     * @return Returns the storeFilePath.
+     * Returns the store file path.
+     * @return The store file path.
      */
     public String getStoreFilePath() {
         return this.fStoreDirectory;
     }
 
     /**
+     * Sets the store file path.
      * @param storeFilePath
      *            The storeFilePath to set.
      */
@@ -750,7 +748,7 @@ public class FileJobStore implements JobStore {
     }
 
     /**
-     * Removes all persitent data.
+     * Removes all persistent data.
      */
     public void clear() {
         this.fJobsByName.clear();

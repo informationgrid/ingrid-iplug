@@ -15,8 +15,9 @@ import de.ingrid.iplug.web.WebContainer;
 public class AdminServer {
 
     /**
-     * @param args
-     * @throws Exception
+     * To start the admin web server from the commandline. 
+     * @param args The server port and the web app folder. 
+     * @throws Exception Something goes wrong.
      */
     public static void main(String[] args) throws Exception {
         String usage = "<serverPort> <webappFolder>";
@@ -33,11 +34,12 @@ public class AdminServer {
     }
 
     /**
-     * @param port
-     * @param webFolder
-     * @param secure
-     * @param realm
-     * @param busClient 
+     * Starts a web container with jetty.
+     * @param port The port for the web server.
+     * @param webFolder The folder where the web contexts are located.
+     * @param secure True if authentication is requiered otherwise false.
+     * @param realm A user password relation if it is a secure web container. 
+     * @param busClient The bus client for the communication.
      * @return The started WebContainer.
      * @throws IOException
      * @throws NoSuchAlgorithmException

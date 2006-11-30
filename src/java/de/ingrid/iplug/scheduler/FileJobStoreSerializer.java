@@ -19,14 +19,10 @@ import org.quartz.JobPersistenceException;
 /**
  * FileJobStoreSerializer is responsible for writing the relevant data of
  * FileJobStore to files.
- * 
- * <p/> Note:only the write/save methods are synchronized cause it is assumed
+ * Note:only the write/save methods are synchronized cause it is assumed
  * that load and clean operations invoked synchronous.
  * 
- * <br/><br/>created on 10.10.2005
- * 
  * @version $Revision: $
- * 
  */
 public class FileJobStoreSerializer {
 
@@ -41,6 +37,7 @@ public class FileJobStoreSerializer {
     private File fPausedTriggerGroupsFile;
 
     /**
+     * Initializes a FileJobStoreSerializer.
      * @param storeDirectory
      * @throws JobPersistenceException
      */
@@ -59,7 +56,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @return the root directory of the store
+     * Returns the root directory of the store.
+     * @return The root directory of the store.
      */
     public File getStoreDirectory() {
         return this.fJobsFile.getParentFile();
@@ -77,7 +75,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @param jobs
+     * Saves the serialized jobs to a file.
+     * @param jobs The serialized jobs to store.
      * @throws JobPersistenceException
      */
     public void saveJobs(Serializable jobs) throws JobPersistenceException {
@@ -88,7 +87,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @param triggers
+     * Saves the serialized triggers to a file.
+     * @param triggers The serialized triggers to store.
      * @throws JobPersistenceException
      */
     public void saveTriggers(Serializable triggers) throws JobPersistenceException {
@@ -98,7 +98,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @param calendars
+     * Saves the serialized calendars to a file. 
+     * @param calendars The serialized calendars to store.
      * @throws JobPersistenceException
      */
     public void saveCalendars(Serializable calendars) throws JobPersistenceException {
@@ -108,7 +109,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @param triggerStates
+     * Saves the serialized trigger states to a file.
+     * @param triggerStates The serialized trigger states to store.
      * @throws JobPersistenceException
      */
     public void saveTriggerStates(Serializable triggerStates) throws JobPersistenceException {
@@ -118,7 +120,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @param pausedTriggerGroups
+     * Saves the serialized paused trigger groups to a file.
+     * @param pausedTriggerGroups The serialized paused trigger groups to store.
      * @throws JobPersistenceException
      */
     public void savePausedTriggerGroups(Serializable pausedTriggerGroups) throws JobPersistenceException {
@@ -128,7 +131,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @return jobs
+     * Loads previously stored jobs.
+     * @return The loaded jobs.
      * @throws JobPersistenceException
      */
     public Serializable loadJobs() throws JobPersistenceException {
@@ -136,7 +140,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @return triggers
+     * Loads previously stored triggers.
+     * @return The loaded triggers.
      * @throws JobPersistenceException
      */
     public Serializable loadTriggers() throws JobPersistenceException {
@@ -144,7 +149,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @return calendars
+     * Loads previously stored calendars.
+     * @return The loaded calendars.
      * @throws JobPersistenceException
      */
     public Serializable loadCalendars() throws JobPersistenceException {
@@ -152,7 +158,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @return trigger-states
+     * Loads previously stored trigger states.
+     * @return The loaded trigger states.
      * @throws JobPersistenceException
      */
     public Serializable loadTriggerStates() throws JobPersistenceException {
@@ -160,7 +167,8 @@ public class FileJobStoreSerializer {
     }
 
     /**
-     * @return paused trigger groups
+     * Loads previously stored paused trigger groups.
+     * @return The loaded paused trigger groups.
      * @throws JobPersistenceException
      */
     public Serializable loadPausedTriggerGroups() throws JobPersistenceException {

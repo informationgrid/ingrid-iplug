@@ -23,7 +23,7 @@ import org.mortbay.jetty.servlet.WebApplicationContext;
 import de.ingrid.ibus.client.BusClient;
 
 /**
- * 
+ * A container for web application contexts.
  */
 public class WebContainer extends Thread {
 
@@ -42,19 +42,15 @@ public class WebContainer extends Thread {
     private boolean fSecured;
 
     /**
-     * @param port
-     * @param secured
+     * Initializes the WebContainer.
+     * @param port The port to the web server.
+     * @param secured True if it should be secured by authorization otherwise false.
      */
     public WebContainer(int port, boolean secured) {
         this.fPort = port;
         this.fSecured = secured;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Runnable#run()
-     */
     public void run() {
         try {
             fServer = new Server();
@@ -74,8 +70,9 @@ public class WebContainer extends Thread {
     }
 
     /**
-     * @param name
-     * @param path
+     * Adds a web application to the container.
+     * @param name A name for the application.
+     * @param path The path of the application.
      * @throws Exception
      */
     public void addWebapp(String name, String path) throws Exception {
@@ -101,8 +98,7 @@ public class WebContainer extends Thread {
     }
 
     /**
-     * Starts the webContainer.
-     * 
+     * Starts the web container.
      * @throws IOException
      */
     public void startContainer() throws IOException {
@@ -124,7 +120,7 @@ public class WebContainer extends Thread {
     }
 
     /**
-     * stops the webcontainer
+     * Stops the web container.
      * 
      * @throws InterruptedException
      */
@@ -135,9 +131,9 @@ public class WebContainer extends Thread {
     }
 
     /**
-     * logout a user.
+     * Logout a user.
      * 
-     * @param principal
+     * @param principal The user.
      */
     public void logoutUser(Principal principal) {
         if (this.fRealm != null) {
@@ -149,39 +145,43 @@ public class WebContainer extends Thread {
     }
 
     /**
-     * Removes a user to be able to login
+     * Removes a user.
      * 
-     * @param userName
+     * @param userName The name of the user.
      */
     public void removeUser(String userName) {
         fServer.removeRealm(userName);
     }
 
     /**
-     * @return
+     * Returns the currently used realm.
+     * @return The used realm.
      */
     public UserRealm getRealm() {
         return this.fRealm;
     }
 
     /**
-     * @param realm
+     * Sets the realm for authentication.
+     * @param realm The relam to use.
      */
     public void setRealm(UserRealm realm) {
         this.fRealm = realm;
     }
 
     /**
-     * @return
+     * Returns the bus client.
+     * @return The used bus client.
      */
     public BusClient getBusClient() {
         return this.fBusClient;
     }
 
     /**
-     * @param communication
+     * Sets the bus client.
+     * @param busClient The bus client to use.
      */
-    public void setBusClient(BusClient communication) {
-        this.fBusClient = communication;
+    public void setBusClient(BusClient busClient) {
+        this.fBusClient = busClient;
     }
 }

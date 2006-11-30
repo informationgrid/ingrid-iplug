@@ -138,7 +138,8 @@ public class SchedulingService {
     private Scheduler fScheduler;
 
     /**
-     * @param fileStorePath
+     * To initialize the sacheduling service.
+     * @param fileStorePath The path to the file store.
      * @throws SchedulerException
      * @throws IOException
      * @throws ParseException
@@ -186,6 +187,7 @@ public class SchedulingService {
     }
 
     /**
+     * Shuts the scheduler down.
      * @throws SchedulerException
      */
     public void shutdown() throws SchedulerException {
@@ -197,14 +199,12 @@ public class SchedulingService {
      * job. All optional parameters could be left blank (null). For
      * cron-expression-examples see class description.
      * 
-     * @param jobName
-     * @param jobGroup
-     *            (optional)
-     * @param jobClass
-     * @param jobData
-     *            (optional), will be availible in
-     *            Job#execute(org.quartz.JobExecutionContext)
-     * @param cronExpression
+     * @param jobName Name of the job.
+     * @param jobGroup Name of the group (optional).
+     * @param jobClass Class of the job.
+     * @param jobData Data of the job (optional). This will be available in
+     *            Job#execute(org.quartz.JobExecutionContext).
+     * @param cronExpression The cron scheduling time expression.
      * @throws ParseException
      * @throws SchedulerException
      */
@@ -232,20 +232,18 @@ public class SchedulingService {
      * 
      * All optional parameters could be left blank (null).
      * 
-     * @param jobName
-     * @param jobGroup
-     *            (optional)
-     * @param jobClass
-     * @param jobData
-     *            (optional), will be availible in
-     *            Job#execute(org.quartz.JobExecutionContext)
-     * @param sec
-     * @param min
-     * @param hours
-     * @param dayOfMonth
-     * @param month
-     * @param dayOfWeek
-     * @param year
+     * @param jobName Name of the job.
+     * @param jobGroup Name of the group (optional).
+     * @param jobClass Class of the job.
+     * @param jobData Data of the job (optional). This will be available in
+     *            Job#execute(org.quartz.JobExecutionContext).
+     * @param sec The second to start on.
+     * @param min The minute to start on.
+     * @param hours The hour to start on.
+     * @param dayOfMonth The day of the month to start on.
+     * @param month The month to start on.
+     * @param dayOfWeek The day of the week to start on.
+     * @param year The year to start on.
      * @throws SchedulerException
      * @throws ParseException
      */
@@ -257,9 +255,10 @@ public class SchedulingService {
     }
 
     /**
-     * @param jobName
-     * @param groupName
-     * @return true if job exists
+     * Remove a job by its name and group.
+     * @param jobName The job name to remove.
+     * @param groupName The group of the job to be removed.
+     * @return True if the job exists and is deleted, otherwise false.
      * @throws SchedulerException
      */
     public boolean removeJob(String jobName, String groupName) throws SchedulerException {
@@ -271,13 +270,13 @@ public class SchedulingService {
      * year. If you leave those parameter blank, the "*"-character will be
      * inserted. For cron-expression-examples see class description.
      * 
-     * @param sec
-     * @param min
-     * @param hours
-     * @param dayOfMonth
-     * @param month
-     * @param dayOfWeek
-     * @param year
+     * @param sec The second to start on.
+     * @param min The minute to start on.
+     * @param hours The hour to start on.
+     * @param dayOfMonth The day of the month to start on.
+     * @param month The month to start on.
+     * @param dayOfWeek The day of the week to start on.
+     * @param year The year to start on.
      * @return the integrated cron expression
      */
     public static String getCronExpression(String sec, String min, String hours, String dayOfMonth, String month,

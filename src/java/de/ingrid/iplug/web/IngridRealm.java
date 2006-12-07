@@ -324,6 +324,7 @@ public class IngridRealm implements UserRealm, SSORealm {
 					if(providerId.equals(providerName)) {
 						List list = (List) partnerProviderMapFromHierarchie.get("providers");
 						partnerProviderMapFromHierarchie.put("partnerid", partnerMap.get("partnerid"));
+						partnerProviderMapFromHierarchie.put("name", partnerMap.get("name"));
 						Map map2 = new HashMap();
 						map2.put("providerid", providerId);
 						map2.put("name", providerNameFromPlug);

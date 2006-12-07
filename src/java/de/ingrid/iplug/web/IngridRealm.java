@@ -273,10 +273,14 @@ public class IngridRealm implements UserRealm, SSORealm {
 
                     String[] ps = (String[]) hitA[i].getArray("provider");
                     if (null != ps) {
+                    	this.fHierarchie.clear();
+                    	Map map = new HashMap();
+                    	map.put("providers", new ArrayList());
+						this.fHierarchie.add(map);
                         for (int j = 0; j < ps.length; j++) {
                             user.addProviderToRole(roleName, ps[j]);
                             if(ROLE_PROVIDER_CATALOG.equals(roleName) || ROLE_PROVIDER_INDEX.equals(roleName)) {
-                            	createProviderHierarchie(ps[j]);
+                            	createProviderHierarchie(ps[j], map);
                             }
                         }
                     }
@@ -302,7 +306,7 @@ public class IngridRealm implements UserRealm, SSORealm {
         return result;
     }
 
-    private void createProviderHierarchie(String providerName) {
+    private void createProviderHierarchie(String providerName, Map partnerProviderMapFromHierarchie) {
     	// get all partner and provider by a new query
 		try {
 			String query = "datatype:management management_request_type:1";
@@ -316,16 +320,14 @@ public class IngridRealm implements UserRealm, SSORealm {
 				for (int k = 0, providerLength = providerList.size(); k < providerLength; k++) {
 					Map providerMap = (Map) providerList.get(k);
 					String providerId = (String) providerMap.get("providerid");
+					String providerNameFromPlug = (String) providerMap.get("name");
 					if(providerId.equals(providerName)) {
-						this.fHierarchie.clear();
-						Map map = new HashMap();
-						map.put("partnerid", partnerMap.get("partnerid"));
+						List list = (List) partnerProviderMapFromHierarchie.get("providers");
+						partnerProviderMapFromHierarchie.put("partnerid", partnerMap.get("partnerid"));
 						Map map2 = new HashMap();
 						map2.put("providerid", providerId);
-						List list = new ArrayList();
+						map2.put("name", providerNameFromPlug);
 						list.add(map2);
-						map.put("providers", list);
-						this.fHierarchie.add(map);
 					}
 				}
 			}

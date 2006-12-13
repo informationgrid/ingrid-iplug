@@ -10,7 +10,6 @@
 #   INGRID_OPTS      addtional java runtime options
 #
 
-# resolve links - $0 may be a softlink
 THIS="$0"
 
 # some directories

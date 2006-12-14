@@ -38,7 +38,7 @@ public class HeartBeatThread extends Thread {
 
     private Random fRandom = new Random(System.currentTimeMillis());
 
-    private int fSleepInterval = 1000 * 30;
+    private int fSleepInterval = 1000 * 90;
 
     private PlugShutdownHook fShutdownHook;
 
@@ -79,9 +79,8 @@ public class HeartBeatThread extends Thread {
                         }
                     } else {
                         if (fLogger.isDebugEnabled()) {
-                            fLogger.debug("I am currently connected. Higher the heartbeat intervall.");
+                            fLogger.debug("I am currently connected.");
                         }
-                        this.fSleepInterval = (this.fRandom.nextInt(60) + 30) * 1000;
                     }
                     this.fLastSendHeartbeat = System.currentTimeMillis();
                     this.fShutdownHook.addBus(this.fBusUrl, this.fBus);
@@ -98,7 +97,6 @@ public class HeartBeatThread extends Thread {
                     if (fLogger.isErrorEnabled()) {
                         fLogger.error("unable to connect ibus: ", t);
                     }
-                    this.fSleepInterval = 1000 * 30;
                 }
                 sleep(this.fSleepInterval);
             }

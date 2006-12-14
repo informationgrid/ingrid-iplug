@@ -173,7 +173,7 @@ public class PlugServer {
         PlugServer server = null;
         if (arguments.containsKey("--descriptor")) {
             String jxtaConf = (String) arguments.get("--descriptor");
-            server = new PlugServer(plugDescription, jxtaConf, 30 * 1000);
+            server = new PlugServer(plugDescription, jxtaConf, 90 * 1000);
         } else {
             int mPort = Integer.parseInt(args[0]);
             int uPort = Integer.parseInt(args[1]);

@@ -280,6 +280,10 @@ public class PlugServer {
 
         private List fHeartBeatThreads = new ArrayList();
 
+        
+        /**
+         * Default value if it isn't initialised before start.
+         */
         private int fHeartBeatIntervall = 2000;
 
         /**

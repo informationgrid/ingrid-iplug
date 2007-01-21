@@ -275,6 +275,10 @@ public class PlugServer {
         String md5 = MD5Util.getMD5(resourceAsStream);
         return md5;
     }
+    
+    public IPlug getIPlugInstance() {
+    	return this.fPlug;
+    }
 
     class HeartBeatTimeOutThread extends Thread {
 

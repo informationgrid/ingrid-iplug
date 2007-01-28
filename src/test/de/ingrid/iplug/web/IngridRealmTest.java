@@ -19,10 +19,10 @@ public class IngridRealmTest extends TestCase {
     private IngridRealm fIRealm;
 
     protected void setUp() throws Exception {
-        BusClient client = BusClient.instance();
-        client.setBusUrl("/torwald-ibus:ibus-torwald");
-        client.setJxtaConfigurationPath("/jxta.properties");
-        this.fIRealm = new IngridRealm("IngridRealm", client.getBus(), "SHA-1");
+//        BusClient client = BusClient.instance();
+//        client.setBusUrl("/torwald-ibus:ibus-torwald");
+//        client.setJxtaConfigurationPath("/jxta.properties");
+//        this.fIRealm = new IngridRealm("IngridRealm", client.getBus(), "SHA-1");
     }
     
     public void testTest() throws Exception {

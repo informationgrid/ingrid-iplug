@@ -5,7 +5,10 @@ package de.ingrid.iplug.web;
 
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import de.ingrid.ibus.client.BusClient;
 import junit.framework.TestCase;
@@ -18,59 +21,58 @@ public class IngridRealmTest extends TestCase {
     private IngridRealm fIRealm;
 
     protected void setUp() throws Exception {
-//        BusClient client = BusClient.instance();
-//        client.setBusUrl("/torwald-ibus:ibus-torwald");
-//        client.setJxtaConfigurationPath("/jxta.properties");
-//        this.fIRealm = new IngridRealm("IngridRealm", client.getBus(), "SHA-1");
+        BusClient client = BusClient.instance();
+        client.setBusUrl("/torwald-ibus:ibus-torwald");
+        client.setJxtaConfigurationPath("/jxta.properties");
+        this.fIRealm = new IngridRealm("IngridRealm", client.getBus(), "SHA-1");
     }
 
-    /**
-     */
-    public void testAuthenticate() {
-//        assertNotNull(this.fIRealm.authenticate("admin_partner", "admin", null));
-//
-//        Principal principal = this.fIRealm.getPrincipal("admin_partner");
-//        assertNotNull(principal);
-//
-//        assertTrue(this.fIRealm.reauthenticate(principal));
-//
-//        assertTrue(this.fIRealm.isUserInRole(principal, "admin_partner"));
+    public void testNLWKN() throws Exception {
+        String name = "nlwkn";
+
+        assertNotNull(this.fIRealm.authenticate(name, name, null));
+        Principal principal = this.fIRealm.getPrincipal(name);
+        Collection hierarchie = this.fIRealm.getHierarchie();
+        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
+            Map map = (Map) iter.next();
+            System.out.println(map);
+        }
     }
 
-    /**
-     * 
-     */
-    public void testAdminPartner() {
-//        assertNotNull(this.fIRealm.authenticate("admin_partner", "admin", null));
-//
-//        Principal principal = this.fIRealm.getPrincipal("admin_partner");
-//
-//        String[] array = this.fIRealm.getPartner(principal, "admin_partner");
-//        assertEquals(2, array.length);
-//        List list = Arrays.asList(array);
-//        assertTrue(list.contains("he"));
-//        assertTrue(list.contains("st"));
-//
-//        array = this.fIRealm.getProvider(principal, "admin_partner");
-//        assertEquals(0, array.length);
+    public void testMU_ADMIN() throws Exception {
+        String name = "mu_admin";
+
+        assertNotNull(this.fIRealm.authenticate(name, name, null));
+        Principal principal = this.fIRealm.getPrincipal(name);
+        Collection hierarchie = this.fIRealm.getHierarchie();
+        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
+            Map map = (Map) iter.next();
+            System.out.println(map);
+        }
     }
 
-    /**
-     * 
-     */
-    public void testAdminProvider() {
-//        assertNotNull(this.fIRealm.authenticate("admin_provider", "admin", null));
-//
-//        Principal principal = this.fIRealm.getPrincipal("admin_provider");
-//
-//        String[] array = this.fIRealm.getPartner(principal, "admin_partner");
-//        assertEquals(0, array.length);
-//
-//        array = this.fIRealm.getProvider(principal, "admin_provider");
-//        assertEquals(3, array.length);
-//        List list = Arrays.asList(array);
-//        assertTrue(list.contains("bu_bmu"));
-//        assertTrue(list.contains("bu_uba"));
-//        assertTrue(list.contains("he_hmulv"));
+    public void testADMINPORTAL() throws Exception {
+        String name = "adminportal";
+
+        assertNotNull(this.fIRealm.authenticate(name, name, null));
+        Principal principal = this.fIRealm.getPrincipal(name);
+        Collection hierarchie = this.fIRealm.getHierarchie();
+        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
+            Map map = (Map) iter.next();
+            System.out.println(map);
+        }
     }
+
+    public void testMB() throws Exception {
+        String name = "mb";
+        assertNotNull(this.fIRealm.authenticate(name, "mb", null));
+        Principal principal = this.fIRealm.getPrincipal(name);
+        Collection hierarchie = this.fIRealm.getHierarchie();
+        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
+            Map map = (Map) iter.next();
+            System.out.println(map);
+        }
+
+    }
+
 }

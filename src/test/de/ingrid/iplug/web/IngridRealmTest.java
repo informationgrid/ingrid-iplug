@@ -24,6 +24,10 @@ public class IngridRealmTest extends TestCase {
         client.setJxtaConfigurationPath("/jxta.properties");
         this.fIRealm = new IngridRealm("IngridRealm", client.getBus(), "SHA-1");
     }
+    
+    public void testTest() throws Exception {
+        assertTrue(true);
+    }
 
 //    public void testNLWKN() throws Exception {
 //        String name = "nlwkn";

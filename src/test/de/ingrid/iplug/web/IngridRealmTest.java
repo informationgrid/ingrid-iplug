@@ -4,14 +4,12 @@
 package de.ingrid.iplug.web;
 
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import de.ingrid.ibus.client.BusClient;
 import junit.framework.TestCase;
+import de.ingrid.ibus.client.BusClient;
 
 /**
  * 
@@ -27,52 +25,52 @@ public class IngridRealmTest extends TestCase {
         this.fIRealm = new IngridRealm("IngridRealm", client.getBus(), "SHA-1");
     }
 
-    public void testNLWKN() throws Exception {
-        String name = "nlwkn";
-
-        assertNotNull(this.fIRealm.authenticate(name, name, null));
-        Principal principal = this.fIRealm.getPrincipal(name);
-        Collection hierarchie = this.fIRealm.getHierarchie();
-        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
-            Map map = (Map) iter.next();
-            System.out.println(map);
-        }
-    }
-
-    public void testMU_ADMIN() throws Exception {
-        String name = "mu_admin";
-
-        assertNotNull(this.fIRealm.authenticate(name, name, null));
-        Principal principal = this.fIRealm.getPrincipal(name);
-        Collection hierarchie = this.fIRealm.getHierarchie();
-        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
-            Map map = (Map) iter.next();
-            System.out.println(map);
-        }
-    }
-
-    public void testADMINPORTAL() throws Exception {
-        String name = "adminportal";
-
-        assertNotNull(this.fIRealm.authenticate(name, name, null));
-        Principal principal = this.fIRealm.getPrincipal(name);
-        Collection hierarchie = this.fIRealm.getHierarchie();
-        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
-            Map map = (Map) iter.next();
-            System.out.println(map);
-        }
-    }
-
-    public void testMB() throws Exception {
-        String name = "mb";
-        assertNotNull(this.fIRealm.authenticate(name, "mb", null));
-        Principal principal = this.fIRealm.getPrincipal(name);
-        Collection hierarchie = this.fIRealm.getHierarchie();
-        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
-            Map map = (Map) iter.next();
-            System.out.println(map);
-        }
-
-    }
+//    public void testNLWKN() throws Exception {
+//        String name = "nlwkn";
+//
+//        assertNotNull(this.fIRealm.authenticate(name, name, null));
+//        Principal principal = this.fIRealm.getPrincipal(name);
+//        Collection hierarchie = this.fIRealm.getHierarchie();
+//        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
+//            Map map = (Map) iter.next();
+//            System.out.println(map);
+//        }
+//    }
+//
+//    public void testMU_ADMIN() throws Exception {
+//        String name = "mu_admin";
+//
+//        assertNotNull(this.fIRealm.authenticate(name, name, null));
+//        Principal principal = this.fIRealm.getPrincipal(name);
+//        Collection hierarchie = this.fIRealm.getHierarchie();
+//        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
+//            Map map = (Map) iter.next();
+//            System.out.println(map);
+//        }
+//    }
+//
+//    public void testADMINPORTAL() throws Exception {
+//        String name = "adminportal";
+//
+//        assertNotNull(this.fIRealm.authenticate(name, name, null));
+//        Principal principal = this.fIRealm.getPrincipal(name);
+//        Collection hierarchie = this.fIRealm.getHierarchie();
+//        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
+//            Map map = (Map) iter.next();
+//            System.out.println(map);
+//        }
+//    }
+//
+//    public void testMB() throws Exception {
+//        String name = "mb";
+//        assertNotNull(this.fIRealm.authenticate(name, "mb", null));
+//        Principal principal = this.fIRealm.getPrincipal(name);
+//        Collection hierarchie = this.fIRealm.getHierarchie();
+//        for (Iterator iter = hierarchie.iterator(); iter.hasNext();) {
+//            Map map = (Map) iter.next();
+//            System.out.println(map);
+//        }
+//
+//    }
 
 }

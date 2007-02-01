@@ -106,7 +106,6 @@ public class IngridRealm implements UserRealm, SSORealm {
             }
         }
 
-        @Override
         public List getPartnerWithProvider() {
             List partnerWithProvider = super.getPartnerWithProvider();
             sortByPartnerName(partnerWithProvider);

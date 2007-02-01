@@ -8,7 +8,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -53,8 +52,6 @@ public class IngridRealm implements UserRealm, SSORealm {
     private static final String ROLE_PROVIDER_INDEX = "admin.portal.partner.provider.index";
 
     private static final String ROLE_PROVIDER_CATALOG = "admin.portal.partner.provider.catalog";
-
-    private List fHierarchie = new ArrayList();
 
     private SSORealm _ssoRealm;
 
@@ -109,6 +106,45 @@ public class IngridRealm implements UserRealm, SSORealm {
             }
         }
 
+        @Override
+        public List getPartnerWithProvider() {
+            List partnerWithProvider = super.getPartnerWithProvider();
+            sortByPartnerName(partnerWithProvider);
+            sortByProviderName(partnerWithProvider);
+            return partnerWithProvider;
+        }
+        
+        private void sortByProviderName(List list) {
+            for (Iterator iter = list.iterator(); iter.hasNext();) {
+                Map partnerMap = (Map) iter.next();
+                List providerList = (List) partnerMap.get("providers");
+                Collections.sort(providerList, new Comparator() {
+                    public int compare(Object arg0, Object arg1) {
+                        Map map1 = (Map) arg0;
+                        Map map2 = (Map) arg1;
+                        String name1 = (String) map1.get("name");
+                        String name2 = (String) map2.get("name");
+                        return name1.compareTo(name2);
+                    }
+                });
+            }
+        }
+
+        /**
+         * 
+         */
+        private void sortByPartnerName(List list) {
+            Collections.sort(list, new Comparator() {
+                public int compare(Object arg0, Object arg1) {
+                    Map map1 = (Map) arg0;
+                    Map map2 = (Map) arg1;
+                    String name1 = (String) map1.get("name");
+                    String name2 = (String) map2.get("name");
+                    return name1.compareTo(name2);
+                }
+            });
+        }
+
         /**
          * @param name
          * @param credential
@@ -119,8 +155,10 @@ public class IngridRealm implements UserRealm, SSORealm {
         }
     }
 
-    private class User implements Principal {
+    public class User implements Principal {
 
+        protected List _partnerWithProvider = new ArrayList();
+        
         protected String fUserName = "Anonymous";
 
         private User() {
@@ -140,6 +178,14 @@ public class IngridRealm implements UserRealm, SSORealm {
             return false;
         }
 
+        public List getPartnerWithProvider() {
+            return _partnerWithProvider;
+        }
+        
+        public void setPartnerWithProvider(List list) {
+            _partnerWithProvider = list;
+        }
+        
         public String toString() {
             return getName();
         }
@@ -281,7 +327,8 @@ public class IngridRealm implements UserRealm, SSORealm {
                     String[] providers = (String[]) hitA[i].getArray("provider");
                     String[] partners = (String[]) hitA[i].getArray("partner");
 
-                    createHierarchieForUrlMaintenance(allPartnerWithProvider, permission, partners, providers);
+                    List partnerWithProvider = createHierarchieForUrlMaintenance(allPartnerWithProvider, permission, partners, providers);
+                    user.setPartnerWithProvider(partnerWithProvider);
 
                     for (int j = 0; providers != null && j < providers.length; j++) {
                         user.addProviderToRole(permission, providers[j]);
@@ -314,21 +361,20 @@ public class IngridRealm implements UserRealm, SSORealm {
         return list;
     }
 
-    private void createHierarchieForUrlMaintenance(List allPartnerWithProvider, String permission, String[] partners,
+    private List createHierarchieForUrlMaintenance(List allPartnerWithProvider, String permission, String[] partners,
             String[] providers) {
 
-        this.fHierarchie.clear();
+        List list = new ArrayList();
         if (ROLE_PORTAL.equals(permission)) {
-            this.fHierarchie.addAll(allPartnerWithProvider);
+            list.addAll(allPartnerWithProvider);
         } else if (ROLE_PARTNER.equals(permission)) {
-            System.out.println("role partner");
             for (int i = 0; i < partners.length; i++) {
                 String partnerName = partners[i];
                 for (int j = 0, length = allPartnerWithProvider.size(); j < length; j++) {
                     Map partnerMap = (Map) allPartnerWithProvider.get(j);
                     String partnerId = (String) partnerMap.get("partnerid");
                     if (partnerId.equals(partnerName)) {
-                        this.fHierarchie.add(partnerMap);
+                        list.add(partnerMap);
                     }
                 }
             }
@@ -346,13 +392,13 @@ public class IngridRealm implements UserRealm, SSORealm {
                             for (int k = 0; k < providers.length; k++) {
                                 String providerIdFromPlug = providers[k];
                                 if (providerIdFromPlug.equals("*")) {
-                                    this.fHierarchie.add(partnerMap);
-                                    return;
+                                    list.add(partnerMap);
+                                    return list;
                                 } else if (providerId.equals(providerIdFromPlug)) {
-                                    if(this.fHierarchie.isEmpty()) {
-                                        this.fHierarchie.add(new HashMap());
+                                    if(list.isEmpty()) {
+                                        list.add(new HashMap());
                                     }
-                                    Map partnerMapFromHierachie = (Map) this.fHierarchie.get(0);
+                                    Map partnerMapFromHierachie = (Map) list.get(0);
                                     List providerListFromHierarchie = (List) partnerMapFromHierachie.get("providers");
                                     if (providerListFromHierarchie == null) {
                                         partnerMapFromHierachie.put("partnerid", partnerId);
@@ -371,6 +417,7 @@ public class IngridRealm implements UserRealm, SSORealm {
                 }
             }
         }
+        return list;
     }
 
     private void addUserToRole(String roleName, Principal user) {
@@ -526,48 +573,7 @@ public class IngridRealm implements UserRealm, SSORealm {
         return result;
     }
 
-    /**
-     * Gets the hirachie of partners and providers.
-     * 
-     * @return The hirachie of partners and providers.
-     */
-    public Collection getHierarchie() {
-        sortByPartnerName();
-        sortByProviderName();
-        return this.fHierarchie;
-    }
-
-    private void sortByProviderName() {
-        for (Iterator iter = this.fHierarchie.iterator(); iter.hasNext();) {
-            Map partnerMap = (Map) iter.next();
-            List providerList = (List) partnerMap.get("providers");
-            Collections.sort(providerList, new Comparator() {
-                public int compare(Object arg0, Object arg1) {
-                    Map map1 = (Map) arg0;
-                    Map map2 = (Map) arg1;
-                    String name1 = (String) map1.get("name");
-                    String name2 = (String) map2.get("name");
-                    return name1.compareTo(name2);
-                }
-            });
-        }
-    }
-
-    /**
-     * 
-     */
-    private void sortByPartnerName() {
-        Collections.sort(this.fHierarchie, new Comparator() {
-            public int compare(Object arg0, Object arg1) {
-                Map map1 = (Map) arg0;
-                Map map2 = (Map) arg1;
-                String name1 = (String) map1.get("name");
-                String name2 = (String) map2.get("name");
-                return name1.compareTo(name2);
-            }
-        });
-    }
-
+    
     /**
      * Sets the single sign on realm.
      * 

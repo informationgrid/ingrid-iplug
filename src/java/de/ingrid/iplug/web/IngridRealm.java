@@ -327,8 +327,10 @@ public class IngridRealm implements UserRealm, SSORealm {
                     String[] partners = (String[]) hitA[i].getArray("partner");
 
                     List partnerWithProvider = createHierarchieForUrlMaintenance(allPartnerWithProvider, permission, partners, providers);
-                    user.setPartnerWithProvider(partnerWithProvider);
-
+                    if (partnerWithProvider != null) {
+                      user.setPartnerWithProvider(partnerWithProvider);
+                    }
+                    
                     for (int j = 0; providers != null && j < providers.length; j++) {
                         user.addProviderToRole(permission, providers[j]);
                     }

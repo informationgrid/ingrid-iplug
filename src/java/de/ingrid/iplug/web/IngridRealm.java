@@ -327,9 +327,7 @@ public class IngridRealm implements UserRealm, SSORealm {
                     String[] partners = (String[]) hitA[i].getArray("partner");
 
                     List partnerWithProvider = createHierarchieForUrlMaintenance(allPartnerWithProvider, permission, partners, providers);
-                    if (partnerWithProvider != null) {
-                      user.setPartnerWithProvider(partnerWithProvider);
-                    }
+                    user.setPartnerWithProvider(partnerWithProvider);
                     
                     for (int j = 0; providers != null && j < providers.length; j++) {
                         user.addProviderToRole(permission, providers[j]);
@@ -349,11 +347,14 @@ public class IngridRealm implements UserRealm, SSORealm {
     }
 
     private List getAllPartnerWithProvider() {
+        System.out.println("IngridRealm.getAllPartnerWithProvider()");
         List list = new ArrayList();
         try {
             String query = "datatype:management management_request_type:1";
             IngridQuery ingridQuery = QueryStringParser.parse(query);
-            IngridHits hits = this.fIBus.search(ingridQuery, 1000, 0, 0, 120000);
+            System.err.println("before");
+            IngridHits hits = this.fIBus.search(ingridQuery, 1, 1, 1, 1000);
+            System.err.println("after");
             if (hits.length() > 0) {
               IngridHit hit = hits.getHits()[0];
               list = hit.getArrayList("partner"); 
@@ -420,7 +421,7 @@ public class IngridRealm implements UserRealm, SSORealm {
                 }
             }
         }
-        return list;
+        return list != null ? list : new ArrayList();
     }
 
     private void addUserToRole(String roleName, Principal user) {

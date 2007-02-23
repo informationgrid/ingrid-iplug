@@ -96,7 +96,37 @@ public class WebContainer extends Thread {
         context.setAttribute("server", this);
         context.start();
     }
+    
+    /**
+     * Adds a web application to the container.
+     * @param name A name for the application.
+     * @param path The path of the application.
+     * @param pd_filename The name of the plug description file.
+     * @throws Exception
+     */
+    public void addWebapp(String name, String path, String plugdescriptionfilename) throws Exception {
+        if (fServer == null || !fServer.isStarted()) {
+            throw new IOException("web container not started");
+        }
+        WebApplicationContext context = fServer.addWebApplication('/' + name, path);
+        ((HashSessionManager) context.getServletHandler().getSessionManager()).setCrossContextSessionIDs(true);
+        context.getServletHandler().setSessionInactiveInterval(SESSION_TIMEOUT);
 
+        if (this.fSecured) {
+            SecurityHandler handler = new SecurityHandler();
+            handler.setAuthMethod("BASIC");
+            context.addHandler(handler);
+            context.setAuthenticator(new BasicAuthenticator());
+            SecurityConstraint sc = new SecurityConstraint();
+            sc.setAuthenticate(true);
+            sc.addRole(SecurityConstraint.ANY_ROLE);
+            context.addSecurityConstraint("/", sc);
+        }
+        context.setAttribute("server", this);
+        context.setAttribute("pd_filename", plugdescriptionfilename);
+        context.start();
+    }
+    
     /**
      * Starts the web container.
      * @throws IOException

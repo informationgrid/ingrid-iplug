@@ -41,6 +41,10 @@ import de.ingrid.utils.xml.XMLSerializer;
  * @author sg
  * @version $Revision: 1.3 $
  */
+/**
+ * @author ak
+ *
+ */
 public class PlugServer {
 
     protected final static Log fLogger = LogFactory.getLog(PlugServer.class);
@@ -49,6 +53,11 @@ public class PlugServer {
      * Plugdescription resource location.
      */
     public static final String PLUG_DESCRIPTION = "/plugdescription.xml";
+    
+    /**
+     * Name of the plug description file. 
+     */
+    public static String fPlugDescriptionFileName = PLUG_DESCRIPTION;
 
     protected ICommunication fCommunication;
 
@@ -169,7 +178,14 @@ public class PlugServer {
      */
     public static void main(String[] args) throws Exception {
         Map arguments = readParameters(args);
-        PlugDescription plugDescription = getPlugDescription();
+        PlugDescription plugDescription = null;
+        if (arguments.containsKey("--plugdescription")) {
+          String plugDescriptionFileName = (String) arguments.get("--plugdescription");
+          plugDescription = getPlugDescription(plugDescriptionFileName);
+        } else {
+           plugDescription = getPlugDescription(PLUG_DESCRIPTION);
+        }
+        
         PlugServer server = null;
         if (arguments.containsKey("--descriptor")) {
             String jxtaConf = (String) arguments.get("--descriptor");
@@ -242,18 +258,36 @@ public class PlugServer {
      * @throws IOException
      */
     public static PlugDescription getPlugDescription() throws IOException {
+      if (fPlugServer != null) {
+          return fPlugServer.loadPlugDescription();
+      }
+      return loadPlugDescriptionFromFile(PLUG_DESCRIPTION);
+    }
+    
+    /**
+     * Reads the plug description from a named xml file in the classpath.
+     * 
+     * @param  Filename for plug description
+     * @return The plug description.
+     * @throws IOException
+     */
+    public static PlugDescription getPlugDescription(String plugDescriptionFileName) throws IOException {
         if (fPlugServer != null) {
-            return fPlugServer.loadPlugDescription();
+            return fPlugServer.loadPlugDescription(plugDescriptionFileName);
         }
-        return loadPlugDescriptionFromFile();
+        return loadPlugDescriptionFromFile(plugDescriptionFileName);
     }
-
+    
     protected PlugDescription loadPlugDescription() throws IOException {
-        return loadPlugDescriptionFromFile();
+      return loadPlugDescriptionFromFile(PLUG_DESCRIPTION);
+    }    
+    
+    protected PlugDescription loadPlugDescription(String plugDescriptionFile) throws IOException {
+        return loadPlugDescriptionFromFile(plugDescriptionFile);
     }
 
-    private static PlugDescription loadPlugDescriptionFromFile() throws IOException {
-        InputStream resourceAsStream = PlugServer.class.getResourceAsStream(PLUG_DESCRIPTION);
+    private static PlugDescription loadPlugDescriptionFromFile(String plugDescriptionFileName) throws IOException {
+        InputStream resourceAsStream = PlugServer.class.getResourceAsStream(plugDescriptionFileName);
         XMLSerializer serializer = new XMLSerializer();
         PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);
         try {
@@ -331,6 +365,14 @@ public class PlugServer {
                 }
             }
         }
+    }
+
+    public static String getPlugDescriptionFileName() {
+      return fPlugDescriptionFileName;
+    }
+
+    public static void setPlugDescriptionFileName(String plugDescriptionFileName) {
+      fPlugDescriptionFileName = plugDescriptionFileName;
     }
 
 }

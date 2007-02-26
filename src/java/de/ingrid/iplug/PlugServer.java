@@ -32,7 +32,6 @@ import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
-import de.ingrid.utils.tool.MD5Util;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
@@ -65,8 +64,6 @@ public class PlugServer {
 
     private File fPlugDescriptionFile;
 
-    private static PlugServer fPlugServer;
-
     /**
      * Starts the admin server and initializes the plug server.
      * @param plugDescription
@@ -75,7 +72,6 @@ public class PlugServer {
      * @throws Exception
      */
     public PlugServer(PlugDescription plugDescription, File jxtaProperties, File plugdescriptionFile, int heartBeatIntervall) throws Exception {
-        fPlugServer = this;
         this.fCommunication = initJxtaCommunication(jxtaProperties, plugDescription);
         this.fPlugDescriptionFile = plugdescriptionFile;
         if ((plugDescription.getIplugAdminPassword() != null)
@@ -114,7 +110,6 @@ public class PlugServer {
      */
     public PlugServer(PlugDescription plugDescription, int unicastPort, int multicastPort, int heartBeatIntervall)
             throws Exception {
-        fPlugServer = this;
         this.fCommunication = initSocketCommunication(unicastPort, multicastPort);
         this.fPlugDescription = plugDescription;
         this.fHeartBeatInterval = heartBeatIntervall;

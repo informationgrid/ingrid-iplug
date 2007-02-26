@@ -101,6 +101,7 @@ public class WebContainer extends Thread {
             context.addSecurityConstraint("/", sc);
         }
         context.setAttribute("server", this);
+        context.setAttribute("busclient", this.fBusClient);
         Set set = _attributes.keySet();
         for (Iterator iter = set.iterator(); iter.hasNext();) {
           String key = (String) iter.next();

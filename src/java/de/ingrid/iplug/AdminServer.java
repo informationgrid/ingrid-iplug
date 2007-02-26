@@ -3,6 +3,8 @@ package de.ingrid.iplug;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.mortbay.http.UserRealm;
 
@@ -29,12 +31,13 @@ public class AdminServer {
         int port = Integer.parseInt(args[0]);
         File webFolder = new File(args[1]);
 
-        WebContainer container = startWebContainer(port, webFolder, false, null, null);
+        WebContainer container = startWebContainer(new HashMap(), port, webFolder, false, null, null);
         container.join();
     }
 
     /**
      * Starts a web container with jetty.
+     * @param plugdescriptionFilename 
      * @param port The port for the web server.
      * @param webFolder The folder where the web contexts are located.
      * @param secure True if authentication is requiered otherwise false.
@@ -46,10 +49,10 @@ public class AdminServer {
      * @throws Exception
      * @throws InterruptedException
      */
-    public static WebContainer startWebContainer(int port, File webFolder, boolean secure, UserRealm realm, BusClient busClient)
+    public static WebContainer startWebContainer(Map attributes, int port, File webFolder, boolean secure, UserRealm realm, BusClient busClient)
             throws IOException, NoSuchAlgorithmException, Exception, InterruptedException {
         WebContainer container = new WebContainer(port, secure);
-
+        container.setAttribues(attributes);
         if (secure) {
             container.setRealm(realm);
         }

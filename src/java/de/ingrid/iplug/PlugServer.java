@@ -52,7 +52,7 @@ public class PlugServer {
     /**
      * Plugdescription resource location.
      */
-    public static final String PLUG_DESCRIPTION = "/plugdescription.xml";
+    public static final String PLUG_DESCRIPTION = "conf/plugdescription.xml";
     
     /**
      * Name of the plug description file. 
@@ -80,7 +80,7 @@ public class PlugServer {
      * @param heartBeatIntervall
      * @throws Exception
      */
-    public PlugServer(PlugDescription plugDescription, String jxtaProperties, int heartBeatIntervall) throws Exception {
+    public PlugServer(PlugDescription plugDescription, File jxtaProperties, File plugdescriptionFile, int heartBeatIntervall) throws Exception {
         fPlugServer = this;
         this.fCommunication = initJxtaCommunication(jxtaProperties, plugDescription);
         if ((plugDescription.getIplugAdminPassword() != null)
@@ -91,8 +91,9 @@ public class PlugServer {
 
             BusClient busClient = BusClient.instance();
             busClient.setCommunication(this.fCommunication);
-
-            AdminServer.startWebContainer(plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm,
+            Map map = new HashMap();
+            map.put("pd_file", plugdescriptionFile);
+            AdminServer.startWebContainer(map, plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm,
                     busClient);
         }
         this.fPlugDescription = plugDescription;
@@ -179,17 +180,16 @@ public class PlugServer {
     public static void main(String[] args) throws Exception {
         Map arguments = readParameters(args);
         PlugDescription plugDescription = null;
+        File plugDescriptionFile = new File(PLUG_DESCRIPTION);
         if (arguments.containsKey("--plugdescription")) {
-          String plugDescriptionFileName = (String) arguments.get("--plugdescription");
-          plugDescription = getPlugDescription(plugDescriptionFileName);
-        } else {
-           plugDescription = getPlugDescription(PLUG_DESCRIPTION);
+           plugDescriptionFile = new File((String) arguments.get("--plugdescription"));
         }
+        plugDescription = getPlugDescription(plugDescriptionFile);
         
         PlugServer server = null;
         if (arguments.containsKey("--descriptor")) {
-            String jxtaConf = (String) arguments.get("--descriptor");
-            server = new PlugServer(plugDescription, jxtaConf, 90 * 1000);
+            File jxtaConf = new File((String) arguments.get("--descriptor"));
+            server = new PlugServer(plugDescription, jxtaConf, plugDescriptionFile, 90 * 1000);
         } else {
             int mPort = Integer.parseInt(args[0]);
             int uPort = Integer.parseInt(args[1]);
@@ -233,8 +233,10 @@ public class PlugServer {
         return plug;
     }
 
-    private ICommunication initJxtaCommunication(String jxtaProperties, PlugDescription plugDescription)
+    private ICommunication initJxtaCommunication(File jxtaProperties, PlugDescription plugDescription)
             throws IOException {
+        System.out.println("PlugServer.initJxtaCommunication()");
+        this.fLogger.info("read jxta property file: " + jxtaProperties.getAbsolutePath());
         FileInputStream confIS = new FileInputStream(jxtaProperties);
         ICommunication communication = StartJxtaConfig.configureFromProperties(confIS);
         WetagURL proxyUrl = new WetagURL(plugDescription.getProxyServiceURL());
@@ -261,7 +263,7 @@ public class PlugServer {
       if (fPlugServer != null) {
           return fPlugServer.loadPlugDescription();
       }
-      return loadPlugDescriptionFromFile(PLUG_DESCRIPTION);
+      return loadPlugDescriptionFromFile(new File(PLUG_DESCRIPTION));
     }
     
     /**
@@ -271,23 +273,23 @@ public class PlugServer {
      * @return The plug description.
      * @throws IOException
      */
-    public static PlugDescription getPlugDescription(String plugDescriptionFileName) throws IOException {
+    public static PlugDescription getPlugDescription(File plugDescriptionFile) throws IOException {
         if (fPlugServer != null) {
-            return fPlugServer.loadPlugDescription(plugDescriptionFileName);
+            return fPlugServer.loadPlugDescription(plugDescriptionFile);
         }
-        return loadPlugDescriptionFromFile(plugDescriptionFileName);
+        return loadPlugDescriptionFromFile(plugDescriptionFile);
     }
     
     protected PlugDescription loadPlugDescription() throws IOException {
-      return loadPlugDescriptionFromFile(PLUG_DESCRIPTION);
+      return loadPlugDescriptionFromFile(new File(PLUG_DESCRIPTION));
     }    
     
-    protected PlugDescription loadPlugDescription(String plugDescriptionFile) throws IOException {
+    protected PlugDescription loadPlugDescription(File plugDescriptionFile) throws IOException {
         return loadPlugDescriptionFromFile(plugDescriptionFile);
     }
 
-    private static PlugDescription loadPlugDescriptionFromFile(String plugDescriptionFileName) throws IOException {
-        InputStream resourceAsStream = PlugServer.class.getResourceAsStream(plugDescriptionFileName);
+    private static PlugDescription loadPlugDescriptionFromFile(File plugDescriptionFile) throws IOException {
+        InputStream resourceAsStream = new FileInputStream(plugDescriptionFile);
         XMLSerializer serializer = new XMLSerializer();
         PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);
         try {
@@ -305,7 +307,7 @@ public class PlugServer {
      * @throws IOException
      */
     public static String getPlugDescriptionMd5() throws IOException {
-        InputStream resourceAsStream = PlugServer.class.getResourceAsStream(PLUG_DESCRIPTION);
+        InputStream resourceAsStream = new FileInputStream(PLUG_DESCRIPTION);
         String md5 = MD5Util.getMD5(resourceAsStream);
         return md5;
     }

@@ -8,6 +8,8 @@ package de.ingrid.iplug.web;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +42,8 @@ public class WebContainer extends Thread {
     private UserRealm fRealm;
 
     private boolean fSecured;
+    
+    private Map _attributes = new HashMap();
 
     /**
      * Initializes the WebContainer.
@@ -73,6 +77,7 @@ public class WebContainer extends Thread {
      * Adds a web application to the container.
      * @param name A name for the application.
      * @param path The path of the application.
+     * @param pd_filename The name of the plug description file.
      * @throws Exception
      */
     public void addWebapp(String name, String path) throws Exception {
@@ -94,36 +99,7 @@ public class WebContainer extends Thread {
             context.addSecurityConstraint("/", sc);
         }
         context.setAttribute("server", this);
-        context.start();
-    }
-    
-    /**
-     * Adds a web application to the container.
-     * @param name A name for the application.
-     * @param path The path of the application.
-     * @param pd_filename The name of the plug description file.
-     * @throws Exception
-     */
-    public void addWebapp(String name, String path, String plugdescriptionfilename) throws Exception {
-        if (fServer == null || !fServer.isStarted()) {
-            throw new IOException("web container not started");
-        }
-        WebApplicationContext context = fServer.addWebApplication('/' + name, path);
-        ((HashSessionManager) context.getServletHandler().getSessionManager()).setCrossContextSessionIDs(true);
-        context.getServletHandler().setSessionInactiveInterval(SESSION_TIMEOUT);
-
-        if (this.fSecured) {
-            SecurityHandler handler = new SecurityHandler();
-            handler.setAuthMethod("BASIC");
-            context.addHandler(handler);
-            context.setAuthenticator(new BasicAuthenticator());
-            SecurityConstraint sc = new SecurityConstraint();
-            sc.setAuthenticate(true);
-            sc.addRole(SecurityConstraint.ANY_ROLE);
-            context.addSecurityConstraint("/", sc);
-        }
-        context.setAttribute("server", this);
-        context.setAttribute("pd_filename", plugdescriptionfilename);
+        context.setAttributes(_attributes);
         context.start();
     }
     
@@ -213,5 +189,13 @@ public class WebContainer extends Thread {
      */
     public void setBusClient(BusClient busClient) {
         this.fBusClient = busClient;
+    }
+    
+    public void addAttribute(String key, Object value) {
+        _attributes.put(key, value);
+    }
+
+    public void setAttribues(Map attributes) {
+        _attributes = attributes;
     }
 }

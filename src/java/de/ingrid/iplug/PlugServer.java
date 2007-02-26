@@ -318,5 +318,9 @@ public class PlugServer {
             }
         }
     }
+    
+    public static PlugDescription getPlugDescription() throws IOException {
+        return loadPlugDescriptionFromFile(new File(PLUG_DESCRIPTION));
+    }
 
 }

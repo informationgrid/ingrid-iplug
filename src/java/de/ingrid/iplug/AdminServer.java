@@ -53,6 +53,7 @@ public class AdminServer {
             throws IOException, NoSuchAlgorithmException, Exception, InterruptedException {
         WebContainer container = new WebContainer(port, secure);
         container.setAttribues(attributes);
+        container.setBusClient(busClient);
         if (secure) {
             container.setRealm(realm);
         }
@@ -62,7 +63,6 @@ public class AdminServer {
             for (int i = 0; i < files.length; i++) {
                 String file = files[i].getCanonicalPath();
                 container.addWebapp(files[i].getName(), file);
-                container.setBusClient(busClient);
             }
         }
 

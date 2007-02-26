@@ -82,6 +82,10 @@ public class PlugServer {
 
             BusClient busClient = BusClient.instance();
             busClient.setCommunication(this.fCommunication);
+            if(busClient.getBusUrl()==null || busClient.getBusUrl().equals("")) {
+                busClient.setBusUrl(plugDescription.getBusUrls()[0]);    
+            }
+            
             Map map = new HashMap();
             map.put("pd_file", plugdescriptionFile);
             AdminServer.startWebContainer(map, plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm,

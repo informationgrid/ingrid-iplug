@@ -49,18 +49,10 @@ public class PlugServer {
 
     protected final static Log fLogger = LogFactory.getLog(PlugServer.class);
 
-    /**
-     * Plugdescription resource location.
-     */
-    public static final String PLUG_DESCRIPTION = "conf/plugdescription.xml";
-    
-    /**
-     * Name of the plug description file. 
-     */
-    public static String fPlugDescriptionFileName = PLUG_DESCRIPTION;
-
     protected ICommunication fCommunication;
 
+    private static final String PLUG_DESCRIPTION = "conf/plugdescription.xml";
+    
     private IPlug fPlug;
 
     private HeartBeatTimeOutThread fTimeOutThread;
@@ -70,6 +62,8 @@ public class PlugServer {
     private PlugDescription fPlugDescription;
 
     private int fHeartBeatInterval;
+
+    private File fPlugDescriptionFile;
 
     private static PlugServer fPlugServer;
 
@@ -83,6 +77,7 @@ public class PlugServer {
     public PlugServer(PlugDescription plugDescription, File jxtaProperties, File plugdescriptionFile, int heartBeatIntervall) throws Exception {
         fPlugServer = this;
         this.fCommunication = initJxtaCommunication(jxtaProperties, plugDescription);
+        this.fPlugDescriptionFile = plugdescriptionFile;
         if ((plugDescription.getIplugAdminPassword() != null)
                 && (plugDescription.getIplugAdminPassword().trim().length() > 0)
                 && (plugDescription.getIplugAdminGuiPort() != 0)) {
@@ -156,7 +151,7 @@ public class PlugServer {
         String[] busUrls = this.fPlugDescription.getBusUrls();
         this.fTimeOutThread = new HeartBeatTimeOutThread();
         for (int i = 0; i < busUrls.length; i++) {
-            HeartBeatThread heartBeat = new HeartBeatThread(this.fCommunication, busUrls[i], this.fShutdownHook);
+            HeartBeatThread heartBeat = new HeartBeatThread(this.fPlugDescriptionFile, this.fPlugDescription, this.fCommunication, busUrls[i], this.fShutdownHook);
             heartBeat.setSleepInterval(this.fHeartBeatInterval);
             this.fTimeOutThread.addHearBeatThread(heartBeat);
             heartBeat.start();
@@ -184,7 +179,7 @@ public class PlugServer {
         if (arguments.containsKey("--plugdescription")) {
            plugDescriptionFile = new File((String) arguments.get("--plugdescription"));
         }
-        plugDescription = getPlugDescription(plugDescriptionFile);
+        plugDescription = loadPlugDescriptionFromFile(plugDescriptionFile);
         
         PlugServer server = null;
         if (arguments.containsKey("--descriptor")) {
@@ -222,7 +217,7 @@ public class PlugServer {
                 .println("Usage: You must set --descriptor <filename> for jxta or <multicastport> <unicastport> <IBusHost> <IBusPort> for socket communication");
     }
 
-    private static IPlug initPlug(PlugDescription plugDescription) throws Exception {
+    private IPlug initPlug(PlugDescription plugDescription) throws Exception {
         String plugClassStr = plugDescription.getIPlugClass();
         if (plugClassStr == null) {
             throw new NullPointerException("iplug class in plugdescription not set");
@@ -235,7 +230,6 @@ public class PlugServer {
 
     private ICommunication initJxtaCommunication(File jxtaProperties, PlugDescription plugDescription)
             throws IOException {
-        System.out.println("PlugServer.initJxtaCommunication()");
         this.fLogger.info("read jxta property file: " + jxtaProperties.getAbsolutePath());
         FileInputStream confIS = new FileInputStream(jxtaProperties);
         ICommunication communication = StartJxtaConfig.configureFromProperties(confIS);
@@ -253,42 +247,9 @@ public class PlugServer {
         return communication;
     }
 
-    /**
-     * Reads the plug description from a xml file in the classpath.
-     * 
-     * @return The plug description.
-     * @throws IOException
-     */
-    public static PlugDescription getPlugDescription() throws IOException {
-      if (fPlugServer != null) {
-          return fPlugServer.loadPlugDescription();
-      }
-      return loadPlugDescriptionFromFile(new File(PLUG_DESCRIPTION));
-    }
-    
-    /**
-     * Reads the plug description from a named xml file in the classpath.
-     * 
-     * @param  Filename for plug description
-     * @return The plug description.
-     * @throws IOException
-     */
-    public static PlugDescription getPlugDescription(File plugDescriptionFile) throws IOException {
-        if (fPlugServer != null) {
-            return fPlugServer.loadPlugDescription(plugDescriptionFile);
-        }
-        return loadPlugDescriptionFromFile(plugDescriptionFile);
-    }
-    
-    protected PlugDescription loadPlugDescription() throws IOException {
-      return loadPlugDescriptionFromFile(new File(PLUG_DESCRIPTION));
-    }    
-    
-    protected PlugDescription loadPlugDescription(File plugDescriptionFile) throws IOException {
-        return loadPlugDescriptionFromFile(plugDescriptionFile);
-    }
-
-    private static PlugDescription loadPlugDescriptionFromFile(File plugDescriptionFile) throws IOException {
+   
+   private static PlugDescription loadPlugDescriptionFromFile(File plugDescriptionFile) throws IOException {
+        fLogger.info("read plugdescription file: " + plugDescriptionFile.getAbsolutePath());
         InputStream resourceAsStream = new FileInputStream(plugDescriptionFile);
         XMLSerializer serializer = new XMLSerializer();
         PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);
@@ -301,17 +262,6 @@ public class PlugServer {
         return plugDescription;
     }
 
-    /**
-     * Returns the md5 hash of the plugdescription.
-     * @return The md5 hash of the plugdescription.
-     * @throws IOException
-     */
-    public static String getPlugDescriptionMd5() throws IOException {
-        InputStream resourceAsStream = new FileInputStream(PLUG_DESCRIPTION);
-        String md5 = MD5Util.getMD5(resourceAsStream);
-        return md5;
-    }
-    
     public IPlug getIPlugInstance() {
     	return this.fPlug;
     }
@@ -348,8 +298,8 @@ public class PlugServer {
                             }
                             iter.remove();
                             heartbeatThread.interrupt();
-                            heartbeatThread = new HeartBeatThread(PlugServer.this.fCommunication, heartbeatThread
-                                    .getBusUrl(), PlugServer.this.fShutdownHook);
+                            heartbeatThread = new HeartBeatThread(fPlugDescriptionFile, fPlugDescription, fCommunication, heartbeatThread
+                                    .getBusUrl(), fShutdownHook);
                             heartbeatThread.start();
                             beatsToAdd.add(heartbeatThread);
                         }
@@ -367,14 +317,6 @@ public class PlugServer {
                 }
             }
         }
-    }
-
-    public static String getPlugDescriptionFileName() {
-      return fPlugDescriptionFileName;
-    }
-
-    public static void setPlugDescriptionFileName(String plugDescriptionFileName) {
-      fPlugDescriptionFileName = plugDescriptionFileName;
     }
 
 }

@@ -6,6 +6,7 @@
 
 package de.ingrid.iplug;
 
+import java.io.File;
 import java.io.IOException;
 
 import net.weta.components.communication.ICommunication;
@@ -17,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.tool.MD5Util;
 
 /**
  * Sends the plug description as a heart beat continuesly to the ibus.
@@ -40,7 +42,13 @@ public class HeartBeatThread extends Thread {
 
     private long fLastSendHeartbeat = System.currentTimeMillis();
 
-    protected HeartBeatThread(ICommunication communication, String busUrl, PlugShutdownHook shutdownHook) {
+    private final PlugDescription fPlugDescription;
+
+    private final File plugdescriptionFile;
+
+    protected HeartBeatThread(File plugdescriptionFile, PlugDescription plugDescription, ICommunication communication, String busUrl, PlugShutdownHook shutdownHook) {
+        this.plugdescriptionFile = plugdescriptionFile;
+        this.fPlugDescription = plugDescription;
         this.fCommunication = communication;
         this.fBusUrl = busUrl;
         this.fShutdownHook = shutdownHook;
@@ -50,9 +58,7 @@ public class HeartBeatThread extends Thread {
         if (fLogger.isInfoEnabled()) {
             fLogger.info("heartbeat for '" + this.fBusUrl + "' started");
         }
-        PlugDescription plugDescription;
         try {
-            plugDescription = PlugServer.getPlugDescription();
             this.fBus = (IBus) ProxyService.createProxy(this.fCommunication, IBus.class, this.fBusUrl);
             this.fCommunication.subscribeGroup(this.fBusUrl);
         } catch (Exception e1) {
@@ -60,15 +66,14 @@ public class HeartBeatThread extends Thread {
         }
         try {
             while (!isInterrupted()) {
-                String md5Hash = PlugServer.getPlugDescriptionMd5();
-                String plugId = plugDescription.getPlugId();
+                String md5Hash = MD5Util.getMD5(this.plugdescriptionFile);
+                String plugId = this.fPlugDescription.getPlugId();
                 if (!this.fBus.containsPlugDescription(plugId, md5Hash)) {
                     if (fLogger.isInfoEnabled()) {
                         fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'...");
                     }
-                    plugDescription = PlugServer.getPlugDescription();
-                    plugDescription.setMd5Hash(md5Hash);
-                    this.fBus.addPlugDescription(plugDescription);
+                    this.fPlugDescription.setMd5Hash(md5Hash);
+                    this.fBus.addPlugDescription(this.fPlugDescription);
                     if (fLogger.isInfoEnabled()) {
                         fLogger.info("added or updated plug description to bus '" + this.fBusUrl + '\'');
                     }

@@ -347,14 +347,11 @@ public class IngridRealm implements UserRealm, SSORealm {
     }
 
     private List getAllPartnerWithProvider() {
-        System.out.println("IngridRealm.getAllPartnerWithProvider()");
         List list = new ArrayList();
         try {
             String query = "datatype:management management_request_type:1";
             IngridQuery ingridQuery = QueryStringParser.parse(query);
-            System.err.println("before");
             IngridHits hits = this.fIBus.search(ingridQuery, 1, 1, 1, 1000);
-            System.err.println("after");
             if (hits.length() > 0) {
               IngridHit hit = hits.getHits()[0];
               list = hit.getArrayList("partner"); 

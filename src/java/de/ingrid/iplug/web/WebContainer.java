@@ -9,7 +9,9 @@ package de.ingrid.iplug.web;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -99,7 +101,12 @@ public class WebContainer extends Thread {
             context.addSecurityConstraint("/", sc);
         }
         context.setAttribute("server", this);
-        context.setAttributes(_attributes);
+        Set set = _attributes.keySet();
+        for (Iterator iter = set.iterator(); iter.hasNext();) {
+          String key = (String) iter.next();
+          Object value = _attributes.get(key);
+          context.setAttribute(key, value);
+        }
         context.start();
     }
     

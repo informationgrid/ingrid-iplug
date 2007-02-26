@@ -50,7 +50,7 @@ public class PlugServer {
 
     protected ICommunication fCommunication;
 
-    public static final String PLUG_DESCRIPTION = "conf/plugdescription.xml";
+    private static final String PLUG_DESCRIPTION = "conf/plugdescription.xml";
     
     private IPlug fPlug;
 

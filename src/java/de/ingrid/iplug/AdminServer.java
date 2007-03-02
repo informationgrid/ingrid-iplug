@@ -30,8 +30,9 @@ public class AdminServer {
 
         int port = Integer.parseInt(args[0]);
         File webFolder = new File(args[1]);
-
-        WebContainer container = startWebContainer(new HashMap(), port, webFolder, false, null, null);
+        Map map = new HashMap();
+        map.put("pd_file", new File("conf/plugdescription.xml"));
+        WebContainer container = startWebContainer(map, port, webFolder, false, null, null);
         container.join();
     }
 

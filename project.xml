@@ -217,6 +217,9 @@
             <resource>
                 <directory>src/webapps</directory>
                 <filtering>false</filtering>
+                <excludes>
+                	<exclude>**/*</exclude>
+                </excludes>
             </resource>
         </resources>
     </build>

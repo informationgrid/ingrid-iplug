@@ -157,8 +157,6 @@ public class PlugServerTest extends TestCase {
 
     class TestPlugServer extends PlugServer {
 
-        private PlugDescription fPlugDescription;
-
         /**
          * @param plugDescription
          * @param unicastPort

@@ -21,6 +21,7 @@ import net.weta.components.communication.WetagURL;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication_sockets.SocketCommunication;
 import net.weta.components.communication_sockets.util.AddressUtil;
+import net.weta.components.http.StartHttpConfig;
 import net.weta.components.peer.StartJxtaConfig;
 
 import org.apache.commons.logging.Log;
@@ -77,7 +78,7 @@ public class PlugServer {
     public PlugServer(PlugDescription plugDescription, File jxtaProperties, File plugdescriptionFile,
             int heartBeatIntervall) throws Exception {
         this.fJxtaProperties = jxtaProperties;
-        this.fCommunication = initJxtaCommunication(jxtaProperties, plugDescription);
+        this.fCommunication = initHttpCommunication(jxtaProperties, plugDescription);
         this.fPlugDescriptionFile = plugdescriptionFile;
         if ((plugDescription.getIplugAdminPassword() != null)
                 && (plugDescription.getIplugAdminPassword().trim().length() > 0)
@@ -250,6 +251,16 @@ public class PlugServer {
         return communication;
     }
 
+    ICommunication initHttpCommunication(File httpProperties, PlugDescription plugDescription) throws IOException {
+        this.fLogger.info("read communication property file: " + httpProperties.getAbsolutePath());
+        FileInputStream confIS = new FileInputStream(httpProperties);
+        ICommunication communication = StartHttpConfig.configureFromProperties(confIS);
+        WetagURL proxyUrl = new WetagURL(plugDescription.getProxyServiceURL());
+        communication.setPeerName(proxyUrl.getPeerName());
+        communication.startup();
+        return communication;
+    }
+
     private ICommunication initSocketCommunication(int unicastPort, int multicastPort) throws IOException {
         SocketCommunication communication = new SocketCommunication();
         communication.setMulticastPort(multicastPort);
@@ -322,7 +333,7 @@ public class PlugServer {
 
                         PlugServer.this.fCommunication.shutdown();
                         try {
-                            PlugServer.this.fCommunication = initJxtaCommunication(PlugServer.this.fJxtaProperties,
+                            PlugServer.this.fCommunication = initHttpCommunication(PlugServer.this.fJxtaProperties,
                                     PlugServer.this.fPlugDescription);
                             setUpCommunication(PlugServer.this.fPlugDescription.getProxyServiceURL());
                             for (Iterator iter = this.fHeartBeatThreads.iterator(); iter.hasNext();) {

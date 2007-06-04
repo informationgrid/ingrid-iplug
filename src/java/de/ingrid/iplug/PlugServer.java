@@ -19,9 +19,7 @@ import java.util.Map;
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication.WetagURL;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
-import net.weta.components.communication_sockets.SocketCommunication;
-import net.weta.components.communication_sockets.util.AddressUtil;
-import net.weta.components.peer.StartJxtaConfig;
+import net.weta.components.communication.tcp.StartCommunication;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,10 +37,6 @@ import de.ingrid.utils.xml.XMLSerializer;
  * 
  * @author sg
  * @version $Revision: 1.3 $
- */
-/**
- * @author ak
- *
  */
 public class PlugServer {
 
@@ -72,7 +66,7 @@ public class PlugServer {
      * @throws Exception
      */
     public PlugServer(PlugDescription plugDescription, File jxtaProperties, File plugdescriptionFile, int heartBeatIntervall) throws Exception {
-        this.fCommunication = initJxtaCommunication(jxtaProperties, plugDescription);
+        this.fCommunication = initCommunication(jxtaProperties, plugDescription);
         this.fPlugDescriptionFile = plugdescriptionFile;
         if ((plugDescription.getIplugAdminPassword() != null)
                 && (plugDescription.getIplugAdminPassword().trim().length() > 0)
@@ -101,22 +95,6 @@ public class PlugServer {
      */
     public ICommunication getCommunication() {
         return this.fCommunication;
-    }
-
-    /**
-     * Starts the admin server with the socket communication.
-     * @param plugDescription
-     * @param unicastPort
-     * @param multicastPort
-     * @param heartBeatIntervall
-     * @throws Exception
-     * @deprecated
-     */
-    public PlugServer(PlugDescription plugDescription, int unicastPort, int multicastPort, int heartBeatIntervall)
-            throws Exception {
-        this.fCommunication = initSocketCommunication(unicastPort, multicastPort);
-        this.fPlugDescription = plugDescription;
-        this.fHeartBeatInterval = heartBeatIntervall;
     }
 
     /**
@@ -184,15 +162,7 @@ public class PlugServer {
         if (arguments.containsKey("--descriptor")) {
             File jxtaConf = new File((String) arguments.get("--descriptor"));
             server = new PlugServer(plugDescription, jxtaConf, plugDescriptionFile, 90 * 1000);
-        } else {
-            int mPort = Integer.parseInt(args[0]);
-            int uPort = Integer.parseInt(args[1]);
-            String busUrl = AddressUtil.getWetagURL(args[2], Integer.parseInt(args[3]));
-            // TODO remove 2 lines below
-            plugDescription.remove(PlugDescription.BUSES);
-            plugDescription.addBusUrl(busUrl);
-            server = new PlugServer(plugDescription, uPort, mPort, 30 * 1000);
-        }
+        } 
         if (server != null) {
             server.initPlugServer();
         }
@@ -227,26 +197,17 @@ public class PlugServer {
         return plug;
     }
 
-    private ICommunication initJxtaCommunication(File jxtaProperties, PlugDescription plugDescription)
+    private ICommunication initCommunication(File jxtaProperties, PlugDescription plugDescription)
             throws IOException {
         this.fLogger.info("read jxta property file: " + jxtaProperties.getAbsolutePath());
         FileInputStream confIS = new FileInputStream(jxtaProperties);
-        ICommunication communication = StartJxtaConfig.configureFromProperties(confIS);
+        ICommunication communication = StartCommunication.create(confIS);
         WetagURL proxyUrl = new WetagURL(plugDescription.getProxyServiceURL());
-        communication.setPeerName(proxyUrl.getPeerName());
+        communication.setPeerName(proxyUrl.getPath());
         communication.startup();
         return communication;
     }
 
-    private ICommunication initSocketCommunication(int unicastPort, int multicastPort) throws IOException {
-        SocketCommunication communication = new SocketCommunication();
-        communication.setMulticastPort(multicastPort);
-        communication.setUnicastPort(unicastPort);
-        communication.startup();
-        return communication;
-    }
-
-   
    private static PlugDescription loadPlugDescriptionFromFile(File plugDescriptionFile) throws IOException {
         fLogger.info("read plugdescription file: " + plugDescriptionFile.getAbsolutePath());
         InputStream resourceAsStream = new FileInputStream(plugDescriptionFile);

@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 1997-2005 by media style GmbH
- * 
- * $Source: $
- */
 
 package de.ingrid.iplug;
 
@@ -14,8 +9,7 @@ import java.io.InputStream;
 import junit.framework.TestCase;
 import net.weta.components.communication.reflect.ProxyService;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
-import net.weta.components.communication_sockets.SocketCommunication;
-import net.weta.components.communication_sockets.util.AddressUtil;
+import net.weta.components.communication.tcp.TcpCommunication;
 import de.ingrid.ibus.Bus;
 import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
 import de.ingrid.utils.IBus;
@@ -32,33 +26,36 @@ public class RegisterIPlugTest extends TestCase {
 
     private String fBusUrl = null;
 
-    private SocketCommunication iPlugCom;
+    private TcpCommunication iPlugCom;
 
-    private SocketCommunication iBusCom;
+    private TcpCommunication iBusCom;
 
     private PlugDescription fPlugDesc;
 
     protected void setUp() throws Exception {
-        this.fBusUrl = AddressUtil.getWetagURL("localhost", 9192);
-        this.iPlugCom = new SocketCommunication();
-        this.iPlugCom.setMulticastPort(9193);
-        this.iPlugCom.setUnicastPort(9194);
+        // remote proxy - start
+        this.iBusCom = new TcpCommunication();
+        this.iBusCom.addServer("127.0.0.1:9191");
+        this.iBusCom.setIsCommunicationServer(true);
+        this.iBusCom.startup();
+
+        
+        this.fBusUrl = "/101tec-group:ibus";
+        this.iPlugCom = new TcpCommunication();
+        this.iPlugCom.setPeerName("/101tec-group:iplug");
+        this.iPlugCom.addServer("127.0.0.1:9191");
+        this.iPlugCom.setIsCommunicationServer(false);
         this.iPlugCom.startup();
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IPlug.class, new DummyPlug());
         this.iPlugCom.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,
                 messageHandler);
 
-        // remote proxy - start
-        this.iBusCom = new SocketCommunication();
-        this.iBusCom.setMulticastPort(9191);
-        this.iBusCom.setUnicastPort(9192);
-        this.iBusCom.startup();
 
         this.fSerFile = File.createTempFile("RegisterIPlugTest", "ser");
 
         this.fPlugDesc = new PlugDescription();
-        this.fPlugDesc.setProxyServiceURL(AddressUtil.getWetagURL("localhost", 9194));
+        this.fPlugDesc.setProxyServiceURL("/101tec-group:iplug");
         this.fPlugDesc.setRecordLoader(false);
 
         XMLSerializer xmlSer = new XMLSerializer();
@@ -66,6 +63,12 @@ public class RegisterIPlugTest extends TestCase {
         Thread.sleep(200);
     }
 
+    protected void tearDown() throws Exception {
+        this.iBusCom.closeConnection("/101tec-group:iplug");
+        this.iBusCom.shutdown();
+        this.iPlugCom.closeConnection(null);
+        this.iPlugCom.shutdown();
+    }
     /**
      * @throws Throwable
      * @throws Exception
@@ -110,5 +113,4 @@ public class RegisterIPlugTest extends TestCase {
         IBus bus = (IBus) ProxyService.createProxy(this.iPlugCom, IBus.class, busUrl);
         bus.addPlugDescription(plugDesc);
     }
-
 }

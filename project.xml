@@ -4,7 +4,7 @@
     <artifactId>ingrid-iplug</artifactId>
     <name>ingrid-iplug</name>
     <groupId>ingrid</groupId>
-    <currentVersion>0.1-SNAPSHOT</currentVersion>
+    <currentVersion>0.2.0-SNAPSHOT</currentVersion>
     <inceptionYear>2005</inceptionYear>
     <logo>/images/logo.gif</logo>
     <shortDescription>short description</shortDescription>
@@ -12,7 +12,7 @@
     <siteAddress>http://213.144.28.209/ingrid/ingrid-iplug</siteAddress>
     <siteDirectory>/srv/www/htdocs/ingrid/ingrid-iplug</siteDirectory>
     <repository>
-        <connection>scm:svn:https://127.0.0.1:444/svn/ingrid/ingrid-iplug/trunk</connection>
+        <connection>scm:svn:https://127.0.0.1:444/svn/ingrid/ingrid-iplug/branches/ingrid-iplug-sockets</connection>
     </repository>
     <mailingLists>
         <mailingList>
@@ -102,18 +102,6 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>weta-components</groupId>
-            <artifactId>communication</artifactId>
-            <version>SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>weta-components</groupId>
-            <artifactId>communication-sockets</artifactId>
-            <version>SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
             <version>2.1_3</version>
@@ -175,18 +163,6 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>weta-components</groupId>
-            <artifactId>communication-jxta</artifactId>
-            <version>SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>jxta</groupId>
-            <artifactId>jxta</artifactId>
-            <version>2.3.6</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
             <groupId>jaxen</groupId>
             <artifactId>jaxen</artifactId>
             <version>1.1-beta-4</version>
@@ -199,11 +175,10 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcprov</artifactId>
-            <version>jdk14-124</version>
-            <type>jar</type>
-        </dependency>
+			<groupId>ingrid</groupId>
+			<artifactId>ingrid-communication</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
     </dependencies>
     <build>
         <sourceDirectory>src/java</sourceDirectory>

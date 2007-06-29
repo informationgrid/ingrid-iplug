@@ -13,7 +13,7 @@
   <siteAddress>http://213.144.28.209/ingrid/ingrid-iplug</siteAddress>
   <siteDirectory>/srv/www/htdocs/ingrid/ingrid-iplug</siteDirectory>
   <repository>
-    <connection>scm:svn:https://127.0.0.1:444/svn/ingrid/ingrid-iplug/trunk</connection>
+    <connection>scm:svn:https://127.0.0.1:444/svn/ingrid/ingrid-iplug/branches/ingrid-iplug-1.0.0</connection>
   </repository>
   <mailingLists>
     <mailingList>

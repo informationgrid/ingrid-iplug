@@ -80,19 +80,19 @@
         <dependency>
             <groupId>ingrid</groupId>
             <artifactId>ingrid-utils</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${pom.currentVersion}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>ingrid</groupId>
             <artifactId>ingrid-ibus</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${pom.currentVersion}</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>ingrid</groupId>
             <artifactId>ingrid-ibus-client</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${pom.currentVersion}</version>
             <type>jar</type>
         </dependency>
         <dependency>

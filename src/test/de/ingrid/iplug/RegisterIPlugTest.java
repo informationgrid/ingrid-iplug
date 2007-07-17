@@ -35,6 +35,7 @@ public class RegisterIPlugTest extends TestCase {
     protected void setUp() throws Exception {
         // remote proxy - start
         this.iBusCom = new TcpCommunication();
+        this.iBusCom.setPeerName("/101tec-group:ibus");
         this.iBusCom.addServer("127.0.0.1:9191");
         this.iBusCom.setIsCommunicationServer(true);
         this.iBusCom.startup();
@@ -44,6 +45,7 @@ public class RegisterIPlugTest extends TestCase {
         this.iPlugCom = new TcpCommunication();
         this.iPlugCom.setPeerName("/101tec-group:iplug");
         this.iPlugCom.addServer("127.0.0.1:9191");
+        this.iPlugCom.addServerName("/101tec-group:ibus");
         this.iPlugCom.setIsCommunicationServer(false);
         this.iPlugCom.startup();
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();

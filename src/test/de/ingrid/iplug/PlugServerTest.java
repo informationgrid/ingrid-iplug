@@ -55,6 +55,7 @@ public class PlugServerTest extends TestCase {
         _file = File.createTempFile("plugTest", "properties");
         Properties properties = new Properties();
         properties.put("Server.1", "127.0.0.1:9191");
+        properties.put("ServerName.1", "/101tec-group:ibus");
         properties.put("IsCommunicationServer", "false");
         properties.put("PeerName", "bus-client");
         properties.put("Proxy", "127.0.0.1:8080");

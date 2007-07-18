@@ -61,12 +61,12 @@ public class PlugServer {
     /**
      * Starts the admin server and initializes the plug server.
      * @param plugDescription
-     * @param jxtaProperties
+     * @param commProperties
      * @param heartBeatIntervall
      * @throws Exception
      */
-    public PlugServer(PlugDescription plugDescription, File jxtaProperties, File plugdescriptionFile, int heartBeatIntervall) throws Exception {
-        this.fCommunication = initCommunication(jxtaProperties, plugDescription);
+    public PlugServer(PlugDescription plugDescription, File commProperties, File plugdescriptionFile, int heartBeatIntervall) throws Exception {
+        this.fCommunication = initCommunication(commProperties, plugDescription);
         this.fPlugDescriptionFile = plugdescriptionFile;
         if ((plugDescription.getIplugAdminPassword() != null)
                 && (plugDescription.getIplugAdminPassword().trim().length() > 0)
@@ -160,8 +160,8 @@ public class PlugServer {
         
         PlugServer server = null;
         if (arguments.containsKey("--descriptor")) {
-            File jxtaConf = new File((String) arguments.get("--descriptor"));
-            server = new PlugServer(plugDescription, jxtaConf, plugDescriptionFile, 90 * 1000);
+            File commConf = new File((String) arguments.get("--descriptor"));
+            server = new PlugServer(plugDescription, commConf, plugDescriptionFile, 90 * 1000);
         } 
         if (server != null) {
             server.initPlugServer();
@@ -197,10 +197,10 @@ public class PlugServer {
         return plug;
     }
 
-    private ICommunication initCommunication(File jxtaProperties, PlugDescription plugDescription)
+    private ICommunication initCommunication(File commProperties, PlugDescription plugDescription)
             throws IOException {
-        this.fLogger.info("read jxta property file: " + jxtaProperties.getAbsolutePath());
-        FileInputStream confIS = new FileInputStream(jxtaProperties);
+        this.fLogger.info("read jxta property file: " + commProperties.getAbsolutePath());
+        FileInputStream confIS = new FileInputStream(commProperties);
         ICommunication communication = StartCommunication.create(confIS);
         WetagURL proxyUrl = new WetagURL(plugDescription.getProxyServiceURL());
         communication.setPeerName(proxyUrl.getPath());

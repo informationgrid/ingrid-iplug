@@ -3,10 +3,13 @@ package de.ingrid.iplug;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+
+import net.weta.components.communication.ICommunication;
+import net.weta.components.communication.tcp.StartCommunication;
+import net.weta.components.communication.tcp.TcpCommunication;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,9 +17,6 @@ import org.mortbay.http.UserRealm;
 
 import de.ingrid.ibus.client.BusClient;
 import de.ingrid.iplug.web.WebContainer;
-import de.ingrid.utils.IRecordLoader;
-import de.ingrid.utils.PlugDescription;
-import de.ingrid.utils.xml.XMLSerializer;
 
 /**
  * 
@@ -26,6 +26,8 @@ public class AdminServer {
   protected final static Log fLogger = LogFactory.getLog(PlugServer.class);
   
   private static final String PLUG_DESCRIPTION = "conf/plugdescription.xml";
+
+  private static final String COMMUNICATION_PROPERTES = "conf/communication.properties";
   
     /**
      * To start the admin web server from the commandline. 
@@ -44,12 +46,24 @@ public class AdminServer {
         if (arguments.containsKey("--plugdescription")) {
           plugDescriptionFile = new File((String) arguments.get("--plugdescription"));
        }
+        File communicationProperties = new File(COMMUNICATION_PROPERTES);
+        if (arguments.containsKey("--descriptor")) {
+           communicationProperties = new File((String) arguments.get("--descriptor"));
+        }
+        ICommunication communication = initCommunication(communicationProperties);
+        BusClient busClient = BusClient.instance();
+        busClient.setCommunication(communication);
+        
+        //DIRTY HACK; we cast the ICommunication into TcpCommunication.
+        String serverName = (String) ((TcpCommunication) communication).getServerNames().get(0);
+        busClient.setBusUrl(serverName);
+        //DIRTY HACK
         
         int port = Integer.parseInt(args[0]);
         File webFolder = new File(args[1]);
         Map map = new HashMap();
         map.put("pd_file", plugDescriptionFile);
-        WebContainer container = startWebContainer(map, port, webFolder, false, null, null);
+        WebContainer container = startWebContainer(map, port, webFolder, false, null, busClient);
         container.join();
     }
 
@@ -105,17 +119,12 @@ public class AdminServer {
               .println("Usage: You must set --descriptor <filename> for jxta or <multicastport> <unicastport> <IBusHost> <IBusPort> for socket communication");
   }
     
-    private static PlugDescription loadPlugDescriptionFromFile(File plugDescriptionFile) throws IOException {
-      fLogger.info("read plugdescription file: " + plugDescriptionFile.getAbsolutePath());
-      InputStream resourceAsStream = new FileInputStream(plugDescriptionFile);
-      XMLSerializer serializer = new XMLSerializer();
-      PlugDescription plugDescription = (PlugDescription) serializer.deSerialize(resourceAsStream);
-      try {
-          plugDescription.setRecordLoader(IRecordLoader.class.isAssignableFrom(Class.forName(plugDescription
-                  .getIPlugClass())));
-      } catch (ClassNotFoundException e) {
-          new RuntimeException("iplug class not in classpath", e);
-      }
-      return plugDescription;
-  }
+    private static ICommunication initCommunication(File communicationProperties) throws IOException {
+        fLogger.info("read communication property file: " + communicationProperties.getAbsolutePath());
+        FileInputStream confIS = new FileInputStream(communicationProperties);
+        ICommunication communication = StartCommunication.create(confIS);
+        communication.startup();
+        return communication;
+    }
+
 }

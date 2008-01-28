@@ -41,7 +41,7 @@ public class AdminServer {
     public static void main(String[] args) throws Exception {
         BeanFactory beanFactory = new BeanFactory();
         String usage = "<serverPort> <webappFolder>";
-        if ((args.length != 2) && (args.length != 4)) {
+        if (args.length == 0) {
             System.err.println(usage);
             return;
         }

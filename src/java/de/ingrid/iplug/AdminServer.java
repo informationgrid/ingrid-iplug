@@ -17,6 +17,10 @@ import org.mortbay.http.UserRealm;
 
 import de.ingrid.ibus.client.BusClient;
 import de.ingrid.iplug.web.WebContainer;
+import de.ingrid.utils.BeanFactory;
+import de.ingrid.utils.datatype.DataTypeEditor;
+import de.ingrid.utils.datatype.DataTypeProvider;
+import de.ingrid.utils.datatype.IDataTypeProvider;
 
 /**
  * 
@@ -35,6 +39,7 @@ public class AdminServer {
      * @throws Exception Something goes wrong.
      */
     public static void main(String[] args) throws Exception {
+        BeanFactory beanFactory = new BeanFactory();
         String usage = "<serverPort> <webappFolder>";
         if ((args.length != 2) && (args.length != 4)) {
             System.err.println(usage);
@@ -61,11 +66,15 @@ public class AdminServer {
         
         int port = Integer.parseInt(args[0]);
         File webFolder = new File(args[1]);
-        Map map = new HashMap();
-        map.put("pd_file", plugDescriptionFile);
-        WebContainer container = startWebContainer(map, port, webFolder, false, null, busClient);
+        
+        IDataTypeProvider dataTypeProvider = new DataTypeProvider(new DataTypeEditor());
+        beanFactory.addBean("pd_file", plugDescriptionFile);
+        beanFactory.addBean("dataTypeProvider", dataTypeProvider);
+        
+        WebContainer container = startWebContainer(beanFactory, port, webFolder, false, null, busClient);
         container.join();
     }
+
 
     /**
      * Starts a web container with jetty.
@@ -81,10 +90,10 @@ public class AdminServer {
      * @throws Exception
      * @throws InterruptedException
      */
-    public static WebContainer startWebContainer(Map attributes, int port, File webFolder, boolean secure, UserRealm realm, BusClient busClient)
+    public static WebContainer startWebContainer(BeanFactory beanFactory, int port, File webFolder, boolean secure, UserRealm realm, BusClient busClient)
             throws IOException, NoSuchAlgorithmException, Exception, InterruptedException {
         WebContainer container = new WebContainer(port, secure);
-        container.setAttribues(attributes);
+        container.setBeanFactory(beanFactory);
         container.setBusClient(busClient);
         if (secure) {
             container.setRealm(realm);

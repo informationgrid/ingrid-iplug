@@ -27,9 +27,13 @@ import org.mortbay.http.HashUserRealm;
 
 import de.ingrid.ibus.client.BusClient;
 import de.ingrid.iplug.util.PlugShutdownHook;
+import de.ingrid.utils.BeanFactory;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.datatype.DataTypeEditor;
+import de.ingrid.utils.datatype.DataTypeProvider;
+import de.ingrid.utils.datatype.IDataTypeProvider;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
@@ -80,9 +84,12 @@ public class PlugServer {
                 busClient.setBusUrl(plugDescription.getBusUrls()[0]);    
             }
             
-            Map map = new HashMap();
-            map.put("pd_file", plugdescriptionFile);
-            AdminServer.startWebContainer(map, plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm,
+            BeanFactory beanFactory = new BeanFactory();
+            IDataTypeProvider dataTypeProvider = new DataTypeProvider(new DataTypeEditor());
+            beanFactory.addBean("pd_file", plugdescriptionFile);
+            beanFactory.addBean("dataTypeProvider", dataTypeProvider);
+            
+            AdminServer.startWebContainer(beanFactory, plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm,
                     busClient);
         }
         this.fPlugDescription = plugDescription;

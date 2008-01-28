@@ -8,10 +8,6 @@ package de.ingrid.iplug.web;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +21,7 @@ import org.mortbay.jetty.servlet.HashSessionManager;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 
 import de.ingrid.ibus.client.BusClient;
+import de.ingrid.utils.BeanFactory;
 
 /**
  * A container for web application contexts.
@@ -44,8 +41,9 @@ public class WebContainer extends Thread {
     private UserRealm fRealm;
 
     private boolean fSecured;
+
+    private BeanFactory _beanFactory;
     
-    private Map _attributes = new HashMap();
 
     /**
      * Initializes the WebContainer.
@@ -102,12 +100,7 @@ public class WebContainer extends Thread {
         }
         context.setAttribute("server", this);
         context.setAttribute("busclient", this.fBusClient);
-        Set set = _attributes.keySet();
-        for (Iterator iter = set.iterator(); iter.hasNext();) {
-          String key = (String) iter.next();
-          Object value = _attributes.get(key);
-          context.setAttribute(key, value);
-        }
+        context.setAttribute("beanFactory", _beanFactory);
         context.start();
     }
     
@@ -199,11 +192,8 @@ public class WebContainer extends Thread {
         this.fBusClient = busClient;
     }
     
-    public void addAttribute(String key, Object value) {
-        _attributes.put(key, value);
-    }
 
-    public void setAttribues(Map attributes) {
-        _attributes = attributes;
+    public void setBeanFactory(BeanFactory beanFactory) {
+        _beanFactory = beanFactory;
     }
 }

@@ -8,6 +8,7 @@ package de.ingrid.iplug.web;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +43,7 @@ public class WebContainer extends Thread {
 
     private boolean fSecured;
 
-    private Map _contextInitParams;
+    private Map _contextInitParams = new HashMap();
 
     /**
      * Initializes the WebContainer.

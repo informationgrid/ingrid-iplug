@@ -27,13 +27,9 @@ import org.mortbay.http.HashUserRealm;
 
 import de.ingrid.ibus.client.BusClient;
 import de.ingrid.iplug.util.PlugShutdownHook;
-import de.ingrid.utils.BeanFactory;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
-import de.ingrid.utils.datatype.DataTypeEditor;
-import de.ingrid.utils.datatype.DataTypeProvider;
-import de.ingrid.utils.datatype.IDataTypeProvider;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
@@ -78,19 +74,10 @@ public class PlugServer {
             HashUserRealm realm = new HashUserRealm(plugDescription.getProxyServiceURL());
             realm.put("admin", plugDescription.getIplugAdminPassword());
 
-            BusClient busClient = BusClient.instance();
-            busClient.setCommunication(this.fCommunication);
-            if(busClient.getBusUrl()==null || busClient.getBusUrl().equals("")) {
-                busClient.setBusUrl(plugDescription.getBusUrls()[0]);    
-            }
-            
-            BeanFactory beanFactory = new BeanFactory();
-            IDataTypeProvider dataTypeProvider = new DataTypeProvider(new DataTypeEditor());
-            beanFactory.addBean("pd_file", plugdescriptionFile);
-            beanFactory.addBean("dataTypeProvider", dataTypeProvider);
-            
-            AdminServer.startWebContainer(beanFactory, plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm,
-                    busClient);
+            HashMap hashMap = new HashMap();
+            hashMap.put("plugdescription.xml", this.fPlugDescriptionFile.getAbsolutePath());
+            hashMap.put("communication.properties", commProperties.getAbsolutePath());
+            AdminServer.startWebContainer(hashMap, plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm);
         }
         this.fPlugDescription = plugDescription;
         this.fHeartBeatInterval = heartBeatIntervall;

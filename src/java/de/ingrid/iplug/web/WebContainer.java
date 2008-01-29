@@ -8,6 +8,9 @@ package de.ingrid.iplug.web;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,9 +23,6 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.HashSessionManager;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 
-import de.ingrid.ibus.client.BusClient;
-import de.ingrid.utils.BeanFactory;
-
 /**
  * A container for web application contexts.
  */
@@ -30,25 +30,27 @@ public class WebContainer extends Thread {
 
     private static Log log = LogFactory.getLog(WebContainer.class);
 
-    private static final int SESSION_TIMEOUT = 60 * 60 * 8; // 8 days for timeout...
+    private static final int SESSION_TIMEOUT = 60 * 60 * 8; // 8 days for
+
+    // timeout...
 
     private static Server fServer;
 
-    private BusClient fBusClient;
-    
     private int fPort;
 
     private UserRealm fRealm;
 
     private boolean fSecured;
 
-    private BeanFactory _beanFactory;
-    
+    private Map _contextInitParams;
 
     /**
      * Initializes the WebContainer.
-     * @param port The port to the web server.
-     * @param secured True if it should be secured by authorization otherwise false.
+     * 
+     * @param port
+     *            The port to the web server.
+     * @param secured
+     *            True if it should be secured by authorization otherwise false.
      */
     public WebContainer(int port, boolean secured) {
         this.fPort = port;
@@ -75,9 +77,13 @@ public class WebContainer extends Thread {
 
     /**
      * Adds a web application to the container.
-     * @param name A name for the application.
-     * @param path The path of the application.
-     * @param pd_filename The name of the plug description file.
+     * 
+     * @param name
+     *            A name for the application.
+     * @param path
+     *            The path of the application.
+     * @param pd_filename
+     *            The name of the plug description file.
      * @throws Exception
      */
     public void addWebapp(String name, String path) throws Exception {
@@ -98,14 +104,19 @@ public class WebContainer extends Thread {
             sc.addRole(SecurityConstraint.ANY_ROLE);
             context.addSecurityConstraint("/", sc);
         }
-        context.setAttribute("server", this);
-        context.setAttribute("busclient", this.fBusClient);
-        context.setAttribute("beanFactory", _beanFactory);
+
+        Set keySet = _contextInitParams.keySet();
+        for (Iterator iterator = keySet.iterator(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            String value = (String) _contextInitParams.get(key);
+            context.setInitParameter(key, value);
+        }
         context.start();
     }
-    
+
     /**
      * Starts the web container.
+     * 
      * @throws IOException
      */
     public void startContainer() throws IOException {
@@ -119,7 +130,7 @@ public class WebContainer extends Thread {
             } catch (InterruptedException ie) {
                 log.error(ie.getMessage(), ie);
             }
-            
+
             if (0 == i) {
                 throw new IOException("Could not start web container");
             }
@@ -140,7 +151,8 @@ public class WebContainer extends Thread {
     /**
      * Logout a user.
      * 
-     * @param principal The user.
+     * @param principal
+     *            The user.
      */
     public void logoutUser(Principal principal) {
         if (this.fRealm != null) {
@@ -154,7 +166,8 @@ public class WebContainer extends Thread {
     /**
      * Removes a user.
      * 
-     * @param userName The name of the user.
+     * @param userName
+     *            The name of the user.
      */
     public void removeUser(String userName) {
         fServer.removeRealm(userName);
@@ -162,6 +175,7 @@ public class WebContainer extends Thread {
 
     /**
      * Returns the currently used realm.
+     * 
      * @return The used realm.
      */
     public UserRealm getRealm() {
@@ -170,30 +184,15 @@ public class WebContainer extends Thread {
 
     /**
      * Sets the realm for authentication.
-     * @param realm The relam to use.
+     * 
+     * @param realm
+     *            The relam to use.
      */
     public void setRealm(UserRealm realm) {
         this.fRealm = realm;
     }
 
-    /**
-     * Returns the bus client.
-     * @return The used bus client.
-     */
-    public BusClient getBusClient() {
-        return this.fBusClient;
-    }
-
-    /**
-     * Sets the bus client.
-     * @param busClient The bus client to use.
-     */
-    public void setBusClient(BusClient busClient) {
-        this.fBusClient = busClient;
-    }
-    
-
-    public void setBeanFactory(BeanFactory beanFactory) {
-        _beanFactory = beanFactory;
+    public void setContextInitParams(Map map) {
+        _contextInitParams = map;
     }
 }

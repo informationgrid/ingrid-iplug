@@ -1,26 +1,16 @@
 package de.ingrid.iplug;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.weta.components.communication.ICommunication;
-import net.weta.components.communication.tcp.StartCommunication;
-import net.weta.components.communication.tcp.TcpCommunication;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.http.UserRealm;
 
-import de.ingrid.ibus.client.BusClient;
 import de.ingrid.iplug.web.WebContainer;
-import de.ingrid.utils.BeanFactory;
-import de.ingrid.utils.datatype.DataTypeEditor;
-import de.ingrid.utils.datatype.DataTypeProvider;
-import de.ingrid.utils.datatype.IDataTypeProvider;
 
 /**
  * 
@@ -39,9 +29,9 @@ public class AdminServer {
      * @throws Exception Something goes wrong.
      */
     public static void main(String[] args) throws Exception {
-        BeanFactory beanFactory = new BeanFactory();
+        
         String usage = "<serverPort> <webappFolder>";
-        if (args.length == 0) {
+        if ((args.length == 0) && (args.length != 4) && (args.length != 6)) {
             System.err.println(usage);
             return;
         }
@@ -55,23 +45,17 @@ public class AdminServer {
         if (arguments.containsKey("--descriptor")) {
            communicationProperties = new File((String) arguments.get("--descriptor"));
         }
-        ICommunication communication = initCommunication(communicationProperties);
-        BusClient busClient = BusClient.instance();
-        busClient.setCommunication(communication);
-        
-        //DIRTY HACK; we cast the ICommunication into TcpCommunication.
-        String serverName = (String) ((TcpCommunication) communication).getServerNames().get(0);
-        busClient.setBusUrl(serverName);
-        //DIRTY HACK
         
         int port = Integer.parseInt(args[0]);
         File webFolder = new File(args[1]);
         
-        IDataTypeProvider dataTypeProvider = new DataTypeProvider(new DataTypeEditor());
-        beanFactory.addBean("pd_file", plugDescriptionFile);
-        beanFactory.addBean("dataTypeProvider", dataTypeProvider);
+
+        //push init params for all contexts (e.g. step1 and step2)
+        HashMap hashMap = new HashMap();
+        hashMap.put("plugdescription.xml", plugDescriptionFile.getAbsolutePath());
+        hashMap.put("communication.properties", communicationProperties.getAbsolutePath());
         
-        WebContainer container = startWebContainer(beanFactory, port, webFolder, false, null, busClient);
+        WebContainer container = startWebContainer(hashMap, port, webFolder, false, null);
         container.join();
     }
 
@@ -90,11 +74,10 @@ public class AdminServer {
      * @throws Exception
      * @throws InterruptedException
      */
-    public static WebContainer startWebContainer(BeanFactory beanFactory, int port, File webFolder, boolean secure, UserRealm realm, BusClient busClient)
+    public static WebContainer startWebContainer(Map contextInitParams, int port, File webFolder, boolean secure, UserRealm realm)
             throws IOException, NoSuchAlgorithmException, Exception, InterruptedException {
         WebContainer container = new WebContainer(port, secure);
-        container.setBeanFactory(beanFactory);
-        container.setBusClient(busClient);
+        container.setContextInitParams(contextInitParams);
         if (secure) {
             container.setRealm(realm);
         }
@@ -113,7 +96,7 @@ public class AdminServer {
     private static Map readParameters(String[] args) {
       Map argumentMap = new HashMap();
       // convert and validate the supplied arguments
-      if (2 != args.length && 4 != args.length) {
+      if ((args.length == 0) && (args.length != 4) && (args.length != 6)) {
           printUsage();
           System.exit(1);
       }
@@ -125,15 +108,9 @@ public class AdminServer {
     
     private static void printUsage() {
       System.err
-              .println("Usage: You must set --descriptor <filename> for jxta or <multicastport> <unicastport> <IBusHost> <IBusPort> for socket communication");
+              .println("Usage: You must set --plugdescription <plugdescription.xml> --descriptor <communication.properties>");
   }
     
-    private static ICommunication initCommunication(File communicationProperties) throws IOException {
-        fLogger.info("read communication property file: " + communicationProperties.getAbsolutePath());
-        FileInputStream confIS = new FileInputStream(communicationProperties);
-        ICommunication communication = StartCommunication.create(confIS);
-        communication.startup();
-        return communication;
-    }
+  
 
 }

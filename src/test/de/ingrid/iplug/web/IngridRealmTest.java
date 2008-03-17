@@ -49,22 +49,22 @@ public class IngridRealmTest extends TestCase {
 //        }
 //    }
 //
-    public void testADMINPORTAL() throws Exception {
-        String name = "TestKatAdmin";
-        BusClient client = BusClient.instance();
-        client.setBusUrl("/torwald-group:torwald-ibus");
-        ICommunication communication = StartCommunication.create(new FileInputStream("src/conf/communication.properties"));
-        communication.startup();
-        client.setCommunication(communication);
-        IngridRealm ingridRealm = new IngridRealm("IngridRealm", client.getBus(), "SHA-1");
-        assertNotNull(ingridRealm.authenticate(name, name, null));
-        Principal principal = ingridRealm.getPrincipal(name);
-        System.out.println(principal.getName());
-        assertNotNull(principal);
-        User user = (User) principal;
-        List partnerWithProvider = user.getPartnerWithProvider();
-        System.out.println(partnerWithProvider);
-    }
+//    public void testADMINPORTAL() throws Exception {
+//        String name = "TestKatAdmin";
+//        BusClient client = BusClient.instance();
+//        client.setBusUrl("/torwald-group:torwald-ibus");
+//        ICommunication communication = StartCommunication.create(new FileInputStream("src/conf/communication.properties"));
+//        communication.startup();
+//        client.setCommunication(communication);
+//        IngridRealm ingridRealm = new IngridRealm("IngridRealm", client.getBus(), "SHA-1");
+//        assertNotNull(ingridRealm.authenticate(name, name, null));
+//        Principal principal = ingridRealm.getPrincipal(name);
+//        System.out.println(principal.getName());
+//        assertNotNull(principal);
+//        User user = (User) principal;
+//        List partnerWithProvider = user.getPartnerWithProvider();
+//        System.out.println(partnerWithProvider);
+//    }
 //
 //    public void testMB() throws Exception {
 //        String name = "mb";

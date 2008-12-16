@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import junit.framework.TestCase;
+import net.weta.components.communication.configuration.ClientConfiguration;
+import net.weta.components.communication.configuration.ServerConfiguration;
+import net.weta.components.communication.configuration.ClientConfiguration.ClientConnection;
 import net.weta.components.communication.reflect.ProxyService;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication.tcp.TcpCommunication;
@@ -36,17 +39,22 @@ public class RegisterIPlugTest extends TestCase {
         // remote proxy - start
         this.iBusCom = new TcpCommunication();
         this.iBusCom.setPeerName("/101tec-group:ibus");
-        this.iBusCom.addServer("127.0.0.1:9191");
-        this.iBusCom.setIsCommunicationServer(true);
+        ServerConfiguration serverConfiguration = new ServerConfiguration();
+		serverConfiguration.setPort(9191);
+		this.iBusCom.configure(serverConfiguration);
         this.iBusCom.startup();
 
         
         this.fBusUrl = "/101tec-group:ibus";
         this.iPlugCom = new TcpCommunication();
-        this.iPlugCom.setPeerName("/101tec-group:iplug");
-        this.iPlugCom.addServer("127.0.0.1:9191");
-        this.iPlugCom.addServerName("/101tec-group:ibus");
-        this.iPlugCom.setIsCommunicationServer(false);
+        ClientConfiguration clientConfiguration = new ClientConfiguration();
+		clientConfiguration.setName("/101tec-group:iplug");
+		ClientConnection clientConnection = clientConfiguration.new ClientConnection();
+		clientConnection.setServerIp("127.0.0.1");
+		clientConnection.setServerPort(9191);
+		clientConnection.setServerName("/101tec-group:ibus");
+		clientConfiguration.addClientConnection(clientConnection);
+		this.iPlugCom.configure(clientConfiguration);
         this.iPlugCom.startup();
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IPlug.class, new DummyPlug());

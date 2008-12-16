@@ -1,7 +1,10 @@
 package de.ingrid.iplug.metadata;
 
+import java.io.Serializable;
 
-public class Metadata {
+public class Metadata implements Serializable {
+
+	private static final long serialVersionUID = -882806556761084500L;
 
 	private MetadataAnnotation _metaDataAnnotation;
 
@@ -11,6 +14,7 @@ public class Metadata {
 	}
 
 	public String getVersion() {
-		return _metaDataAnnotation.version();
+		return _metaDataAnnotation != null ? _metaDataAnnotation.version()
+				: "unknown";
 	}
 }

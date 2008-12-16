@@ -25,7 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.http.HashUserRealm;
 
-import de.ingrid.ibus.client.BusClient;
+import de.ingrid.iplug.metadata.IMetadataInjector;
+import de.ingrid.iplug.metadata.MetadataInjectorFactory;
 import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
@@ -152,6 +153,8 @@ public class PlugServer {
         }
         plugDescription = loadPlugDescriptionFromFile(plugDescriptionFile);
         
+        injectMetadatas(plugDescription);
+        
         PlugServer server = null;
         if (arguments.containsKey("--descriptor")) {
             File commConf = new File((String) arguments.get("--descriptor"));
@@ -161,6 +164,14 @@ public class PlugServer {
             server.initPlugServer();
         }
     }
+
+	private static void injectMetadatas(PlugDescription plugDescription) {
+		List<IMetadataInjector> metadataInjectors = MetadataInjectorFactory
+				.getMetadataInjectors();
+		for (IMetadataInjector metadataInjector : metadataInjectors) {
+			metadataInjector.injectMetaDatas(plugDescription);
+		}
+	}
 
     private static Map readParameters(String[] args) {
         Map argumentMap = new HashMap();

@@ -25,12 +25,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mortbay.http.HashUserRealm;
 
-import de.ingrid.iplug.metadata.IMetadataInjector;
-import de.ingrid.iplug.metadata.MetadataInjectorFactory;
 import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.metadata.IMetadataInjector;
+import de.ingrid.utils.metadata.MetadataInjectorFactory;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**

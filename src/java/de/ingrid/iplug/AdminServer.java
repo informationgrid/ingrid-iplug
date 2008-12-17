@@ -21,7 +21,7 @@ public class AdminServer {
   
   private static final String PLUG_DESCRIPTION = "conf/plugdescription.xml";
 
-  private static final String COMMUNICATION_PROPERTES = "conf/communication.properties";
+  private static final String COMMUNICATION_PROPERTES = "conf/communication.xml";
   
     /**
      * To start the admin web server from the commandline. 

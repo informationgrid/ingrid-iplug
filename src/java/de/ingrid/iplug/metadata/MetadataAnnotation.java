@@ -10,5 +10,8 @@ import java.lang.annotation.Target;
 public @interface MetadataAnnotation {
 
 	String version() default ("unknown");
-	
+
+	String date() default ("1970-01-01");
+
+	IPlugType type() default (IPlugType.OTHER);
 }

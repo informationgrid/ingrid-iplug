@@ -30,6 +30,7 @@ import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.metadata.IMetadataInjector;
+import de.ingrid.utils.metadata.Metadata;
 import de.ingrid.utils.metadata.MetadataInjectorFactory;
 import de.ingrid.utils.xml.XMLSerializer;
 
@@ -166,11 +167,13 @@ public class PlugServer {
     }
 
 	private static void injectMetadatas(PlugDescription plugDescription) {
+		Metadata metadata = new Metadata();
 		List<IMetadataInjector> metadataInjectors = MetadataInjectorFactory
 				.getMetadataInjectors();
 		for (IMetadataInjector metadataInjector : metadataInjectors) {
-			metadataInjector.injectMetaDatas(plugDescription);
+			metadataInjector.injectMetaDatas(metadata);
 		}
+		plugDescription.setMetadata(metadata);
 	}
 
     private static Map readParameters(String[] args) {

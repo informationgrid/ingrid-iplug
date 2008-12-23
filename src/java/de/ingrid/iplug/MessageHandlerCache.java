@@ -6,11 +6,15 @@ import net.sf.ehcache.Element;
 import net.weta.components.communication.messaging.IMessageHandler;
 import net.weta.components.communication.messaging.Message;
 
+import org.apache.log4j.Logger;
+
 public class MessageHandlerCache implements IMessageHandler {
 
 	private final IMessageHandler _messageHandler;
 	private CacheManager _cacheManager;
 	private Cache _cache;
+	private static final Logger LOG = Logger
+			.getLogger(MessageHandlerCache.class);
 
 	public MessageHandlerCache(IMessageHandler messageHandler) throws Exception {
 		_messageHandler = messageHandler;
@@ -34,7 +38,7 @@ public class MessageHandlerCache implements IMessageHandler {
 		if (ret == null) {
 			ret = _messageHandler.handleMessage(message);
 			_cache.put(new Element(cacheKey, ret));
-		}
+		} 
 		return ret;
 	}
 
@@ -42,6 +46,9 @@ public class MessageHandlerCache implements IMessageHandler {
 		Element element = null;
 		try {
 			element = _cache.get(cacheKey);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("found element in cache, with cacheKey: " + cacheKey);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

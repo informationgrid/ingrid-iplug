@@ -136,8 +136,9 @@ public class PlugServer {
         this.fCommunication.subscribeGroup(new WetagURL(plugUrl).getGroupPath());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IPlug.class, this.fPlug);
+        MessageHandlerCache cache = new MessageHandlerCache(messageHandler);
         this.fCommunication.getMessageQueue().getProcessorRegistry().addMessageHandler(
-                ReflectMessageHandler.MESSAGE_TYPE, messageHandler);
+                ReflectMessageHandler.MESSAGE_TYPE, cache);
     }
 
     /**

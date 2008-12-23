@@ -20,16 +20,22 @@ public class CacheSearcher implements IPlug {
 
 	public IngridHits search(IngridQuery query, int start, int length)
 			throws Exception {
-		String cacheKey = getSearchCacheKey(query, start, length);
-		Element element = _cache != null ? _cache.get(cacheKey) : null;
+		Element element = null;
+		if (_cache != null) {
+			String cacheKey = getSearchCacheKey(query, start, length);
+			element = _cache != null ? _cache.get(cacheKey) : null;
+		}
 		return element != null ? (IngridHits) element.getValue() : null;
 	}
 
 	@Override
 	public IngridHitDetail getDetail(IngridHit hit, IngridQuery query,
 			String[] requestedFields) throws Exception {
-		String cacheKey = getDetailCacheKey(hit, requestedFields);
-		Element element = _cache != null ? _cache.get(cacheKey) : null;
+		Element element = null;
+		if (_cache != null) {
+			String cacheKey = getDetailCacheKey(hit, requestedFields);
+			element = _cache != null ? _cache.get(cacheKey) : null;
+		}
 		return element != null ? (IngridHitDetail) element.getValue() : null;
 	}
 

@@ -70,16 +70,22 @@ public class CacheSearcher implements IPlug {
 
 	public void addToCache(IngridQuery ingridQuery, int start, int length,
 			IngridHits hits) {
-		String ingridQueryString = getSearchCacheKey(ingridQuery, start, length);
-		Element element = new Element(ingridQueryString, hits);
-		_cache.put(element);
+		if (_cache != null) {
+			String ingridQueryString = getSearchCacheKey(ingridQuery, start,
+					length);
+			Element element = new Element(ingridQueryString, hits);
+			_cache.put(element);
+		}
 	}
 
 	public void addToCache(IngridHit ingridHit, String[] requestedFields,
 			IngridHitDetail detail) {
-		String ingridQueryString = getDetailCacheKey(ingridHit, requestedFields);
-		Element element = new Element(ingridQueryString, detail);
-		_cache.put(element);
+		if (_cache != null) {
+			String ingridQueryString = getDetailCacheKey(ingridHit,
+					requestedFields);
+			Element element = new Element(ingridQueryString, detail);
+			_cache.put(element);
+		}
 	}
 
 	private String getSearchCacheKey(IngridQuery query, int start, int length) {

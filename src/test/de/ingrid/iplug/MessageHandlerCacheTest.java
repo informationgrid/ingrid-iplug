@@ -28,14 +28,16 @@ public class MessageHandlerCacheTest extends TestCase {
 
 		assertEquals(0, testHandler._counter);
 		for (int i = 0; i < 10; i++) {
-			IngridQuery ingridQuery = QueryStringParser.parse("foo" + i);
+			IngridQuery ingridQuery = QueryStringParser.parse("foo" + i
+					+ " cache:on");
 			cache.handleMessage(new ReflectMessage("search", IPlug.class
 					.getName(), new Object[] { ingridQuery, 10, 10 }));
 		}
 		assertEquals(10, testHandler._counter);
 		
 		for (int i = 0; i < 10; i++) {
-			IngridQuery ingridQuery = QueryStringParser.parse("foo" + i);
+			IngridQuery ingridQuery = QueryStringParser.parse("foo" + i
+					+ " cache:on");
 			cache.handleMessage(new ReflectMessage("search", IPlug.class
 					.getName(), new Object[] { ingridQuery, 10, 10 }));
 		}

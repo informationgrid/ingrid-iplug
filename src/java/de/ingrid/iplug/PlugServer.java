@@ -167,9 +167,12 @@ public class PlugServer {
         }
     }
 
-	private static void injectMetadatas(PlugDescription plugDescription) {
+	private static void injectMetadatas(PlugDescription plugDescription)
+			throws Exception {
 		Metadata metadata = new Metadata();
-		List<IMetadataInjector> metadataInjectors = MetadataInjectorFactory
+		MetadataInjectorFactory metadataInjectorFactory = new MetadataInjectorFactory(
+				plugDescription);
+		List<IMetadataInjector> metadataInjectors = metadataInjectorFactory
 				.getMetadataInjectors();
 		for (IMetadataInjector metadataInjector : metadataInjectors) {
 			metadataInjector.injectMetaDatas(metadata);

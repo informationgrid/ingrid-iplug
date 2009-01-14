@@ -29,9 +29,6 @@ import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
-import de.ingrid.utils.metadata.IMetadataInjector;
-import de.ingrid.utils.metadata.Metadata;
-import de.ingrid.utils.metadata.MetadataInjectorFactory;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
@@ -155,8 +152,6 @@ public class PlugServer {
         }
         plugDescription = loadPlugDescriptionFromFile(plugDescriptionFile);
         
-        injectMetadatas(plugDescription);
-        
         PlugServer server = null;
         if (arguments.containsKey("--descriptor")) {
             File commConf = new File((String) arguments.get("--descriptor"));
@@ -166,19 +161,6 @@ public class PlugServer {
             server.initPlugServer();
         }
     }
-
-	private static void injectMetadatas(PlugDescription plugDescription)
-			throws Exception {
-		Metadata metadata = new Metadata();
-		MetadataInjectorFactory metadataInjectorFactory = new MetadataInjectorFactory(
-				plugDescription);
-		List<IMetadataInjector> metadataInjectors = metadataInjectorFactory
-				.getMetadataInjectors();
-		for (IMetadataInjector metadataInjector : metadataInjectors) {
-			metadataInjector.injectMetaDatas(metadata);
-		}
-		plugDescription.setMetadata(metadata);
-	}
 
     private static Map readParameters(String[] args) {
         Map argumentMap = new HashMap();

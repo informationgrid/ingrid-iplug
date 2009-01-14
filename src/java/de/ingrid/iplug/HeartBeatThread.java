@@ -8,6 +8,8 @@ package de.ingrid.iplug;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication.reflect.ProxyService;
@@ -18,6 +20,9 @@ import org.apache.commons.logging.LogFactory;
 import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.metadata.IMetadataInjector;
+import de.ingrid.utils.metadata.Metadata;
+import de.ingrid.utils.metadata.MetadataInjectorFactory;
 import de.ingrid.utils.tool.MD5Util;
 
 /**
@@ -46,6 +51,8 @@ public class HeartBeatThread extends Thread {
 
     private final File plugdescriptionFile;
 
+	private List<IMetadataInjector> _metadataInjectors = new ArrayList<IMetadataInjector>();
+
     protected HeartBeatThread(File plugdescriptionFile, PlugDescription plugDescription, ICommunication communication, String busUrl, PlugShutdownHook shutdownHook) {
         this.plugdescriptionFile = plugdescriptionFile;
         this.fPlugDescription = plugDescription;
@@ -61,14 +68,24 @@ public class HeartBeatThread extends Thread {
         try {
             this.fBus = (IBus) ProxyService.createProxy(this.fCommunication, IBus.class, this.fBusUrl);
             this.fCommunication.subscribeGroup(this.fBusUrl);
+    		MetadataInjectorFactory metadataInjectorFactory = new MetadataInjectorFactory(
+					this.fPlugDescription, this.fBus);
+			_metadataInjectors = metadataInjectorFactory.getMetadataInjectors();
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         }
         try {
             while (!isInterrupted()) {
+            	
+                Metadata oldMetadata = this.fPlugDescription.getMetadata();
+				injectMetadatas(this.fPlugDescription);
+				Metadata newMetadata = this.fPlugDescription.getMetadata();
+				boolean changedMetadata = !newMetadata.equals(oldMetadata);
+            	
                 String md5Hash = MD5Util.getMD5(this.plugdescriptionFile);
                 String plugId = this.fPlugDescription.getPlugId();
-                if (!this.fBus.containsPlugDescription(plugId, md5Hash)) {
+                if (!this.fBus.containsPlugDescription(plugId, md5Hash)
+						|| changedMetadata) {
                     if (fLogger.isInfoEnabled()) {
                         fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'...");
                     }
@@ -149,4 +166,15 @@ public class HeartBeatThread extends Thread {
     public void setSleepInterval(int sleepIntervall) {
         this.fSleepInterval = sleepIntervall;
     }
+    
+    private void injectMetadatas(PlugDescription plugDescription)
+			throws Exception {
+		Metadata metadata = plugDescription.getMetadata();
+		metadata = metadata != null ? metadata : new Metadata();
+		for (IMetadataInjector metadataInjector : _metadataInjectors) {
+			metadataInjector.injectMetaDatas(metadata);
+		}
+		plugDescription.setMetadata(metadata);
+	}
+
 }

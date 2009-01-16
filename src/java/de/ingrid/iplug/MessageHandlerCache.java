@@ -33,7 +33,6 @@ public class MessageHandlerCache implements IMessageHandler {
 	@Override
 	public Message handleMessage(Message message) {
 		String cacheKey = message.toString();
-		System.out.println(cacheKey);
 		Message ret = null;
 		if (cacheKey.indexOf("cache:on") > -1) {
 			Element element = getFromCache(cacheKey);

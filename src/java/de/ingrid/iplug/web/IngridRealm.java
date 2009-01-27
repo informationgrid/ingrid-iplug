@@ -21,7 +21,8 @@ import org.mortbay.http.SSORealm;
 import org.mortbay.http.UserRealm;
 import org.mortbay.util.Credential;
 
-import sun.misc.BASE64Encoder;
+import com.thoughtworks.xstream.core.util.Base64Encoder;
+
 import de.ingrid.ibus.client.BusClient;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IngridHit;
@@ -284,7 +285,7 @@ public class IngridRealm implements UserRealm, SSORealm {
             value = this.fMessageDigest.digest(value);
         }
 
-        return new String(new BASE64Encoder().encode(value));
+        return new String(new Base64Encoder().encode(value));
     }
 
     /**

@@ -53,7 +53,7 @@ public class AdminServer {
         //push init params for all contexts (e.g. step1 and step2)
         HashMap hashMap = new HashMap();
         hashMap.put("plugdescription.xml", plugDescriptionFile.getAbsolutePath());
-        hashMap.put("communication.properties", communicationProperties.getAbsolutePath());
+        hashMap.put("communication.xml", communicationProperties.getAbsolutePath());
         
         WebContainer container = startWebContainer(hashMap, port, webFolder, false, null);
         container.join();

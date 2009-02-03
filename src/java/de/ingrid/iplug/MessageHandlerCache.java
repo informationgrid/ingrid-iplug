@@ -43,10 +43,16 @@ public class MessageHandlerCache implements IMessageHandler {
         int status = cacheKey.indexOf("cache: false") > -1 ? CACHE_OFF : CACHE_ON;
         switch (status) {
         case CACHE_OFF:
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("cache option is turned off. searching started...");
+            }
             ret = _messageHandler.handleMessage(message);
             _cache.put(new Element(cacheKey, ret));
             break;
         case CACHE_ON:
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("cache option is turned on. search element in cache...");
+            }
             Element element = getFromCache(cacheKey);
             ret = element != null ? (Message) element.getValue() : null;
             break;
@@ -65,11 +71,15 @@ public class MessageHandlerCache implements IMessageHandler {
         Element element = null;
         try {
             element = _cache.get(cacheKey);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("found element in cache, with cacheKey: " + cacheKey);
-            }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("error while searching in cache", e);
+        }
+        if (LOG.isDebugEnabled()) {
+            if (element != null) {
+                LOG.debug("found element in cache, with cacheKey: " + cacheKey);
+            } else {
+                LOG.debug("dont found element in cache, with cacheKey: " + cacheKey);
+            }
         }
         return element;
     }

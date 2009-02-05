@@ -1,7 +1,5 @@
 package de.ingrid.iplug;
 
-import java.util.Arrays;
-
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -40,7 +38,7 @@ public class MessageHandlerCache implements IMessageHandler {
 
     @Override
     public Message handleMessage(Message message) {
-        String cacheKey = Arrays.deepToString(new Object[] { message });
+        String cacheKey = message.toString();
         Message ret = null;
         int status = cacheKey.indexOf("cache: false") > -1 ? CACHE_OFF : CACHE_ON;
         switch (status) {

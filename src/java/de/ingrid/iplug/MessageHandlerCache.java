@@ -38,6 +38,7 @@ public class MessageHandlerCache implements IMessageHandler {
 
     @Override
     public Message handleMessage(Message message) {
+        long start = System.currentTimeMillis();
         String cacheKey = message.toString();
         Message ret = null;
         int status = cacheKey.indexOf("cache: false") > -1 ? CACHE_OFF : CACHE_ON;
@@ -62,6 +63,10 @@ public class MessageHandlerCache implements IMessageHandler {
             // not found in cache
             ret = _messageHandler.handleMessage(message);
             _cache.put(new Element(cacheKey, ret));
+        }
+        long end = System.currentTimeMillis();
+        if(LOG.isDebugEnabled()) {
+            LOG.debug("time to handle message: " + (end - start) + " ms.");
         }
         
         return ret;

@@ -55,7 +55,11 @@ public class MessageHandlerCache implements IMessageHandler {
                 LOG.debug("cache option is turned on. search element in cache...");
             }
             Element element = getFromCache(cacheKey);
-            ret = element != null ? (Message) element.getValue() : null;
+            if (element != null) {
+                ret = (Message) element.getValue();
+                // set new id
+                ret.setId(message.getId());
+            }
             break;
         }
 

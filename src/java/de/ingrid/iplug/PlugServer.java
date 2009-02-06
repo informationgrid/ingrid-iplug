@@ -75,7 +75,7 @@ public class PlugServer {
 
             HashMap hashMap = new HashMap();
             hashMap.put("plugdescription.xml", this.fPlugDescriptionFile.getAbsolutePath());
-            hashMap.put("communication.properties", commProperties.getAbsolutePath());
+            hashMap.put("communication.xml", commProperties.getAbsolutePath());
             AdminServer.startWebContainer(hashMap, plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm);
         }
         this.fPlugDescription = plugDescription;

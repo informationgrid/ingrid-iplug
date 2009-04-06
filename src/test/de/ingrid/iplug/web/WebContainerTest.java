@@ -34,7 +34,7 @@ public class WebContainerTest extends TestCase {
         container.addWebapp("", infoFolder.getCanonicalPath());
         try {
 
-            InputStream stream = new URL("http://127.0.0.1:8089/system.jsp")
+            InputStream stream = new URL("http://127.0.0.1:12345/system.jsp")
                     .openStream();
             assertNotNull(stream);
             while (stream.read() != -1) {

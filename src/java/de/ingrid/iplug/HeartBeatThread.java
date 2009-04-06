@@ -73,6 +73,7 @@ public class HeartBeatThread extends Thread {
     		MetadataInjectorFactory metadataInjectorFactory = new MetadataInjectorFactory(
 					this.fPlugDescription, this.fBus);
 			_metadataInjectors = metadataInjectorFactory.getMetadataInjectors();
+			this.fPlugDescription.setMetadata(new Metadata());
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         }
@@ -81,6 +82,7 @@ public class HeartBeatThread extends Thread {
 
                 String md5Hash = MD5Util.getMD5(this.plugdescriptionFile);
                 String plugId = this.fPlugDescription.getPlugId();
+                fLogger.info("send heartbeat - call containsPlugdescription");
                 boolean containsPlugDescription = this.fBus.containsPlugDescription(plugId, md5Hash);
                 
                 Metadata oldMetadata = this.fPlugDescription.getMetadata();
@@ -92,8 +94,7 @@ public class HeartBeatThread extends Thread {
                 }
 				Metadata newMetadata = this.fPlugDescription.getMetadata();
 				boolean changedMetadata = !newMetadata.equals(oldMetadata);
-            	
-                fLogger.info("send heartbeat - call containsPlugdescription");
+                
                 if (!containsPlugDescription
 						|| changedMetadata) {
                     if (fLogger.isInfoEnabled()) {

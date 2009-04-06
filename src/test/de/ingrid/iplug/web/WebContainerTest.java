@@ -29,7 +29,7 @@ public class WebContainerTest extends TestCase {
             }
         }
         File infoFolder = new File(path);
-        WebContainer container = new WebContainer(8089, false);
+        WebContainer container = new WebContainer(12345, false);
         container.startContainer();
         container.addWebapp("", infoFolder.getCanonicalPath());
         try {

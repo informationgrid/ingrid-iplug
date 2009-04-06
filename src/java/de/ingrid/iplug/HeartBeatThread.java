@@ -84,10 +84,12 @@ public class HeartBeatThread extends Thread {
             	
                 String md5Hash = MD5Util.getMD5(this.plugdescriptionFile);
                 String plugId = this.fPlugDescription.getPlugId();
-                if (!this.fBus.containsPlugDescription(plugId, md5Hash)
+                boolean containsPlugDescription = this.fBus.containsPlugDescription(plugId, md5Hash);
+                if (!containsPlugDescription
 						|| changedMetadata) {
                     if (fLogger.isInfoEnabled()) {
-                        fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'...");
+                        fLogger.info("adding or updating plug description to bus '" + this.fBusUrl + "'... [containsPlugDescription:" + containsPlugDescription + " / changedMetaData:"
+                                + changedMetadata + "]");
                     }
                     this.fPlugDescription.setMd5Hash(md5Hash);
                     this.fBus.addPlugDescription(this.fPlugDescription);

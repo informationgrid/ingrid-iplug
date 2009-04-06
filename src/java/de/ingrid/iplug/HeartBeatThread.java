@@ -41,7 +41,7 @@ public class HeartBeatThread extends Thread {
 
     private IBus fBus;
 
-    private int fSleepInterval = 1000 * 90;
+    private int fSleepInterval = 1000 * 60;
 
     private PlugShutdownHook fShutdownHook;
 

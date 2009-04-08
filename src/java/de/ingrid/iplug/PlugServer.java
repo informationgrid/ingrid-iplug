@@ -213,7 +213,6 @@ public class PlugServer {
         } catch (ClassNotFoundException e) {
             new RuntimeException("iplug class not in classpath", e);
         }
-        plugDescription.put("PLUGDESCRIPTION_FILE", plugDescriptionFile.getAbsolutePath());
         return plugDescription;
     }
 

@@ -48,6 +48,18 @@
       <artifactId>org.mortbay.jetty</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>de.ingrid.m2</id>
+      <name>Maven2 Repo InGrid</name>
+      <url>http://harrison.its-technidata.de/ingrid/maven2</url>
+    </repository>
+    <repository>
+      <id>de.ingrid.m1</id>
+      <name>Maven1 Repo InGrid</name>
+      <url>http://harrison.its-technidata.de/ingrid/maven</url>
+    </repository>
+  </repositories>
   <build>
     <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>

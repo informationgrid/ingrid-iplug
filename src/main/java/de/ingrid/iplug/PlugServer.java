@@ -278,4 +278,8 @@ public class PlugServer {
         return loadPlugDescriptionFromFile(new File(PLUG_DESCRIPTION));
     }
 
+    public static PlugDescription getPlugDescription(String pdPath) throws IOException {
+        return loadPlugDescriptionFromFile(new File(pdPath));
+    }
+    
 }

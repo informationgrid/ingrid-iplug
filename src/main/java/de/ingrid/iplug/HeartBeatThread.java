@@ -184,9 +184,15 @@ public class HeartBeatThread extends Thread {
 		Metadata metadata = plugDescription.getMetadata();
 		metadata = metadata != null ? metadata : new Metadata();
 		for (IMetadataInjector metadataInjector : _metadataInjectors) {
+			if (fLogger.isDebugEnabled()) {
+				fLogger.debug("Inject metadatas using " + metadataInjector.getClass().getName());
+			}
 			metadataInjector.injectMetaDatas(metadata);
+		}
+		if (fLogger.isDebugEnabled()) {
+			fLogger.debug("Injected metadata:" + metadata);
 		}
 		plugDescription.setMetadata(metadata);
 	}
-
+    
 }

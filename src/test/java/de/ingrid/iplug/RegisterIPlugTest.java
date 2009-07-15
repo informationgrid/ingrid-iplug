@@ -18,6 +18,8 @@ import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.metadata.ManifestMetadataInjector;
+import de.ingrid.utils.metadata.Metadata;
 import de.ingrid.utils.xml.XMLSerializer;
 
 /**
@@ -67,6 +69,12 @@ public class RegisterIPlugTest extends TestCase {
         this.fPlugDesc = new PlugDescription();
         this.fPlugDesc.setProxyServiceURL("/101tec-group:iplug");
         this.fPlugDesc.setRecordLoader(false);
+        this.fPlugDesc.setIPlugClass("org.springframework.beans.factory.xml.XmlBeanFactory");
+		ManifestMetadataInjector mdi = new ManifestMetadataInjector();
+		mdi.configure(this.fPlugDesc);
+		Metadata metadata = new Metadata();
+		mdi.injectMetaDatas(metadata);
+		this.fPlugDesc.setMetadata(metadata);
 
         XMLSerializer xmlSer = new XMLSerializer();
         xmlSer.serialize(this.fPlugDesc, this.fSerFile);

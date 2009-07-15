@@ -85,15 +85,19 @@ public class HeartBeatThread extends Thread {
                 fLogger.info("send heartbeat - call containsPlugdescription");
                 boolean containsPlugDescription = this.fBus.containsPlugDescription(plugId, md5Hash);
                 
-                Metadata oldMetadata = this.fPlugDescription.getMetadata();
+                int oldMetadataHashCode = this.fPlugDescription.getMetadata().hashCode();
                 if (_metadataCheckCounter > 3) {
                     injectMetadatas(this.fPlugDescription);
                     _metadataCheckCounter = 0;
                 } else {
                     _metadataCheckCounter++;
                 }
-				Metadata newMetadata = this.fPlugDescription.getMetadata();
-				boolean changedMetadata = !newMetadata.equals(oldMetadata);
+				int newMetadataHashCode = this.fPlugDescription.getMetadata().hashCode();
+				boolean changedMetadata = oldMetadataHashCode != newMetadataHashCode;
+                if (fLogger.isDebugEnabled()) {
+                    fLogger.debug("Detect changed metadata: " + changedMetadata);
+                    fLogger.debug("Metadata: " + this.fPlugDescription.getMetadata());
+                }
                 
                 if (!containsPlugDescription
 						|| changedMetadata) {

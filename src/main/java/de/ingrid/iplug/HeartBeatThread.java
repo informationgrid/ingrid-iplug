@@ -53,8 +53,6 @@ public class HeartBeatThread extends Thread {
 
 	private List<IMetadataInjector> _metadataInjectors = new ArrayList<IMetadataInjector>();
 	
-	private int _metadataCheckCounter = 0;
-
     protected HeartBeatThread(File plugdescriptionFile, PlugDescription plugDescription, ICommunication communication, String busUrl, PlugShutdownHook shutdownHook) {
         this.plugdescriptionFile = plugdescriptionFile;
         this.fPlugDescription = plugDescription;
@@ -86,12 +84,7 @@ public class HeartBeatThread extends Thread {
                 boolean containsPlugDescription = this.fBus.containsPlugDescription(plugId, md5Hash);
                 
                 int oldMetadataHashCode = this.fPlugDescription.getMetadata().hashCode();
-                if (_metadataCheckCounter > 3) {
-                    injectMetadatas(this.fPlugDescription);
-                    _metadataCheckCounter = 0;
-                } else {
-                    _metadataCheckCounter++;
-                }
+                injectMetadatas(this.fPlugDescription);
 				int newMetadataHashCode = this.fPlugDescription.getMetadata().hashCode();
 				boolean changedMetadata = oldMetadataHashCode != newMetadataHashCode;
                 if (fLogger.isDebugEnabled()) {

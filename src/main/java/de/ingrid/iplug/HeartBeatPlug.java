@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -91,6 +92,11 @@ public abstract class HeartBeatPlug implements IPlug {
     public HeartBeatPlug(File communicationXml, int period) throws FileNotFoundException, IOException {
         _period = period;
         _communication = StartCommunication.create(new FileInputStream(communicationXml));
+    }
+
+    public HeartBeatPlug(InputStream inputStream, int period) throws FileNotFoundException, IOException {
+        _period = period;
+        _communication = StartCommunication.create(inputStream);
     }
 
     @SuppressWarnings("unchecked")

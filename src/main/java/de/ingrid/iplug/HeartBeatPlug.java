@@ -97,13 +97,14 @@ public abstract class HeartBeatPlug implements IPlug {
     public HeartBeatPlug(InputStream inputStream, int period) throws FileNotFoundException, IOException {
         _period = period;
         _communication = StartCommunication.create(inputStream);
-        _communication.startup();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void configure(PlugDescription plugDescription) throws Exception {
 
+        _communication.setPeerName(plugDescription.getProxyServiceURL());
+        _communication.startup();
         // configure communication
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IPlug.class, this);

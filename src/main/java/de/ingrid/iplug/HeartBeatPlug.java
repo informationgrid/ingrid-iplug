@@ -30,7 +30,6 @@ public abstract class HeartBeatPlug implements IPlug {
 
     static class HeartBeat extends TimerTask {
 
-        private Timer _timer;
         private boolean _enable = false;
         private static final Log LOG = LogFactory.getLog(HeartBeat.class);
         private final PlugDescription _plugDescription;
@@ -41,8 +40,8 @@ public abstract class HeartBeatPlug implements IPlug {
         public HeartBeat(IBus bus, PlugDescription plugDescription, long period) {
             _bus = bus;
             _plugDescription = plugDescription;
-            _timer = new Timer(true);
-            _timer.schedule(this, new Date(), period);
+            Timer timer = new Timer(true);
+            timer.schedule(this, new Date(), period);
         }
 
         public void enable() throws IOException {

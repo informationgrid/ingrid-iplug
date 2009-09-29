@@ -97,6 +97,7 @@ public abstract class HeartBeatPlug implements IPlug {
     public HeartBeatPlug(InputStream inputStream, int period) throws FileNotFoundException, IOException {
         _period = period;
         _communication = StartCommunication.create(inputStream);
+        _communication.startup();
     }
 
     @SuppressWarnings("unchecked")

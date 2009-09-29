@@ -82,6 +82,7 @@ public abstract class HeartBeatPlug implements IPlug {
     private ICommunication _communication;
     private List<HeartBeat> _heartBeats = new ArrayList<HeartBeat>();
     private final int _period;
+    private PlugDescription _plugDescription;
 
     public HeartBeatPlug(ICommunication communication, int period) {
         _communication = communication;
@@ -102,7 +103,8 @@ public abstract class HeartBeatPlug implements IPlug {
     @Override
     public void configure(PlugDescription plugDescription) throws Exception {
 
-        _communication.setPeerName(plugDescription.getProxyServiceURL());
+        _plugDescription = plugDescription;
+        _plugDescription.setProxyServiceURL(_communication.getPeerName());
         _communication.startup();
         // configure communication
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
@@ -115,7 +117,7 @@ public abstract class HeartBeatPlug implements IPlug {
         List serverNames = ((TcpCommunication) _communication).getServerNames();
         for (Object busUrl : serverNames) {
             IBus bus = (IBus) ProxyService.createProxy(_communication, IBus.class, (String) busUrl);
-            HeartBeat heartBeat = new HeartBeat(bus, plugDescription, _period);
+            HeartBeat heartBeat = new HeartBeat(bus, _plugDescription, _period);
             _heartBeats.add(heartBeat);
         }
 
@@ -123,6 +125,11 @@ public abstract class HeartBeatPlug implements IPlug {
 
     @Override
     public void close() throws Exception {
+        startHeartBeats();
+        for (HeartBeat heartBeat : _heartBeats) {
+            IBus bus = heartBeat._bus;
+            bus.removePlugDescription(_plugDescription);
+        }
         _communication.shutdown();
     }
 

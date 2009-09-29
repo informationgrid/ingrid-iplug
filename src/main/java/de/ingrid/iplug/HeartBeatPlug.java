@@ -131,4 +131,7 @@ public abstract class HeartBeatPlug implements IPlug {
         }
     }
 
+    public IBus getMotherIBus() {
+        return !_heartBeats.isEmpty() ? _heartBeats.get(0)._bus : null;
+    }
 }

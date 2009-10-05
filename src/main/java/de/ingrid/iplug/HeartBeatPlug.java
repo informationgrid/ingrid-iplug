@@ -1,26 +1,19 @@
 package de.ingrid.iplug;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.weta.components.communication.ICommunication;
-import net.weta.components.communication.reflect.ProxyService;
-import net.weta.components.communication.reflect.ReflectMessageHandler;
-import net.weta.components.communication.tcp.StartCommunication;
-import net.weta.components.communication.tcp.TcpCommunication;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import de.ingrid.ibus.client.BusClient;
+import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.PlugDescription;
@@ -37,10 +30,10 @@ public abstract class HeartBeatPlug implements IPlug {
         private long _heartBeatCount;
 
         @Autowired
-        public HeartBeat(IBus bus, PlugDescription plugDescription, long period) {
+        public HeartBeat(final IBus bus, final PlugDescription plugDescription, final long period) {
             _bus = bus;
             _plugDescription = plugDescription;
-            Timer timer = new Timer(true);
+            final Timer timer = new Timer(true);
             timer.schedule(this, new Date(), period);
         }
 
@@ -62,13 +55,13 @@ public abstract class HeartBeatPlug implements IPlug {
                 _heartBeatCount++;
                 LOG.info("send heartbeat [" + (_heartBeatCount) + "]");
                 try {
-                    File plugdescriptionAsFile = _plugDescription.getDesrializedFromFolder();
-                    String md5 = MD5Util.getMD5(plugdescriptionAsFile);
+                    final File plugdescriptionAsFile = _plugDescription.getDesrializedFromFolder();
+                    final String md5 = MD5Util.getMD5(plugdescriptionAsFile);
                     _plugDescription.setMd5Hash(md5);
                     if (!_bus.containsPlugDescription(_plugDescription.getPlugId(), _plugDescription.getMd5Hash())) {
                         _bus.addPlugDescription(_plugDescription);
                     }
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     LOG.error("can not send heartbeat [" + _heartBeatCount + "]", e);
                 }
             } else {
@@ -79,45 +72,27 @@ public abstract class HeartBeatPlug implements IPlug {
 
     }
 
-    private ICommunication _communication;
-    private List<HeartBeat> _heartBeats = new ArrayList<HeartBeat>();
+    private final List<HeartBeat> _heartBeats = new ArrayList<HeartBeat>();
     private final int _period;
     private PlugDescription _plugDescription;
 
-    public HeartBeatPlug(ICommunication communication, int period) {
-        _communication = communication;
+	public HeartBeatPlug(final File communicationXml, final int period) throws Exception {
         _period = period;
+		BusClientFactory.createBusClient(communicationXml);
     }
 
-    public HeartBeatPlug(File communicationXml, int period) throws FileNotFoundException, IOException {
-        _period = period;
-        _communication = StartCommunication.create(new FileInputStream(communicationXml));
-    }
-
-    public HeartBeatPlug(InputStream inputStream, int period) throws FileNotFoundException, IOException {
-        _period = period;
-        _communication = StartCommunication.create(inputStream);
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
-    public void configure(PlugDescription plugDescription) throws Exception {
+    public void configure(final PlugDescription plugDescription) throws Exception {
 
         _plugDescription = plugDescription;
-        _plugDescription.setProxyServiceURL(_communication.getPeerName());
-        _communication.startup();
-        // configure communication
-        ReflectMessageHandler messageHandler = new ReflectMessageHandler();
-        messageHandler.addObjectToCall(IPlug.class, this);
-        MessageHandlerCache cache = new MessageHandlerCache(messageHandler);
-        _communication.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE, cache);
+		final BusClient busClient = BusClientFactory.getBusClient();
+		busClient.start();
+		_plugDescription.setProxyServiceURL(busClient.getPeerName());
 
         // configure heartbeat's
         // FIXME bad hack, we cast into TcpCommunication
-        List serverNames = ((TcpCommunication) _communication).getServerNames();
-        for (Object busUrl : serverNames) {
-            IBus bus = (IBus) ProxyService.createProxy(_communication, IBus.class, (String) busUrl);
-            HeartBeat heartBeat = new HeartBeat(bus, _plugDescription, _period);
+		for (final IBus bus : busClient.getNonCacheableIBusses()) {
+            final HeartBeat heartBeat = new HeartBeat(bus, _plugDescription, _period);
             _heartBeats.add(heartBeat);
         }
 
@@ -126,26 +101,22 @@ public abstract class HeartBeatPlug implements IPlug {
     @Override
     public void close() throws Exception {
         startHeartBeats();
-        for (HeartBeat heartBeat : _heartBeats) {
-            IBus bus = heartBeat._bus;
+        for (final HeartBeat heartBeat : _heartBeats) {
+            final IBus bus = heartBeat._bus;
             bus.removePlugDescription(_plugDescription);
         }
-        _communication.shutdown();
+		BusClientFactory.getBusClient().shutdown();
     }
 
     public void startHeartBeats() throws IOException {
-        for (HeartBeat heartBeat : _heartBeats) {
+        for (final HeartBeat heartBeat : _heartBeats) {
             heartBeat.enable();
         }
     }
 
     public void stopHeartBeats() {
-        for (HeartBeat heartBeat : _heartBeats) {
+        for (final HeartBeat heartBeat : _heartBeats) {
             heartBeat.disable();
         }
-    }
-
-    public IBus getMotherIBus() {
-        return !_heartBeats.isEmpty() ? _heartBeats.get(0)._bus : null;
     }
 }

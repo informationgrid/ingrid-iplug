@@ -24,9 +24,13 @@ public abstract class HeartBeatPlug implements IPlug {
     static class HeartBeat extends TimerTask {
 
         private boolean _enable = false;
+
         private static final Log LOG = LogFactory.getLog(HeartBeat.class);
+
         private final PlugDescription _plugDescription;
+
         private final IBus _bus;
+
         private long _heartBeatCount;
 
         @Autowired
@@ -73,27 +77,29 @@ public abstract class HeartBeatPlug implements IPlug {
     }
 
     private final List<HeartBeat> _heartBeats = new ArrayList<HeartBeat>();
+
     private final int _period;
+
     private PlugDescription _plugDescription;
 
-	public HeartBeatPlug(final File communicationXml, final int period) throws Exception {
+    public HeartBeatPlug(final int period) throws Exception {
         _period = period;
-		BusClientFactory.createBusClient(communicationXml);
     }
 
     @Override
     public void configure(final PlugDescription plugDescription) throws Exception {
 
-        _plugDescription = plugDescription;
-		final BusClient busClient = BusClientFactory.getBusClient();
-		busClient.start();
-		_plugDescription.setProxyServiceURL(busClient.getPeerName());
+        final BusClient busClient = BusClientFactory.getBusClient();
+        if (busClient != null && busClient.allConnected()) {
+            _plugDescription = plugDescription;
+            _plugDescription.setProxyServiceURL(busClient.getPeerName());
 
-        // configure heartbeat's
-        // FIXME bad hack, we cast into TcpCommunication
-		for (final IBus bus : busClient.getNonCacheableIBusses()) {
-            final HeartBeat heartBeat = new HeartBeat(bus, _plugDescription, _period);
-            _heartBeats.add(heartBeat);
+            // configure heartbeat's
+            // FIXME bad hack, we cast into TcpCommunication
+            for (final IBus bus : busClient.getNonCacheableIBusses()) {
+                final HeartBeat heartBeat = new HeartBeat(bus, _plugDescription, _period);
+                _heartBeats.add(heartBeat);
+            }
         }
 
     }
@@ -105,7 +111,7 @@ public abstract class HeartBeatPlug implements IPlug {
             final IBus bus = heartBeat._bus;
             bus.removePlugDescription(_plugDescription);
         }
-		BusClientFactory.getBusClient().shutdown();
+        BusClientFactory.getBusClient().shutdown();
     }
 
     public void startHeartBeats() throws IOException {

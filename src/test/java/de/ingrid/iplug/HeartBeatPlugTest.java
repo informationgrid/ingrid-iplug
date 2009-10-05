@@ -19,8 +19,8 @@ public class HeartBeatPlugTest extends TestCase {
 
     class TestPlug extends HeartBeatPlug {
 
-		public TestPlug(final File communicationXml, final int period) throws Exception {
-			super(communicationXml, period);
+        public TestPlug(final int period) throws Exception {
+            super(period);
         }
 
         @Override
@@ -65,7 +65,7 @@ public class HeartBeatPlugTest extends TestCase {
     }
 
     public void testHeartBeats() throws Exception {
-		final HeartBeatPlug plug = new TestPlug(_communicationXml, 1000);
+        final HeartBeatPlug plug = new TestPlug(1000);
 
         final List<String> serverNames = new ArrayList<String>();
         serverNames.add("foo");

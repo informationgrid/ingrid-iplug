@@ -38,6 +38,12 @@ public class HeartBeatPlugTest extends TestCase {
             return null;
         }
 
+        @Override
+        public boolean isRecordLoader() {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
     }
 
 	private final File _communicationXml = new File("communicatino.xml");

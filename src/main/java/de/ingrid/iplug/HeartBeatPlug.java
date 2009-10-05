@@ -82,7 +82,7 @@ public abstract class HeartBeatPlug implements IPlug {
 
     private PlugDescription _plugDescription;
 
-    public HeartBeatPlug(final int period) throws Exception {
+    public HeartBeatPlug(final int period) {
         _period = period;
     }
 
@@ -125,4 +125,17 @@ public abstract class HeartBeatPlug implements IPlug {
             heartBeat.disable();
         }
     }
+
+    public boolean sendingHeartBeats() {
+        boolean bit = true;
+        for (final HeartBeat heartBeat : _heartBeats) {
+            if (!heartBeat.isEnable()) {
+                bit = false;
+                break;
+            }
+        }
+        return bit;
+    }
+
+    public abstract boolean isRecordLoader();
 }

@@ -95,7 +95,6 @@ public abstract class HeartBeatPlug implements IPlug {
             _plugDescription.setProxyServiceURL(busClient.getPeerName());
 
             // configure heartbeat's
-            // FIXME bad hack, we cast into TcpCommunication
             for (final IBus bus : busClient.getNonCacheableIBusses()) {
                 final HeartBeat heartBeat = new HeartBeat(bus, _plugDescription, _period);
                 _heartBeats.add(heartBeat);

@@ -47,6 +47,9 @@ public abstract class HeartBeatPlug implements IPlug {
 
         public void disable() {
             _enable = false;
+            if (_bus.containsPlugDescription(_plugDescription.getPlugId(), _plugDescription.getMd5Hash())) {
+                _bus.removePlugDescription(_plugDescription);
+            }
         }
 
         public boolean isEnable() {

@@ -71,8 +71,6 @@ public abstract class HeartBeatPlug implements IPlug {
                 } catch (final Throwable e) {
                     LOG.error("can not send heartbeat [" + _heartBeatCount + "]", e);
                 }
-            } else {
-                LOG.info("heartbeat is disabled");
             }
 
         }

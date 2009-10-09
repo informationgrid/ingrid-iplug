@@ -79,6 +79,8 @@ public abstract class HeartBeatPlug implements IPlug {
 
     }
 
+    private static final Log LOG = LogFactory.getLog(HeartBeatPlug.class);
+
     private final List<HeartBeat> _heartBeats = new ArrayList<HeartBeat>();
 
     private final int _period;
@@ -117,12 +119,14 @@ public abstract class HeartBeatPlug implements IPlug {
     }
 
     public void startHeartBeats() throws IOException {
+        LOG.info("starting heart beat");
         for (final HeartBeat heartBeat : _heartBeats) {
             heartBeat.enable();
         }
     }
 
     public void stopHeartBeats() {
+        LOG.info("stopping heart beat");
         for (final HeartBeat heartBeat : _heartBeats) {
             heartBeat.disable();
         }

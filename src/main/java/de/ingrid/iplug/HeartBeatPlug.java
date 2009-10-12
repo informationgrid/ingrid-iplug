@@ -140,6 +140,4 @@ public abstract class HeartBeatPlug implements IPlug {
         }
         return bit;
     }
-
-    public abstract boolean isRecordLoader();
 }

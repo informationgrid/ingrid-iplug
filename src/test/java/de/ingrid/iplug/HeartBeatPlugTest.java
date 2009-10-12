@@ -37,13 +37,6 @@ public class HeartBeatPlugTest extends TestCase {
         public IngridHitDetail[] getDetails(final IngridHit[] arg0, final IngridQuery arg1, final String[] arg2) throws Exception {
             return null;
         }
-
-        @Override
-        public boolean isRecordLoader() {
-            // TODO Auto-generated method stub
-            return false;
-        }
-
     }
 
 	private final File _communicationXml = new File("communicatino.xml");

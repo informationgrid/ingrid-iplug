@@ -117,14 +117,14 @@ public abstract class HeartBeatPlug implements IPlug {
     }
 
     public void startHeartBeats() throws IOException {
-        LOG.info("starting heart beat");
+        LOG.info("start heart beats");
         for (final HeartBeat heartBeat : _heartBeats) {
             heartBeat.enable();
         }
     }
 
     public void stopHeartBeats() {
-        LOG.info("stopping heart beat");
+        LOG.info("stop heart beats");
         for (final HeartBeat heartBeat : _heartBeats) {
             heartBeat.disable();
         }

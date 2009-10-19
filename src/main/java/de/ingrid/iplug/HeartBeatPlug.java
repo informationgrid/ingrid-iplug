@@ -15,11 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import de.ingrid.ibus.client.BusClient;
 import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.utils.IBus;
+import de.ingrid.utils.IConfigurable;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.tool.MD5Util;
 
-public abstract class HeartBeatPlug implements IPlug {
+public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     static class HeartBeat extends TimerTask {
 

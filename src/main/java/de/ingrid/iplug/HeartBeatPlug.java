@@ -91,7 +91,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
     }
 
     @Override
-    public void configure(final PlugDescription plugDescription) throws Exception {
+    public void configure(final PlugDescription plugDescription) {
 
         final BusClient busClient = BusClientFactory.getBusClient();
         if (busClient != null && busClient.allConnected()) {

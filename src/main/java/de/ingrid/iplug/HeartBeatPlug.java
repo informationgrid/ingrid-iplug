@@ -131,11 +131,10 @@ public abstract class HeartBeatPlug implements IPlug {
     }
 
     public boolean sendingHeartBeats() {
-        boolean bit = true;
+        boolean bit = false;
         for (final HeartBeat heartBeat : _heartBeats) {
-            if (!heartBeat.isEnable()) {
-                bit = false;
-                break;
+            if (heartBeat.isEnable()) {
+                bit = true;
             }
         }
         return bit;

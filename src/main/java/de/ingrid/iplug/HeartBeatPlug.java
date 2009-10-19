@@ -10,7 +10,6 @@ import java.util.TimerTask;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import de.ingrid.ibus.client.BusClient;
 import de.ingrid.ibus.client.BusClientFactory;
@@ -34,7 +33,6 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         private long _heartBeatCount;
 
-        @Autowired
         public HeartBeat(final IBus bus, final PlugDescription plugDescription, final long period) {
             _bus = bus;
             _plugDescription = plugDescription;
@@ -44,6 +42,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         public void enable() throws IOException {
             _enable = true;
+            run();
         }
 
         public void disable() {
@@ -86,18 +85,19 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     private PlugDescription _plugDescription;
 
-    public HeartBeatPlug(final int period) {
+    private final PlugDescriptionFieldFilters _filters;
+
+    public HeartBeatPlug(final int period, PlugDescriptionFieldFilters plugDescriptionFieldFilters) {
         _period = period;
+        _filters = plugDescriptionFieldFilters;
     }
 
     @Override
     public void configure(final PlugDescription plugDescription) {
-
+        _plugDescription = _filters.filter(plugDescription);
         final BusClient busClient = BusClientFactory.getBusClient();
         if (busClient != null && busClient.allConnected()) {
-            _plugDescription = plugDescription;
             _plugDescription.setProxyServiceURL(busClient.getPeerName());
-
             // configure heartbeat's
             for (final IBus bus : busClient.getNonCacheableIBusses()) {
                 final HeartBeat heartBeat = new HeartBeat(bus, _plugDescription, _period);

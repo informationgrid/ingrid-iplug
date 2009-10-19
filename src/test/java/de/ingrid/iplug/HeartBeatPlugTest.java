@@ -20,7 +20,7 @@ public class HeartBeatPlugTest extends TestCase {
     class TestPlug extends HeartBeatPlug {
 
         public TestPlug(final int period) throws Exception {
-            super(period);
+            super(period, new PlugDescriptionFieldFilters());
         }
 
         @Override
@@ -39,7 +39,7 @@ public class HeartBeatPlugTest extends TestCase {
         }
     }
 
-	private final File _communicationXml = new File("communicatino.xml");
+    private final File _communicationXml = new File("communicatino.xml");
 
     private final File _target = new File(System.getProperty("java.io.tmpdir"), "" + System.currentTimeMillis());
 

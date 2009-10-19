@@ -788,5 +788,17 @@ public class FileJobStoreTest extends TestCase {
         public void signalSchedulingChange() {
             this.fChangeCount++;
         }
+
+        @Override
+        public void notifySchedulerListenersFinalized(Trigger arg0) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void signalSchedulingChange(long arg0) {
+            // TODO Auto-generated method stub
+
+        }
     }
 }

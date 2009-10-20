@@ -42,7 +42,6 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         public void enable() throws IOException {
             _enable = true;
-            run();
         }
 
         public void disable() {
@@ -109,7 +108,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     @Override
     public void close() throws Exception {
-        startHeartBeats();
+        stopHeartBeats();
         for (final HeartBeat heartBeat : _heartBeats) {
             final IBus bus = heartBeat._bus;
             bus.removePlugDescription(_plugDescription);

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,6 +43,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         public void enable() throws IOException {
             _enable = true;
+            run();
         }
 
         public void disable() {
@@ -118,14 +120,18 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     public void startHeartBeats() throws IOException {
         LOG.info("start heart beats");
-        for (final HeartBeat heartBeat : _heartBeats) {
+        Iterator<HeartBeat> iterator = _heartBeats.iterator();
+        while (iterator.hasNext()) {
+            HeartBeatPlug.HeartBeat heartBeat = iterator.next();
             heartBeat.enable();
         }
     }
 
     public void stopHeartBeats() {
         LOG.info("stop heart beats");
-        for (final HeartBeat heartBeat : _heartBeats) {
+        Iterator<HeartBeat> iterator = _heartBeats.iterator();
+        while (iterator.hasNext()) {
+            HeartBeatPlug.HeartBeat heartBeat = iterator.next();
             heartBeat.disable();
         }
     }

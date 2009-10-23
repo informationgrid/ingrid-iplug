@@ -67,6 +67,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                     final String md5 = MD5Util.getMD5(plugdescriptionAsFile);
                     _plugDescription.setMd5Hash(md5);
                     if (!_bus.containsPlugDescription(_plugDescription.getPlugId(), _plugDescription.getMd5Hash())) {
+                        LOG.info("add plugdescription...");
                         _bus.addPlugDescription(_plugDescription);
                     }
                 } catch (final Throwable e) {

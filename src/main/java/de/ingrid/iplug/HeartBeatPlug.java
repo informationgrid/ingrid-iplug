@@ -69,6 +69,8 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                     if (!_bus.containsPlugDescription(_plugDescription.getPlugId(), _plugDescription.getMd5Hash())) {
                         LOG.info("add plugdescription...");
                         _bus.addPlugDescription(_plugDescription);
+                    } else {
+                        LOG.debug("dont add plugdescription, because it is already registered");
                     }
                 } catch (final Throwable e) {
                     LOG.error("can not send heartbeat [" + _heartBeatCount + "]", e);

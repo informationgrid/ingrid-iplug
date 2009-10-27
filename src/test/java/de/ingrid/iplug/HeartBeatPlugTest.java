@@ -12,6 +12,9 @@ import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.metadata.IMetadataInjector;
+import de.ingrid.utils.processor.IPostProcessor;
+import de.ingrid.utils.processor.IPreProcessor;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.xml.PlugdescriptionSerializer;
 
@@ -20,7 +23,7 @@ public class HeartBeatPlugTest extends TestCase {
     class TestPlug extends HeartBeatPlug {
 
         public TestPlug(final int period) throws Exception {
-            super(period, new PlugDescriptionFieldFilters());
+            super(period, new PlugDescriptionFieldFilters(), new IMetadataInjector[] {}, new IPreProcessor[] {}, new IPostProcessor[] {});
         }
 
         @Override

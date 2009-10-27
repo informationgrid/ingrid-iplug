@@ -17,7 +17,13 @@ import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IConfigurable;
 import de.ingrid.utils.IPlug;
+import de.ingrid.utils.IngridDocument;
 import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.metadata.IMetadataInjector;
+import de.ingrid.utils.metadata.Metadata;
+import de.ingrid.utils.processor.IPostProcessor;
+import de.ingrid.utils.processor.IPreProcessor;
+import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.tool.MD5Util;
 
 public abstract class HeartBeatPlug implements IPlug, IConfigurable {
@@ -34,9 +40,15 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         private long _heartBeatCount;
 
-        public HeartBeat(final IBus bus, final PlugDescription plugDescription, final long period) {
+        private final IMetadataInjector[] _metadataInjectors;
+
+        private final String _busUrl;
+
+        public HeartBeat(String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final IMetadataInjector... metadataInjectors) {
+            _busUrl = busUrl;
             _bus = bus;
             _plugDescription = plugDescription;
+            _metadataInjectors = metadataInjectors;
             final Timer timer = new Timer(true);
             timer.schedule(this, new Date(), period);
         }
@@ -65,6 +77,36 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                 try {
                     final File plugdescriptionAsFile = _plugDescription.getDesrializedFromFolder();
                     final String md5 = MD5Util.getMD5(plugdescriptionAsFile);
+
+                    String plugId = _plugDescription.getPlugId();
+                    LOG.info("send heartbeat - call containsPlugdescription");
+                    boolean containsPlugDescription = _bus.containsPlugDescription(plugId, md5);
+
+                    int oldMetadataHashCode = _plugDescription.getMetadata().hashCode();
+                    injectMetadatas(_plugDescription);
+                    int newMetadataHashCode = _plugDescription.getMetadata().hashCode();
+                    boolean changedMetadata = oldMetadataHashCode != newMetadataHashCode;
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Detect changed metadata: " + changedMetadata);
+                        LOG.debug("Metadata: " + _plugDescription.getMetadata());
+                    }
+
+                    if (!containsPlugDescription || changedMetadata) {
+                        if (LOG.isInfoEnabled()) {
+                            LOG.info("adding or updating plug description to bus '" + _busUrl + "'... [containsPlugDescription:" + containsPlugDescription + " / changedMetaData:" + changedMetadata
+                                    + "]");
+                        }
+                        _plugDescription.setMd5Hash(md5);
+                        _bus.addPlugDescription(_plugDescription);
+                        if (LOG.isInfoEnabled()) {
+                            LOG.info("added or updated plug description to bus '" + _busUrl + '\'');
+                        }
+                    } else {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("I am currently connected.");
+                        }
+                    }
+
                     _plugDescription.setMd5Hash(md5);
                     if (!_bus.containsPlugDescription(_plugDescription.getPlugId(), _plugDescription.getMd5Hash())) {
                         LOG.info("add plugdescription...");
@@ -79,6 +121,21 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         }
 
+        private void injectMetadatas(PlugDescription plugDescription) throws Exception {
+            Metadata metadata = plugDescription.getMetadata();
+            metadata = metadata != null ? metadata : new Metadata();
+            for (IMetadataInjector metadataInjector : _metadataInjectors) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Inject metadatas using " + metadataInjector.getClass().getName());
+                }
+                metadataInjector.injectMetaDatas(metadata);
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Injected metadata:" + metadata);
+            }
+            plugDescription.setMetadata(metadata);
+        }
+
     }
 
     private static final Log LOG = LogFactory.getLog(HeartBeatPlug.class);
@@ -91,9 +148,18 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     private final PlugDescriptionFieldFilters _filters;
 
-    public HeartBeatPlug(final int period, PlugDescriptionFieldFilters plugDescriptionFieldFilters) {
+    private final IMetadataInjector[] _injectors;
+
+    private final IPostProcessor[] _postProcessors;
+
+    private final IPreProcessor[] _preProcessors;
+
+    public HeartBeatPlug(final int period, PlugDescriptionFieldFilters plugDescriptionFieldFilters, IMetadataInjector[] injectors, IPreProcessor[] preProcessors, IPostProcessor[] postProcessors) {
         _period = period;
         _filters = plugDescriptionFieldFilters;
+        _injectors = injectors;
+        _preProcessors = preProcessors;
+        _postProcessors = postProcessors;
     }
 
     @Override
@@ -103,8 +169,11 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         if (busClient != null && busClient.allConnected()) {
             _plugDescription.setProxyServiceURL(busClient.getPeerName());
             // configure heartbeat's
-            for (final IBus bus : busClient.getNonCacheableIBusses()) {
-                final HeartBeat heartBeat = new HeartBeat(bus, _plugDescription, _period);
+            List<IBus> busses = busClient.getNonCacheableIBusses();
+            for (int i = 0; i < busses.size(); i++) {
+                IBus iBus = busses.get(i);
+                String busUrl = busClient.getBusUrl(i);
+                final HeartBeat heartBeat = new HeartBeat(busUrl, iBus, _plugDescription, _period, _injectors);
                 _heartBeats.add(heartBeat);
             }
         }
@@ -148,4 +217,17 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         }
         return bit;
     }
+
+    protected void preProcess(IngridQuery ingridQuery) throws Exception {
+        for (IPreProcessor processor : _preProcessors) {
+            processor.process(ingridQuery);
+        }
+    }
+
+    protected void postProcess(IngridQuery ingridQuery, IngridDocument[] documents) throws Exception {
+        for (IPostProcessor processor : _postProcessors) {
+            processor.process(ingridQuery, documents);
+        }
+    }
+
 }

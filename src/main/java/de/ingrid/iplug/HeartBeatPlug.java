@@ -208,7 +208,13 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                 heartBeat.setPlugDescription(_plugDescription);
             }
         }
-
+        
+        // start sending HeartBeats to connected iBuses
+        try {
+			startHeartBeats();
+		} catch (IOException e) {
+			LOG.error("Couldn't start HeartBeats!", e);
+		}
     }
 
     @Override

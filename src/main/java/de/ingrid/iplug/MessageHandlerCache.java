@@ -5,6 +5,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.weta.components.communication.messaging.IMessageHandler;
 import net.weta.components.communication.messaging.Message;
+import net.weta.components.communication.reflect.ReflectMessage;
 
 import org.apache.log4j.Logger;
 
@@ -39,9 +40,12 @@ public class MessageHandlerCache implements IMessageHandler {
     @Override
     public Message handleMessage(Message message) {
         long start = System.currentTimeMillis();
-        String cacheKey = message.toString();
+        int cacheKey = message.hashCode();
+        if (message instanceof ReflectMessage) {
+            cacheKey = ((ReflectMessage) message).hashCode();
+        }
         Message ret = null;
-        int status = cacheKey.indexOf("cache: false") > -1 ? CACHE_OFF : CACHE_ON;
+        int status = message.toString().indexOf("cache: false") > -1 ? CACHE_OFF : CACHE_ON;
         switch (status) {
         case CACHE_OFF:
             if (LOG.isDebugEnabled()) {
@@ -76,7 +80,7 @@ public class MessageHandlerCache implements IMessageHandler {
         return ret;
     }
 
-    private Element getFromCache(String cacheKey) {
+    private Element getFromCache(int cacheKey) {
         Element element = null;
         try {
             element = _cache.get(cacheKey);

@@ -30,15 +30,23 @@ public class MessageHandlerCacheTest extends TestCase {
         assertEquals(0, testHandler._counter);
         for (int i = 0; i < 10; i++) {
             IngridQuery ingridQuery = QueryStringParser.parse("foo" + i + " cache: true");
-            cache.handleMessage(new ReflectMessage("search", IPlug.class.getName(), new Object[] { ingridQuery, 10, 10 }));
+            ingridQuery.put("BUS_URL", "a_bus");
+            cache.handleMessage(new ReflectMessage("search", IPlug.class.getName(), new Object[] { ingridQuery, 10, i }));
         }
         assertEquals(10, testHandler._counter);
 
         for (int i = 0; i < 10; i++) {
             IngridQuery ingridQuery = QueryStringParser.parse("foo" + i + " cache: true");
-            cache.handleMessage(new ReflectMessage("search", IPlug.class.getName(), new Object[] { ingridQuery, 10, 10 }));
+            ingridQuery.put("BUS_URL", "a_bus");
+            cache.handleMessage(new ReflectMessage("search", IPlug.class.getName(), new Object[] { ingridQuery, 10, i }));
         }
         assertEquals(10, testHandler._counter);
 
+        for (int i = 0; i < 10; i++) {
+            final IngridQuery ingridQuery = QueryStringParser.parse("foo" + i + " cache: true");
+            ingridQuery.put("BUS_URL", "another_bus");
+            cache.handleMessage(new ReflectMessage("search", IPlug.class.getName(), new Object[] { ingridQuery, 10, i }));
+        }
+        assertEquals(20, testHandler._counter);
     }
 }

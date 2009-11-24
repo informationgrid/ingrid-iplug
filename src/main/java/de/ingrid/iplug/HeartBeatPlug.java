@@ -34,7 +34,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         static class ShutdownHook extends Thread {
             private final HeartBeat _heartBeat;
 
-            public ShutdownHook(HeartBeat heartBeat) {
+            public ShutdownHook(final HeartBeat heartBeat) {
                 _heartBeat = heartBeat;
             }
 
@@ -46,6 +46,8 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         }
 
         private boolean _enable = false;
+
+        private boolean _accurate = false;
 
         private static final Log LOG = LogFactory.getLog(HeartBeat.class);
 
@@ -61,11 +63,11 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         private final String _name;
 
-        private ShutdownHook _shutdownHook;
+        private final ShutdownHook _shutdownHook;
 
-        private Timer _timer;
+        private final Timer _timer;
 
-        public HeartBeat(String name, String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final IMetadataInjector... metadataInjectors) {
+        public HeartBeat(final String name, final String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final IMetadataInjector... metadataInjectors) {
             _name = name;
             _busUrl = busUrl;
             _bus = bus;
@@ -79,11 +81,13 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         public void enable() throws IOException {
             _enable = true;
+            _accurate = true;
             run();
         }
 
         public void disable() {
             _enable = false;
+            _accurate = false;
             if (_bus.containsPlugDescription(_plugDescription.getPlugId(), _plugDescription.getMd5Hash())) {
                 _bus.removePlugDescription(_plugDescription);
             }
@@ -93,20 +97,24 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
             return _enable;
         }
 
+        public boolean isAccurate() {
+            return _accurate;
+        }
+
         @Override
         public void run() {
             if (_enable) {
                 _heartBeatCount++;
                 try {
 
-                    int oldMetadataHashCode = _plugDescription.getMetadata().hashCode();
+                    final int oldMetadataHashCode = _plugDescription.getMetadata().hashCode();
                     injectMetadatas(_plugDescription);
-                    int newMetadataHashCode = _plugDescription.getMetadata().hashCode();
-                    boolean changedMetadata = oldMetadataHashCode != newMetadataHashCode;
+                    final int newMetadataHashCode = _plugDescription.getMetadata().hashCode();
+                    final boolean changedMetadata = oldMetadataHashCode != newMetadataHashCode;
 
                     final File plugdescriptionAsFile = _plugDescription.getDesrializedFromFolder();
                     final String md5 = MD5Util.getMD5(plugdescriptionAsFile);
-                    String plugId = _plugDescription.getPlugId();
+                    final String plugId = _plugDescription.getPlugId();
 
                     if (changedMetadata) {
                         LOG.info("Detect changed metadata: " + changedMetadata);
@@ -118,7 +126,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                     }
 
                     LOG.info("heartbeat#" + _name + " send heartbeat [" + (_heartBeatCount) + "] to bus [" + _busUrl + "]");
-                    boolean containsPlugDescription = _bus.containsPlugDescription(plugId, md5);
+                    final boolean containsPlugDescription = _bus.containsPlugDescription(plugId, md5);
 
                     if (!containsPlugDescription) {
                         if (LOG.isInfoEnabled()) {
@@ -134,18 +142,19 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                             LOG.debug("I am currently connected.");
                         }
                     }
-
+                    _accurate = true;
                 } catch (final Throwable e) {
                     LOG.error("can not send heartbeat [" + _heartBeatCount + "]", e);
+                    _accurate = false;
                 }
             }
 
         }
 
-        private void injectMetadatas(PlugDescription plugDescription) throws Exception {
+        private void injectMetadatas(final PlugDescription plugDescription) throws Exception {
             Metadata metadata = plugDescription.getMetadata();
             metadata = metadata != null ? metadata : new Metadata();
-            for (IMetadataInjector metadataInjector : _metadataInjectors) {
+            for (final IMetadataInjector metadataInjector : _metadataInjectors) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Inject metadatas using " + metadataInjector.getClass().getName());
                 }
@@ -157,7 +166,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
             plugDescription.setMetadata(metadata);
         }
 
-        public void setPlugDescription(PlugDescription plugDescription) {
+        public void setPlugDescription(final PlugDescription plugDescription) {
             _plugDescription = plugDescription;
         }
 
@@ -179,7 +188,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     private final IPreProcessor[] _preProcessors;
 
-    public HeartBeatPlug(final int period, PlugDescriptionFieldFilters plugDescriptionFieldFilters, IMetadataInjector[] injectors, IPreProcessor[] preProcessors, IPostProcessor[] postProcessors) {
+    public HeartBeatPlug(final int period, final PlugDescriptionFieldFilters plugDescriptionFieldFilters, final IMetadataInjector[] injectors, final IPreProcessor[] preProcessors, final IPostProcessor[] postProcessors) {
         _period = period;
         _filters = plugDescriptionFieldFilters;
         _injectors = injectors;
@@ -196,23 +205,23 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         if (busClient != null && busClient.allConnected()) {
             _plugDescription.setProxyServiceURL(busClient.getPeerName());
             // configure heartbeat's
-            List<IBus> busses = busClient.getNonCacheableIBusses();
+            final List<IBus> busses = busClient.getNonCacheableIBusses();
             for (int i = 0; i < busses.size(); i++) {
-                IBus iBus = busses.get(i);
-                String busUrl = busClient.getBusUrl(i);
+                final IBus iBus = busses.get(i);
+                final String busUrl = busClient.getBusUrl(i);
                 if (!_heartBeats.containsKey(busUrl)) {
                     final HeartBeat heartBeat = new HeartBeat("no." + _heartBeats.size(), busUrl, iBus, _plugDescription, _period, _injectors);
                     _heartBeats.put(busUrl, heartBeat);
                 }
-                HeartBeat heartBeat = _heartBeats.get(busUrl);
+                final HeartBeat heartBeat = _heartBeats.get(busUrl);
                 heartBeat.setPlugDescription(_plugDescription);
             }
         }
-        
+
         // start sending HeartBeats to connected iBuses
         try {
 			startHeartBeats();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			LOG.error("Couldn't start HeartBeats!", e);
 		}
     }
@@ -229,18 +238,18 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     public void startHeartBeats() throws IOException {
         LOG.info("start heart beats");
-        Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
+        final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
         while (iterator.hasNext()) {
-            HeartBeatPlug.HeartBeat heartBeat = iterator.next();
+            final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
             heartBeat.enable();
         }
     }
 
     public void stopHeartBeats() {
         LOG.info("stop heart beats");
-        Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
+        final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
         while (iterator.hasNext()) {
-            HeartBeatPlug.HeartBeat heartBeat = iterator.next();
+            final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
             heartBeat.disable();
         }
     }
@@ -250,19 +259,33 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         for (final HeartBeat heartBeat : _heartBeats.values()) {
             if (heartBeat.isEnable()) {
                 bit = true;
+                break;
             }
         }
         return bit;
     }
 
-    protected void preProcess(IngridQuery ingridQuery) throws Exception {
-        for (IPreProcessor processor : _preProcessors) {
+    public boolean sendingAccurate() {
+        boolean bit = sendingHeartBeats();
+        if (bit) {
+            for (final HeartBeat heartBeat : _heartBeats.values()) {
+                if (!heartBeat.isAccurate()) {
+                    bit = false;
+                    break;
+                }
+            }
+        }
+        return bit;
+    }
+
+    protected void preProcess(final IngridQuery ingridQuery) throws Exception {
+        for (final IPreProcessor processor : _preProcessors) {
             processor.process(ingridQuery);
         }
     }
 
-    protected void postProcess(IngridQuery ingridQuery, IngridDocument[] documents) throws Exception {
-        for (IPostProcessor processor : _postProcessors) {
+    protected void postProcess(final IngridQuery ingridQuery, final IngridDocument[] documents) throws Exception {
+        for (final IPostProcessor processor : _postProcessors) {
             processor.process(ingridQuery, documents);
         }
     }

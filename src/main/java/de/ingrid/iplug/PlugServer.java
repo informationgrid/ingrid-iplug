@@ -126,6 +126,7 @@ public class PlugServer {
             this.fTimeOutThread.addHearBeatThread(heartBeat);
             heartBeat.start();
         }
+        CacheService.updateIngridCache(fPlugDescription);
         this.fTimeOutThread.start();
     }
 

@@ -154,11 +154,13 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         private void injectMetadatas(final PlugDescription plugDescription) throws Exception {
             Metadata metadata = plugDescription.getMetadata();
             metadata = metadata != null ? metadata : new Metadata();
-            for (final IMetadataInjector metadataInjector : _metadataInjectors) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Inject metadatas using " + metadataInjector.getClass().getName());
+            if (_metadataInjectors != null) {
+                for (final IMetadataInjector metadataInjector : _metadataInjectors) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Inject metadatas using " + metadataInjector.getClass().getName());
+                    }
+                    metadataInjector.injectMetaDatas(metadata);
                 }
-                metadataInjector.injectMetaDatas(metadata);
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Injected metadata:" + metadata);
@@ -194,6 +196,14 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         _injectors = injectors;
         _preProcessors = preProcessors;
         _postProcessors = postProcessors;
+    }
+
+    public HeartBeatPlug(final int period) {
+        _period = period;
+        _filters = new PlugDescriptionFieldFilters();
+        _injectors = null;
+        _preProcessors = null;
+        _postProcessors = null;
     }
 
     @Override
@@ -279,14 +289,18 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
     }
 
     protected void preProcess(final IngridQuery ingridQuery) throws Exception {
-        for (final IPreProcessor processor : _preProcessors) {
-            processor.process(ingridQuery);
+        if (_preProcessors != null) {
+            for (final IPreProcessor processor : _preProcessors) {
+                processor.process(ingridQuery);
+            }
         }
     }
 
     protected void postProcess(final IngridQuery ingridQuery, final IngridDocument[] documents) throws Exception {
-        for (final IPostProcessor processor : _postProcessors) {
-            processor.process(ingridQuery, documents);
+        if (_postProcessors != null) {
+            for (final IPostProcessor processor : _postProcessors) {
+                processor.process(ingridQuery, documents);
+            }
         }
     }
 

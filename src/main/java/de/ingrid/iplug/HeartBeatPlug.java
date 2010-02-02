@@ -208,6 +208,11 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     @Override
     public void configure(final PlugDescription plugDescription) {
+        // configurate injectors
+        for (final IMetadataInjector injector : _injectors) {
+            injector.configure(plugDescription);
+        }
+
         // stop and remove existing heartbeats
         _plugDescription = _filters.filter(plugDescription);
         _plugDescription.setMetadata(new Metadata());

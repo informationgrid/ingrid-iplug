@@ -107,7 +107,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         @Override
         public void run() {
-            if (_enable && BusClientFactory.getBusClient().isConnected(_bus)) {
+            if (_enable) {
                 _heartBeatCount++;
                 try {
 

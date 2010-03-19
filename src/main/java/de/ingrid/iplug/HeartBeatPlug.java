@@ -79,10 +79,6 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
             Runtime.getRuntime().addShutdownHook(_shutdownHook);
         }
 
-        public String getName() {
-            return _name;
-        }
-
         public void enable() throws IOException {
             _enable = true;
             _accurate = true;
@@ -92,8 +88,12 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         public void disable() {
             _enable = false;
             _accurate = false;
-            if (_bus.containsPlugDescription(_plugDescription.getPlugId(), _plugDescription.getMd5Hash())) {
-                _bus.removePlugDescription(_plugDescription);
+            try {
+                if (_bus.containsPlugDescription(_plugDescription.getPlugId(), _plugDescription.getMd5Hash())) {
+                    _bus.removePlugDescription(_plugDescription);
+                }
+            } catch (final Exception e) {
+                LOG.warn("error while disabling heartbeat '" + _name + "'. maybe it's already disconnected?");
             }
         }
 
@@ -107,7 +107,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         @Override
         public void run() {
-            if (_enable) {
+            if (_enable && BusClientFactory.getBusClient().isConnected(_bus)) {
                 _heartBeatCount++;
                 try {
 
@@ -280,11 +280,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
         while (iterator.hasNext()) {
             final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
-            try {
-                heartBeat.disable();
-            } catch (final Exception e) {
-                LOG.warn("error while disabling heartbeat '" + heartBeat.getName() + "'");
-            }
+            heartBeat.disable();
         }
     }
 

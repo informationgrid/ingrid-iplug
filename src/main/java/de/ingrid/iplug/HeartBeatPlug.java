@@ -79,6 +79,10 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
             Runtime.getRuntime().addShutdownHook(_shutdownHook);
         }
 
+        public String getName() {
+            return _name;
+        }
+
         public void enable() throws IOException {
             _enable = true;
             _accurate = true;
@@ -276,7 +280,11 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
         while (iterator.hasNext()) {
             final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
-            heartBeat.disable();
+            try {
+                heartBeat.disable();
+            } catch (final Exception e) {
+                LOG.warn("error while disabling heartbeat '" + heartBeat.getName() + "'");
+            }
         }
     }
 

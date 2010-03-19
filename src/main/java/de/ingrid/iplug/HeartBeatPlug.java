@@ -219,6 +219,9 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         final BusClient busClient = BusClientFactory.getBusClient();
         if (busClient != null && busClient.allConnected()) {
             _plugDescription.setProxyServiceURL(busClient.getPeerName());
+            // remove old hearbeats
+            stopHeartBeats();
+            _heartBeats.clear();
             // configure heartbeat's
             final List<IBus> busses = busClient.getNonCacheableIBusses();
             for (int i = 0; i < busses.size(); i++) {
@@ -241,6 +244,15 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 		}
     }
 
+    public void reconfigure() {
+        // remove old hearbeats
+        stopHeartBeats();
+        _heartBeats.clear();
+        if (_plugDescription != null) {
+            configure(_plugDescription);
+        }
+    }
+
     @Override
     public void close() throws Exception {
         stopHeartBeats();
@@ -250,7 +262,6 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         }
         BusClientFactory.getBusClient().shutdown();
     }
-
     public void startHeartBeats() throws IOException {
         LOG.info("start heart beats");
         final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();

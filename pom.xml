@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-base-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -16,52 +16,31 @@
   </scm>
   <dependencies>
     <dependency>
-      <groupId>commons-betwixt</groupId>
-      <artifactId>commons-betwixt</artifactId>
-    </dependency>
-    <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus</artifactId>
+      <!-- EXCLUDE non released plugs to avoid problems during release -->
+      <exclusions>
+          <exclusion>
+              <groupId>de.ingrid</groupId>
+              <artifactId>ingrid-iplug-dsc</artifactId>
+          </exclusion>
+          <exclusion>
+              <groupId>de.ingrid</groupId>
+              <artifactId>ingrid-iplug-tamino</artifactId>
+          </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus-client</artifactId>
-      <version>1.2.3-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-utils</artifactId>
-      <version>1.3.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-communication</artifactId>
-      <version>1.2.2-SNAPSHOT</version>
+      <groupId>commons-betwixt</groupId>
+      <artifactId>commons-betwixt</artifactId>
     </dependency>
     <dependency>
       <groupId>opensymphony</groupId>
       <artifactId>quartz</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-compiler</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>tomcat</groupId>
-      <artifactId>jasper-runtime</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jetty</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jetty</groupId>
-      <artifactId>org.mortbay.jetty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.8.0</version>
     </dependency>
   </dependencies>
   <repositories>

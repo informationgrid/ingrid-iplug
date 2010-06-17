@@ -8,11 +8,11 @@
   <groupId>de.ingrid</groupId>
   <artifactId>ingrid-iplug</artifactId>
   <packaging>jar</packaging>
-  <version>1.4.0-SNAPSHOT</version>
+  <version>1.3.0</version>
   <name>ingrid-iplug</name>
   <scm>
-    <connection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-iplug/trunk</connection>
-    <developerConnection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-iplug/trunk</developerConnection>
+    <connection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-iplug/tags/ingrid-iplug-1.3.0</connection>
+    <developerConnection>scm:svn:https://harrison.its-technidata.de:444/svn/ingrid/ingrid-iplug/tags/ingrid-iplug-1.3.0</developerConnection>
   </scm>
   <dependencies>
     <dependency>

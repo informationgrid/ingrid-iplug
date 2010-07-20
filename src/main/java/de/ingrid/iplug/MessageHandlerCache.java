@@ -79,8 +79,10 @@ public class MessageHandlerCache implements IMessageHandler {
     	if (_cache == null ||
     		_cache.getStatus() != Status.STATUS_ALIVE) {
 
-    		_cache = _cacheManager.getCache("ingrid-cache");
+    		_cache = _cacheManager.getCache(CacheService.INGRID_CACHE);
             if (_cache == null) {
+            	// Use CacheService.DEFAULT_CACHE ???
+            	// Guess CacheService was never really coordinated with this MessageHandlerCache or vice versa ...
                 if (!_cacheManager.cacheExists("default")) {
                     _cache = new Cache("default", 1000, false, false, 600, 600);
                     _cacheManager.addCache(_cache);

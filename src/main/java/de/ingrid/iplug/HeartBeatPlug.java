@@ -151,6 +151,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                     LOG.error("Can not send heartbeat [" + _heartBeatCount + "].", e);
                     _accurate = false;
                     try {
+                        LOG.info("Try to restart client.");
                         BusClientFactory.getBusClient().restart();
                     } catch (Exception e1) {
                         LOG.error("Can not restart client.", e1);

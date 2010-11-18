@@ -148,8 +148,14 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                     }
                     _accurate = true;
                 } catch (final Throwable e) {
-                    LOG.error("can not send heartbeat [" + _heartBeatCount + "]", e);
+                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "].", e);
                     _accurate = false;
+                    try {
+                        BusClientFactory.getBusClient().restart();
+                    } catch (Exception e1) {
+                        LOG.error("Can not restart client.", e1);
+                    }
+                    
                 }
             }
 

@@ -53,7 +53,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         private PlugDescription _plugDescription;
 
-        private final IBus _bus;
+        private IBus _bus;
 
         private long _heartBeatCount;
 
@@ -66,6 +66,8 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         private final ShutdownHook _shutdownHook;
 
         private final Timer _timer;
+        
+        private boolean _heartBeatFailed;
 
         public HeartBeat(final String name, final String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final IMetadataInjector... metadataInjectors) {
             _name = name;
@@ -76,7 +78,14 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
             _timer = new Timer(true);
             _timer.schedule(this, new Date(), period);
             _shutdownHook = new ShutdownHook(this);
+            _heartBeatFailed = false;
             Runtime.getRuntime().addShutdownHook(_shutdownHook);
+        }
+        
+        public void setIBus(IBus ibus) {
+            _bus = ibus;
+            // reset heartbeat failure since a new bus is connected
+            _heartBeatFailed = false;
         }
 
         public void enable() throws IOException {
@@ -107,10 +116,10 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         @Override
         public void run() {
-            if (_enable) {
+            if (_enable) { // && !_heartBeatFailed) {
                 _heartBeatCount++;
                 try {
-
+                    
                     final int oldMetadataHashCode = _plugDescription.getMetadata().hashCode();
                     injectMetadatas(_plugDescription);
                     final int newMetadataHashCode = _plugDescription.getMetadata().hashCode();
@@ -150,14 +159,10 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                 } catch (final Throwable e) {
                     LOG.error("Can not send heartbeat [" + _heartBeatCount + "].", e);
                     _accurate = false;
-                    try {
-                        LOG.info("Try to restart client.");
-                        BusClientFactory.getBusClient().restart();
-                    } catch (Exception e1) {
-                        LOG.error("Can not restart client.", e1);
-                    }
-                    
+                    //this._heartBeatFailed = true;
                 }
+            } else {
+                LOG.debug("Heartbeat not sent since it was disabled or a failure! (" + this + ")");
             }
 
         }
@@ -182,7 +187,65 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         public void setPlugDescription(final PlugDescription plugDescription) {
             _plugDescription = plugDescription;
         }
+        
+        public boolean hasFailed() {
+            return _heartBeatFailed;
+        }
 
+    }
+    
+    /**
+     * This class observes the heart beats and restarts the communication
+     * if any failure occurs, that cannot be corrected with a simple reconnect.
+     * @author Andre
+     *
+     */
+    static class HeartBeatMonitor extends TimerTask {
+        private static final Log LOG = LogFactory.getLog(HeartBeatMonitor.class);
+        
+        private Timer _timer;
+
+        private final Map<String, HeartBeat> _heartBeats;
+        
+        public HeartBeatMonitor(final long period, final Map<String, HeartBeat> heartBeats) {
+            this._timer = new Timer(true);
+            this._timer.schedule(this, new Date(), period);
+            this._heartBeats = heartBeats;
+            LOG.debug("HeartBeatMonitor started!");
+        }
+        
+        @Override
+        public void run() {
+            final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
+            while (iterator.hasNext()) {
+                final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
+                if (heartBeat.hasFailed()) {
+                    // restart complete communication (since it's not possible 
+                    // yet just to restart a single one)
+                    try {
+                        LOG.info("Restart iBusClient with all connections");
+                        BusClientFactory.getBusClient().restart();
+                        updateBusInHeartBeats();
+                        break;
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        
+        private void updateBusInHeartBeats() {
+            BusClient busClient = BusClientFactory.getBusClient();
+            List<IBus> busses = busClient.getNonCacheableIBusses();
+            for (int i = 0; i < busses.size(); i++) {
+                final IBus iBus = busses.get(i);
+                final String busUrl = busClient.getBusUrl(i);
+                _heartBeats.get(busUrl).setIBus(iBus);
+                LOG.debug("update iBus in heartbeat");
+            }
+        }
+        
     }
 
     private static final Log LOG = LogFactory.getLog(HeartBeatPlug.class);
@@ -200,6 +263,8 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
     private final IPostProcessor[] _postProcessors;
 
     private final IPreProcessor[] _preProcessors;
+
+    private HeartBeatMonitor _heartBeatMonitor;
 
     public HeartBeatPlug(final int period, final PlugDescriptionFieldFilters plugDescriptionFieldFilters, final IMetadataInjector[] injectors, final IPreProcessor[] preProcessors, final IPostProcessor[] postProcessors) {
         _period = period;
@@ -245,6 +310,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                 final HeartBeat heartBeat = _heartBeats.get(busUrl);
                 heartBeat.setPlugDescription(_plugDescription);
             }
+            //_heartBeatMonitor = new HeartBeatMonitor(20000, _heartBeats);
         }
 
         // start sending HeartBeats to connected iBuses

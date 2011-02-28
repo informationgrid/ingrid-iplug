@@ -353,7 +353,9 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
         while (iterator.hasNext()) {
             final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
-            heartBeat.disable();
+            if (heartBeat._enable) {
+                heartBeat.disable();
+            }
         }
     }
 

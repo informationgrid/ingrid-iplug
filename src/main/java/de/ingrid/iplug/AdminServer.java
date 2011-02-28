@@ -67,7 +67,6 @@ public class AdminServer {
      * @param webFolder The folder where the web contexts are located.
      * @param secure True if authentication is requiered otherwise false.
      * @param realm A user password relation if it is a secure web container. 
-     * @param busClient The bus client for the communication.
      * @return The started WebContainer.
      * @throws IOException
      * @throws NoSuchAlgorithmException

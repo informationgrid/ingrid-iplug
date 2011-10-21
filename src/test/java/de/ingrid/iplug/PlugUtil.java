@@ -34,7 +34,6 @@ public class PlugUtil {
         description.addField("datatype");
         description.addField("topic");
         description.addField("partner");
-        description.addField("funct_category");
 
         serializer.aliasClass(PlugDescription.class.getName(),
                 PlugDescription.class);

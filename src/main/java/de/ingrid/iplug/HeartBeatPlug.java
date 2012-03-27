@@ -26,6 +26,7 @@ import de.ingrid.utils.processor.IPostProcessor;
 import de.ingrid.utils.processor.IPreProcessor;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.tool.MD5Util;
+import de.ingrid.utils.xml.PlugdescriptionSerializer;
 
 public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
@@ -145,7 +146,11 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                         if (LOG.isInfoEnabled()) {
                             LOG.info("adding or updating plug description to bus [" + _busUrl + "]");
                         }
+                        // read plugdescription from file system in case it was changed externally and 
+                        // could not be updated in all IConfigurable instances
+                        _plugDescription = new PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile);
                         _plugDescription.setMd5Hash(md5);
+                        injectMetadatas(_plugDescription);
                         _bus.addPlugDescription(_plugDescription);
                         if (LOG.isInfoEnabled()) {
                             LOG.info("added or updated plug description to bus [" + _busUrl + "]");

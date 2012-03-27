@@ -1,14 +1,8 @@
 package de.ingrid.iplug.ibus;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import junit.framework.TestCase;
-import net.weta.components.communication.configuration.ClientConfiguration;
-import net.weta.components.communication.configuration.ClientConfiguration.ClientConnection;
-import net.weta.components.communication.configuration.ServerConfiguration;
-import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication.tcp.TcpCommunication;
 
 import org.mockito.MockitoAnnotations;
@@ -17,9 +11,6 @@ import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.iplug.DummyPlug;
 import de.ingrid.iplug.HeartBeatPlug;
 import de.ingrid.iplug.PlugDescriptionFieldFilters;
-import de.ingrid.iplug.ibus.HeartBeatPlugTest.TestPlug;
-import de.ingrid.utils.BeanFactory;
-import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;

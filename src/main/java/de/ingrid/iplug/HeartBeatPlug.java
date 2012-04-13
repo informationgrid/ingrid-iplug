@@ -69,8 +69,10 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         private final Timer _timer;
         
         private boolean _heartBeatFailed;
+        
+        private final PlugDescriptionFieldFilters _filters;
 
-        public HeartBeat(final String name, final String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final IMetadataInjector... metadataInjectors) {
+        public HeartBeat(final String name, final String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final PlugDescriptionFieldFilters filters ,  final IMetadataInjector... metadataInjectors) {
             _name = name;
             _busUrl = busUrl;
             _bus = bus;
@@ -80,6 +82,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
             _timer.schedule(this, new Date(), period);
             _shutdownHook = new ShutdownHook(this);
             _heartBeatFailed = false;
+            _filters = filters;
             Runtime.getRuntime().addShutdownHook(_shutdownHook);
         }
         
@@ -151,6 +154,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                         _plugDescription = new PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile);
                         _plugDescription.setMd5Hash(md5);
                         injectMetadatas(_plugDescription);
+                        _plugDescription = _filters.filter(_plugDescription);
                         _bus.addPlugDescription(_plugDescription);
                         if (LOG.isInfoEnabled()) {
                             LOG.info("added or updated plug description to bus [" + _busUrl + "]");
@@ -309,7 +313,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                 final IBus iBus = busses.get(i);
                 final String busUrl = busClient.getBusUrl(i);
                 if (!_heartBeats.containsKey(busUrl)) {
-                    final HeartBeat heartBeat = new HeartBeat("no." + _heartBeats.size(), busUrl, iBus, _plugDescription, _period, _injectors);
+                    final HeartBeat heartBeat = new HeartBeat("no." + _heartBeats.size(), busUrl, iBus, _plugDescription, _period, _filters, _injectors);
                     _heartBeats.put(busUrl, heartBeat);
                 }
                 final HeartBeat heartBeat = _heartBeats.get(busUrl);

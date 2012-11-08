@@ -161,12 +161,12 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                         }
                     } else {
                         if (LOG.isDebugEnabled()) {
-                            LOG.debug("I am currently connected.");
+                            LOG.debug("I am currently connected to bus [" + _busUrl + "].");
                         }
                     }
                     _accurate = true;
                 } catch (final Throwable e) {
-                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "].", e);
+                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "].", e);
                     _accurate = false;
                     //this._heartBeatFailed = true;
                 }

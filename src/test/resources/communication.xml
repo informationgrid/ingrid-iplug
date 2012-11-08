@@ -8,5 +8,5 @@
                         </server>
                 </connections>
         </client>
-        <messages queueSize="2000" handleTimeout="10"/>
+        <messages queueSize="2000" handleTimeout="2"/>
 </communication>

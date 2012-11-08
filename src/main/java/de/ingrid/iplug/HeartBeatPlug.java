@@ -302,7 +302,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         _plugDescription = _filters.filter(plugDescription);
         _plugDescription.setMetadata(new Metadata());
         final BusClient busClient = BusClientFactory.getBusClient();
-        if (busClient != null && busClient.allConnected()) {
+        if (busClient != null) {
             _plugDescription.setProxyServiceURL(busClient.getPeerName());
             // remove old hearbeats
             stopHeartBeats();

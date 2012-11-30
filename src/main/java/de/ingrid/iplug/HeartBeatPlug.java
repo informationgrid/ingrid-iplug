@@ -71,6 +71,8 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         private boolean _heartBeatFailed;
         
         private final PlugDescriptionFieldFilters _filters;
+        
+        private File plugdescriptionAsFile = null;
 
         public HeartBeat(final String name, final String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final PlugDescriptionFieldFilters filters ,  final IMetadataInjector... metadataInjectors) {
             _name = name;
@@ -108,6 +110,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
             } catch (final Exception e) {
                 LOG.warn("error while disabling heartbeat '" + _name + "'. maybe it's already disconnected?");
             }
+            this.cancel();
         }
 
         public boolean isEnable() {
@@ -129,7 +132,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                     final int newMetadataHashCode = _plugDescription.getMetadata().hashCode();
                     final boolean changedMetadata = oldMetadataHashCode != newMetadataHashCode;
 
-                    final File plugdescriptionAsFile = _plugDescription.getDesrializedFromFolder();
+                    plugdescriptionAsFile = _plugDescription.getDesrializedFromFolder();
                     final String md5 = MD5Util.getMD5(plugdescriptionAsFile);
                     final String plugId = _plugDescription.getPlugId();
 
@@ -157,7 +160,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                         _plugDescription = _filters.filter(_plugDescription);
                         _bus.addPlugDescription(_plugDescription);
                         if (LOG.isInfoEnabled()) {
-                            LOG.info("added or updated plug description to bus [" + _busUrl + "]");
+                            LOG.info("added or updated plug description to bus [" + _busUrl + "]: " + _plugDescription);
                         }
                     } else {
                         if (LOG.isDebugEnabled()) {
@@ -166,9 +169,31 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                     }
                     _accurate = true;
                 } catch (final Throwable e) {
-                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "].", e);
+                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "]. With plugdescription: " + _plugDescription, e);
                     _accurate = false;
                     //this._heartBeatFailed = true;
+                    
+                    // try to reload plugdescription in case it was reseted
+                    // suspicious Exception:
+                    /*
+                     * ERROR: 2012-11-26 18:39:48.458: de.ingrid.iplug.HeartBeatPlug$HeartBeat.run(169): Can not send heartbeat [3].
+                         java.lang.NullPointerException
+                                at de.ingrid.iplug.HeartBeatPlug$HeartBeat.run(HeartBeatPlug.java:127)
+                                at java.util.TimerThread.mainLoop(Timer.java:512)
+                                at java.util.TimerThread.run(Timer.java:462)
+                     * 
+                     */
+                    if (_plugDescription == null || _plugDescription.getMetadata() == null) {
+                        LOG.info("PlugDescription or metadata is null. Reload PlugDescription from file...");
+                        try {
+                            _plugDescription = new PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile);
+                            injectMetadatas(_plugDescription);
+                        } catch (IOException e1) {
+                            LOG.error("Cannot deserialize plugdescription from: " + plugdescriptionAsFile, e1);
+                        } catch (Exception e1) {
+                            LOG.error("Cannot inject Metadate into plugdescription.", e1);
+                        }
+                    }
                 }
             } else {
                 LOG.debug("Heartbeat not sent since it was disabled or a failure! (" + this + ")");

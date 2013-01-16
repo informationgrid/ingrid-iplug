@@ -63,7 +63,7 @@ public class HeartBeatThread extends Thread {
 
     public void run() {
         if (fLogger.isInfoEnabled()) {
-            fLogger.info("heartbeat for '" + this.fBusUrl + "' started");
+            fLogger.info("heartbeat for '" + this.fBusUrl + "' started (" + this.hashCode() + ").");
         }
         try {
             this.fBus = (IBus) ProxyService.createProxy(this.fCommunication, IBus.class, this.fBusUrl);
@@ -80,7 +80,7 @@ public class HeartBeatThread extends Thread {
 
                 String md5Hash = MD5Util.getMD5(this.plugdescriptionFile);
                 String plugId = this.fPlugDescription.getPlugId();
-                fLogger.info("send heartbeat - call containsPlugdescription");
+                fLogger.info("send heartbeat (" + this.hashCode() + ") - call containsPlugdescription");
                 boolean containsPlugDescription = this.fBus.containsPlugDescription(plugId, md5Hash);
                 
                 int oldMetadataHashCode = this.fPlugDescription.getMetadata().hashCode();
@@ -101,7 +101,7 @@ public class HeartBeatThread extends Thread {
                     this.fPlugDescription.setMd5Hash(md5Hash);
                     this.fBus.addPlugDescription(this.fPlugDescription);
                     if (fLogger.isInfoEnabled()) {
-                        fLogger.info("added or updated plug description to bus '" + this.fBusUrl + '\'');
+                        fLogger.info("added or updated plug description to bus '" + this.fBusUrl + "' by heartbeat (" + this.hashCode() + ").");
                     }
                     this.fShutdownHook.addBus(this.fBusUrl, this.fBus);
                 } else {
@@ -114,11 +114,11 @@ public class HeartBeatThread extends Thread {
             }
         } catch (InterruptedException e) {
             if (fLogger.isWarnEnabled()) {
-                fLogger.warn("interrupt heartbeat thread to '" + this.fBusUrl + "'");
+                fLogger.warn("interrupt heartbeat (" + this.hashCode() + ") thread to '" + this.fBusUrl + "'");
             }
         } catch (Throwable t) {
             if (fLogger.isErrorEnabled()) {
-                fLogger.error("exception in heartbeat thread to '" + this.fBusUrl + "'", t);
+                fLogger.error("exception in heartbeat (" + this.hashCode() + ") thread to '" + this.fBusUrl + "'", t);
             }
         } finally {
             this.fShutdownHook.removeBus(this.fBusUrl);

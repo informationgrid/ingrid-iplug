@@ -250,7 +250,7 @@ public class PlugServer {
                         if (heartbeatThread.getLastSendHeartbeat() + heartbeatThread.getSleepInterval() * 2 < System
                                 .currentTimeMillis()) {
                             if (fLogger.isWarnEnabled()) {
-                                fLogger.warn("stopping heartbeat for '".concat(heartbeatThread.getBusUrl()) + '\'');
+                                fLogger.warn("stopping heartbeat for '".concat(heartbeatThread.getBusUrl()) + "' (" + heartbeatThread.hashCode() + ")");
                             }
                             iter.remove();
                             heartbeatThread.interrupt();

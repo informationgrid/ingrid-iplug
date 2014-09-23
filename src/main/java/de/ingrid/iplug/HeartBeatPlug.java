@@ -97,7 +97,6 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         public void enable() throws IOException {
             _enable = true;
             _accurate = true;
-            run();
         }
 
         public void disable() {
@@ -298,8 +297,6 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     private final IPreProcessor[] _preProcessors;
 
-    private HeartBeatMonitor _heartBeatMonitor;
-
     public HeartBeatPlug(final int period, final PlugDescriptionFieldFilters plugDescriptionFieldFilters, final IMetadataInjector[] injectors, final IPreProcessor[] preProcessors, final IPostProcessor[] postProcessors) {
         _period = period;
         _filters = plugDescriptionFieldFilters;
@@ -376,20 +373,32 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
     public void startHeartBeats() throws IOException {
         LOG.info("start heart beats");
         final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
+        int index = 0;
         while (iterator.hasNext()) {
             final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
             heartBeat.enable();
+            if (BusClientFactory.getBusClient().isConnected( index )) {
+                heartBeat.run();
+            }
+            index++;
         }
     }
 
     public void stopHeartBeats() {
         LOG.info("stop heart beats");
         final Iterator<HeartBeat> iterator = _heartBeats.values().iterator();
+        int index = 0;
         while (iterator.hasNext()) {
+            // only disable heartbeat for those who are connected
             final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
-            if (heartBeat._enable) {
-                heartBeat.disable();
+            if (BusClientFactory.getBusClient().isConnected( index )) {
+                if (heartBeat._enable) {
+                    heartBeat.disable();
+                }
+            } else {
+                LOG.warn( "HeartBeat already stopped, because there's no connection to ibus: " + heartBeat._busUrl );
             }
+            index++;
         }
     }
 

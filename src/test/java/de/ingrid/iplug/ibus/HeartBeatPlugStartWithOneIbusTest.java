@@ -96,7 +96,9 @@ public class HeartBeatPlugStartWithOneIbusTest extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         System.out.println("Shut down server.");
-        this.iBusCom.shutdown();
+        if (this.iBusCom != null) {
+            this.iBusCom.shutdown();
+        }
         assertTrue(new File(_target, "pd.xml").delete());
         assertTrue(_target.delete());
     }

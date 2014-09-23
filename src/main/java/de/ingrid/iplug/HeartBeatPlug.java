@@ -96,7 +96,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
         public void enable() throws IOException {
             _enable = true;
-            _accurate = true;
+            _accurate = false;
         }
 
         public void disable() {

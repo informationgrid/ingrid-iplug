@@ -14,8 +14,8 @@ import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
 import de.ingrid.iplug.DummyPlug;
 import de.ingrid.iplug.HeartBeatPlug;
-import de.ingrid.iplug.PlugDescriptionFieldFilters;
 import de.ingrid.utils.IBus;
+import de.ingrid.utils.IPlugDescriptionFilter;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
@@ -31,7 +31,7 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
     class TestPlug extends HeartBeatPlug {
 
         public TestPlug(final int period) throws Exception {
-            super(period, new PlugDescriptionFieldFilters(), new IMetadataInjector[] {}, new IPreProcessor[] {},
+            super(period, new IPlugDescriptionFilter[] {}, new IMetadataInjector[] {}, new IPreProcessor[] {},
                     new IPostProcessor[] {});
         }
 

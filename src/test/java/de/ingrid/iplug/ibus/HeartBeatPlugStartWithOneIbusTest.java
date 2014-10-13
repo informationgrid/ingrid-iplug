@@ -14,8 +14,8 @@ import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
 import de.ingrid.iplug.DummyPlug;
 import de.ingrid.iplug.HeartBeatPlug;
+import de.ingrid.iplug.PlugDescriptionFieldFilters;
 import de.ingrid.utils.IBus;
-import de.ingrid.utils.IPlugDescriptionFilter;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
@@ -31,7 +31,8 @@ public class HeartBeatPlugStartWithOneIbusTest extends TestCase {
     class TestPlug extends HeartBeatPlug {
 
         public TestPlug(final int period) throws Exception {
-            super(period, new IPlugDescriptionFilter[] {}, new IMetadataInjector[] {}, new IPreProcessor[] {}, new IPostProcessor[] {});
+            super(period, new PlugDescriptionFieldFilters(), new IMetadataInjector[] {}, new IPreProcessor[] {},
+                    new IPostProcessor[] {});
         }
 
         @Override
@@ -40,12 +41,14 @@ public class HeartBeatPlugStartWithOneIbusTest extends TestCase {
         }
 
         @Override
-        public IngridHitDetail getDetail(final IngridHit arg0, final IngridQuery arg1, final String[] arg2) throws Exception {
+        public IngridHitDetail getDetail(final IngridHit arg0, final IngridQuery arg1, final String[] arg2)
+                throws Exception {
             return null;
         }
 
         @Override
-        public IngridHitDetail[] getDetails(final IngridHit[] arg0, final IngridQuery arg1, final String[] arg2) throws Exception {
+        public IngridHitDetail[] getDetails(final IngridHit[] arg0, final IngridQuery arg1, final String[] arg2)
+                throws Exception {
             return null;
         }
     }
@@ -69,7 +72,8 @@ public class HeartBeatPlugStartWithOneIbusTest extends TestCase {
         MockitoAnnotations.initMocks(this);
 
         // BusClient can only be created once!
-        String communicationFile = Thread.currentThread().getContextClassLoader().getResource("communication.xml").getPath();
+        String communicationFile = Thread.currentThread().getContextClassLoader().getResource("communication.xml")
+                .getPath();
         BusClientFactory.createBusClient(new File(communicationFile), new DummyPlug());
     }
 
@@ -85,7 +89,8 @@ public class HeartBeatPlugStartWithOneIbusTest extends TestCase {
         Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom));
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
-        this.iBusCom.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE, messageHandler);
+        this.iBusCom.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,
+                messageHandler);
     }
 
     @Override

@@ -194,7 +194,7 @@ public class PlugServer {
 
     private ICommunication initCommunication(File commProperties, PlugDescription plugDescription)
             throws IOException {
-        this.fLogger.info("read communication property file: " + commProperties.getAbsolutePath());
+        this.fLogger.info("read jxta property file: " + commProperties.getAbsolutePath());
         FileInputStream confIS = new FileInputStream(commProperties);
         ICommunication communication = StartCommunication.create(confIS);
         WetagURL proxyUrl = new WetagURL(plugDescription.getProxyServiceURL());

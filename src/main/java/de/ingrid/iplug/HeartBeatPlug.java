@@ -18,7 +18,6 @@ import de.ingrid.ibus.client.BusClientFactory;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IConfigurable;
 import de.ingrid.utils.IPlug;
-import de.ingrid.utils.IPlugDescriptionFilter;
 import de.ingrid.utils.IngridDocument;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.metadata.IMetadataInjector;
@@ -71,11 +70,11 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         
         private boolean _heartBeatFailed;
         
-        private IPlugDescriptionFilter[] _filters = null;
+        private final PlugDescriptionFieldFilters _filters;
         
         private File plugdescriptionAsFile = null;
 
-        public HeartBeat(final String name, final String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final IPlugDescriptionFilter[] filters ,  final IMetadataInjector... metadataInjectors) {
+        public HeartBeat(final String name, final String busUrl, final IBus bus, final PlugDescription plugDescription, final long period, final PlugDescriptionFieldFilters filters ,  final IMetadataInjector... metadataInjectors) {
             _name = name;
             _busUrl = busUrl;
             _bus = bus;
@@ -157,6 +156,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                         _plugDescription = new PlugdescriptionSerializer().deSerialize(plugdescriptionAsFile);
                         _plugDescription.setMd5Hash(md5);
                         injectMetadatas(_plugDescription);
+                        _plugDescription = _filters.filter(_plugDescription);
                         _bus.addPlugDescription(_plugDescription);
                         if (LOG.isInfoEnabled()) {
                             LOG.info("added or updated plug description to bus [" + _busUrl + "]: " + _plugDescription);
@@ -215,14 +215,6 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                 LOG.debug("Injected metadata:" + metadata);
             }
             plugDescription.setMetadata(metadata);
-            
-            // filter plugdescription
-            if (_filters != null) {
-                for (final IPlugDescriptionFilter filter : _filters) {
-                    filter.filter(plugDescription);
-                }
-            }
-
         }
 
         public void setPlugDescription(final PlugDescription plugDescription) {
@@ -297,7 +289,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     private PlugDescription _plugDescription;
 
-    private final IPlugDescriptionFilter[] _filters;
+    private final PlugDescriptionFieldFilters _filters;
 
     private final IMetadataInjector[] _injectors;
 
@@ -305,9 +297,9 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     private final IPreProcessor[] _preProcessors;
 
-    public HeartBeatPlug(final int period, final IPlugDescriptionFilter[] plugDescriptionFilters, final IMetadataInjector[] injectors, final IPreProcessor[] preProcessors, final IPostProcessor[] postProcessors) {
+    public HeartBeatPlug(final int period, final PlugDescriptionFieldFilters plugDescriptionFieldFilters, final IMetadataInjector[] injectors, final IPreProcessor[] preProcessors, final IPostProcessor[] postProcessors) {
         _period = period;
-        _filters = plugDescriptionFilters;
+        _filters = plugDescriptionFieldFilters;
         _injectors = injectors;
         _preProcessors = preProcessors;
         _postProcessors = postProcessors;
@@ -315,7 +307,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
     public HeartBeatPlug(final int period) {
         _period = period;
-        _filters = null;
+        _filters = new PlugDescriptionFieldFilters();
         _injectors = null;
         _preProcessors = null;
         _postProcessors = null;
@@ -329,7 +321,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         }
 
         // stop and remove existing heartbeats
-        _plugDescription = plugDescription;
+        _plugDescription = _filters.filter(plugDescription);
         _plugDescription.setMetadata(new Metadata());
         final BusClient busClient = BusClientFactory.getBusClient();
         if (busClient != null) {

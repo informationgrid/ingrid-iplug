@@ -1,3 +1,25 @@
+/*
+ * **************************************************-
+ * ingrid-iplug
+ * ==================================================
+ * Copyright (C) 2014 wemove digital solutions GmbH
+ * ==================================================
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be
+ * approved by the European Commission - subsequent versions of the
+ * EUPL (the "Licence");
+ * 
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * http://ec.europa.eu/idabc/eupl5
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and
+ * limitations under the Licence.
+ * **************************************************#
+ */
 package de.ingrid.iplug;
 
 import java.io.File;
@@ -391,14 +413,20 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         while (iterator.hasNext()) {
             // only disable heartbeat for those who are connected
             final HeartBeatPlug.HeartBeat heartBeat = iterator.next();
-            if (BusClientFactory.getBusClient().isConnected( index )) {
-                if (heartBeat._enable) {
-                    heartBeat.disable();
+            try {
+                if (BusClientFactory.getBusClient().isConnected( index )) {
+                    if (heartBeat._enable) {
+                        heartBeat.disable();
+                    }
+                } else {
+                    LOG.warn( "HeartBeat already stopped, because there's no connection to ibus: " + heartBeat._busUrl );
                 }
-            } else {
-                LOG.warn( "HeartBeat already stopped, because there's no connection to ibus: " + heartBeat._busUrl );
+                index++;
+            } catch (IndexOutOfBoundsException e) {
+                LOG.warn( "Could not check for connection at iBus: " + index );
+                heartBeat.disable();
+                break;
             }
-            index++;
         }
     }
 

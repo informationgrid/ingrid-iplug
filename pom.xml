@@ -2,7 +2,7 @@
   <parent>
     <artifactId>ingrid-base-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>3.3.0</version>
+    <version>3.5.0-SNAPSHOT-R304</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.ingrid</groupId>
@@ -41,27 +41,33 @@
     <dependency>
       <groupId>commons-betwixt</groupId>
       <artifactId>commons-betwixt</artifactId>
+      <version>0.7</version>
     </dependency>
     <dependency>
       <groupId>opensymphony</groupId>
       <artifactId>quartz</artifactId>
+      <version>1.6.5</version>
     </dependency>
 <!-- KEEP TOMCAT / JETTY DEPENDENCIES HERE ! (also transitive from iBus, but iPlug needs them and also other projects excluding iBus !) -->
     <dependency>
       <groupId>tomcat</groupId>
       <artifactId>jasper-compiler</artifactId>
+      <version>5.5.9</version>
     </dependency>
     <dependency>
       <groupId>tomcat</groupId>
       <artifactId>jasper-runtime</artifactId>
+      <version>5.5.9</version>
     </dependency>
     <dependency>
       <groupId>jetty</groupId>
       <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
     </dependency>
     <dependency>
       <groupId>jetty</groupId>
       <artifactId>org.mortbay.jetty</artifactId>
+      <version>6.1.14</version>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>

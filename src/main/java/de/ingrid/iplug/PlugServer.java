@@ -38,20 +38,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import net.weta.components.communication.ICommunication;
-import net.weta.components.communication.WetagURL;
-import net.weta.components.communication.reflect.ReflectMessageHandler;
-import net.weta.components.communication.tcp.StartCommunication;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.mortbay.http.HashUserRealm;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import de.ingrid.iplug.util.PlugShutdownHook;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.IRecordLoader;
 import de.ingrid.utils.PlugDescription;
 import de.ingrid.utils.xml.XMLSerializer;
+import net.weta.components.communication.ICommunication;
+import net.weta.components.communication.WetagURL;
+import net.weta.components.communication.reflect.ReflectMessageHandler;
+import net.weta.components.communication.tcp.StartCommunication;
 
 /**
  * A server that starts the iplug as defined in the plugdescription.
@@ -92,10 +91,10 @@ public class PlugServer {
         if ((plugDescription.getIplugAdminPassword() != null)
                 && (plugDescription.getIplugAdminPassword().trim().length() > 0)
                 && (plugDescription.getIplugAdminGuiPort() != 0)) {
-            HashUserRealm realm = new HashUserRealm(plugDescription.getProxyServiceURL());
+            BCryptUserRealm realm = new BCryptUserRealm(plugDescription.getProxyServiceURL());
             realm.put("admin", plugDescription.getIplugAdminPassword());
 
-            HashMap hashMap = new HashMap();
+            HashMap<String, String> hashMap = new HashMap<String, String>();
             hashMap.put("plugdescription.xml", this.fPlugDescriptionFile.getAbsolutePath());
             hashMap.put("communication.xml", commProperties.getAbsolutePath());
             AdminServer.startWebContainer(hashMap, plugDescription.getIplugAdminGuiPort(), new File("./webapp"), true, realm);
@@ -176,7 +175,22 @@ public class PlugServer {
         plugDescription = loadPlugDescriptionFromFile(plugDescriptionFile);
         
         PlugServer server = null;
-        if (arguments.containsKey("--descriptor")) {
+        if (arguments.containsKey("--resetPassword")) {
+            String pw = (String) arguments.get("--resetPassword");
+            fLogger.info("Resetting password to '"+pw+"' ...");
+            plugDescription.setIplugAdminPassword(BCrypt.hashpw( pw, BCrypt.gensalt() ));
+            XMLSerializer serializer = new XMLSerializer();
+            serializer.serialize(plugDescription, plugDescriptionFile);
+            fLogger.info("Done ... please restart iPlug.");
+            return;
+        } else if (arguments.containsKey("--migratePassword")) {
+            fLogger.info("Migrating plain text password from PlugDescription to encrypted one ...");
+            plugDescription.setIplugAdminPassword(BCrypt.hashpw( plugDescription.getIplugAdminPassword(), BCrypt.gensalt() ));
+            XMLSerializer serializer = new XMLSerializer();
+            serializer.serialize(plugDescription, plugDescriptionFile);
+            fLogger.info("Done ... please restart iPlug.");
+            return;
+        } else if (arguments.containsKey("--descriptor")) {
             File commConf = new File((String) arguments.get("--descriptor"));
             server = new PlugServer(plugDescription, commConf, plugDescriptionFile, 90 * 1000);
         } 

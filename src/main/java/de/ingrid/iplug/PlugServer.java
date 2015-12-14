@@ -58,6 +58,11 @@ import net.weta.components.communication.tcp.StartCommunication;
  * @author sg
  * @version $Revision: 1.3 $
  */
+/**
+ * @deprecated
+ * Not used anymore.
+ */
+@Deprecated
 public class PlugServer {
 
     protected final static Log fLogger = LogFactory.getLog(PlugServer.class);

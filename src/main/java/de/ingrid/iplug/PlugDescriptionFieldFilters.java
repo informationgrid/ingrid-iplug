@@ -42,7 +42,7 @@ public class PlugDescriptionFieldFilters {
 
     public PlugDescription filter(final PlugDescription plugDescription) {
         PlugDescription clone = (PlugDescription) plugDescription.clone();
-        Iterator<Entry<?, ?>> iterator = clone.entrySet().iterator();
+        Iterator<Entry<Object, Object>> iterator = clone.entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<?, ?> entry = (Entry<?, ?>) iterator.next();
             Object key = entry.getKey();

@@ -2,10 +2,9 @@
   <parent>
     <artifactId>ingrid-base-pom</artifactId>
     <groupId>de.ingrid</groupId>
-    <version>3.6.0.3</version>
+    <version>3.6.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>de.ingrid</groupId>
   <artifactId>ingrid-iplug</artifactId>
   <packaging>jar</packaging>
   <version>3.6.2-SNAPSHOT</version>
@@ -15,22 +14,11 @@
     <developerConnection>scm:git:git@github.com:informationgrid/ingrid-iplug.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>de.ingrid</groupId>
-        <artifactId>ingrid-version-management-pom</artifactId>
-        <version>3.6.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus</artifactId>
-      <version>3.5.0</version>
+      <version>3.6.2-SNAPSHOT</version>
       <!-- EXCLUDE non released plugs to avoid problems during release -->
       <exclusions>
           <exclusion>
@@ -45,11 +33,8 @@
     </dependency>
     <dependency>
       <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-communication</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus-client</artifactId>
+      <version>3.6.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>commons-betwixt</groupId>

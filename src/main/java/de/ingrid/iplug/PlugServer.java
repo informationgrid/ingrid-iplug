@@ -197,7 +197,7 @@ public class PlugServer {
             return;
         } else if (arguments.containsKey("--descriptor")) {
             File commConf = new File((String) arguments.get("--descriptor"));
-            server = new PlugServer(plugDescription, commConf, plugDescriptionFile, 90 * 1000);
+            server = new PlugServer(plugDescription, commConf, plugDescriptionFile, 60 * 1000);
         } 
         if (server != null) {
             server.initPlugServer();

@@ -327,6 +327,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
         _postProcessors = postProcessors;
     }
 
+    @Deprecated
     public HeartBeatPlug(final int period) {
         _period = period;
         _filters = new PlugDescriptionFieldFilters();

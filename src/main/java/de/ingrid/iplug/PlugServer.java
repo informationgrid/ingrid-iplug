@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -58,6 +58,11 @@ import net.weta.components.communication.tcp.StartCommunication;
  * @author sg
  * @version $Revision: 1.3 $
  */
+/**
+ * @deprecated
+ * Not used anymore.
+ */
+@Deprecated
 public class PlugServer {
 
     protected final static Log fLogger = LogFactory.getLog(PlugServer.class);
@@ -192,7 +197,7 @@ public class PlugServer {
             return;
         } else if (arguments.containsKey("--descriptor")) {
             File commConf = new File((String) arguments.get("--descriptor"));
-            server = new PlugServer(plugDescription, commConf, plugDescriptionFile, 90 * 1000);
+            server = new PlugServer(plugDescription, commConf, plugDescriptionFile, 60 * 1000);
         } 
         if (server != null) {
             server.initPlugServer();

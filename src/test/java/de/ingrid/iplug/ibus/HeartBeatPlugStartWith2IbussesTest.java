@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -38,6 +38,8 @@ import de.ingrid.iplug.DummyPlug;
 import de.ingrid.iplug.HeartBeatPlug;
 import de.ingrid.iplug.PlugDescriptionFieldFilters;
 import de.ingrid.utils.IBus;
+import de.ingrid.utils.IngridCall;
+import de.ingrid.utils.IngridDocument;
 import de.ingrid.utils.IngridHit;
 import de.ingrid.utils.IngridHitDetail;
 import de.ingrid.utils.IngridHits;
@@ -71,6 +73,12 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
         @Override
         public IngridHitDetail[] getDetails(final IngridHit[] arg0, final IngridQuery arg1, final String[] arg2)
                 throws Exception {
+            return null;
+        }
+
+        @Override
+        public IngridDocument call(IngridCall arg0) throws Exception {
+            // TODO Auto-generated method stub
             return null;
         }
     }

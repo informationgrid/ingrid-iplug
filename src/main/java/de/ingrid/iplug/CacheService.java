@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2015 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2016 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -29,6 +29,11 @@ import org.apache.log4j.Logger;
 
 import de.ingrid.utils.PlugDescription;
 
+/**
+ * @deprecated
+ * This is old and is replaced by the CacheService in the base-webapp project.
+ */
+@Deprecated
 public class CacheService {
 
     public static final Logger LOG = Logger.getLogger(CacheService.class);

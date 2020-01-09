@@ -17,8 +17,8 @@
   <dependencies>
     <dependency>
       <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-ibus-backend</artifactId>
-      <version>5.2.0</version>
+      <artifactId>ingrid-ibus</artifactId>
+      <version>4.2.0</version>
       <!-- EXCLUDE non released plugs to avoid problems during release -->
       <exclusions>
           <exclusion>

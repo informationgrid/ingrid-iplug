@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2019 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2020 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -171,7 +171,7 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
 
                     if (!containsPlugDescription) {
                         if (LOG.isInfoEnabled()) {
-                            LOG.info("adding or updating plug description to bus [" + _busUrl + "]");
+                            LOG.info("adding or updating plug description to bus [" + _busUrl + "] with md5 [" + md5 + "]");
                         }
                         // read plugdescription from file system in case it was changed externally and 
                         // could not be updated in all IConfigurable instances
@@ -180,8 +180,8 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                         injectMetadatas(_plugDescription);
                         _plugDescription = _filters.filter(_plugDescription);
                         _bus.addPlugDescription(_plugDescription);
-                        if (LOG.isInfoEnabled()) {
-                            LOG.info("added or updated plug description to bus [" + _busUrl + "]: " + _plugDescription);
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("added or updated plug description to bus [" + _busUrl + "]: " + _plugDescription);
                         }
                     } else {
                         if (LOG.isDebugEnabled()) {

@@ -34,12 +34,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class WebContainerTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class WebContainerTest {
     private static final boolean WINDOWS = System.getProperty("os.name")
             .startsWith("Windows");
 
+    @Test
     public void testWebContainer() throws Exception {
         URL url = WebContainer.class.getClassLoader().getResource("info");
         String path = url.getPath();

@@ -27,7 +27,9 @@
  */
 package de.ingrid.iplug.v05;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for administration-userinterface-feature (INGRID-13).
@@ -35,71 +37,92 @@ import junit.framework.TestCase;
  *
  * @author hs
  */
-public class AdministrationUserInterfaceTest extends TestCase{
+public class AdministrationUserInterfaceTest{
     /**
      * 
      */
-	public void testWebInterface() {
+    @Test
+    public void testWebInterface() {
         fail("INGRID-56 not yet implemented"); 
     }
-	/**
+
+    /**
      * 
      */
-	public void testSetupOfCarrier() {
+    @Test
+    public void testSetupOfCarrier() {
         fail("INGRID-58 not yet implemented"); 
     }
-	/**
+
+    /**
      * 
      */
-	public void testSetupOfParentIBus() {
+    @Test
+    public void testSetupOfParentIBus() {
         fail("INGRID-62 not yet implemented"); 
     }
-	/**
+
+    /**
      * 
      */
-	public void testSetupOfP2PGroup() {
+    @Test
+    public void testSetupOfP2PGroup() {
         fail("INGRID-63 not yet implemented");
     }
-	/**
+
+    /**
      * 
      */
-	public void testSetupOfDatabaseConnection() {
+    @Test
+    public void testSetupOfDatabaseConnection() {
         fail("INGRID-64 not yet implemented");
     }
-	/**
+
+    /**
      * 
      */
-	public void testSetupOfDataTypes() {
+    @Test
+    public void testSetupOfDataTypes() {
         fail("INGRID-65 not yet implemented");
     }
-	/**
+
+    /**
      * 
      */
-	public void testSetupOfPathToIndex() {
+    @Test
+    public void testSetupOfPathToIndex() {
         fail("INGRID-66 not yet implemented");
     }
-	/**
+
+    /**
      * 
      */
-	public void testSetupScheduledReindexing() {
+    @Test
+    public void testSetupScheduledReindexing() {
         fail("INGRID-67 not yet implemented");
     }
-	/**
+
+    /**
      * 
      */
-	public void testManualReindexing() {
+    @Test
+    public void testManualReindexing() {
         fail("INGRID-68 not yet implemented");
     }
-	/**
+
+    /**
      * 
      */
-	public void testSetupOfDatafieldMapping() {
+    @Test
+    public void testSetupOfDatafieldMapping() {
         fail("INGRID-69 not yet implemented");
     }
-	/**
+
+    /**
      * 
      */
-	public void testSetupLocalRanking() {
+    @Test
+    public void testSetupLocalRanking() {
         fail("INGRID-71 not yet implemented");
     }
 }

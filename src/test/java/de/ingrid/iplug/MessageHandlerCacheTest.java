@@ -22,15 +22,18 @@
  */
 package de.ingrid.iplug;
 
-import junit.framework.TestCase;
 import net.weta.components.communication.messaging.IMessageHandler;
 import net.weta.components.communication.messaging.Message;
 import net.weta.components.communication.reflect.ReflectMessage;
+import org.junit.jupiter.api.Test;
+
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.queryparser.QueryStringParser;
 
-public class MessageHandlerCacheTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class MessageHandlerCacheTest {
 
     public class TestHandler implements IMessageHandler {
 
@@ -44,6 +47,7 @@ public class MessageHandlerCacheTest extends TestCase {
 
     }
 
+    @Test
     public void testReflectMessage() throws Exception {
 
         TestHandler testHandler = new TestHandler();

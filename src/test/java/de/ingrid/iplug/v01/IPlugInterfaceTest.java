@@ -28,7 +28,9 @@
 
 package de.ingrid.iplug.v01;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test for IPlugInterface-feature (INGRID-7).
@@ -36,16 +38,19 @@ import junit.framework.TestCase;
  *
  * @author hs
  */
-public class IPlugInterfaceTest extends TestCase {
+public class IPlugInterfaceTest {
     /**
      * 
      */
+    @Test
     public void testCommunicationLayerToIBus() {
         fail("INGRID-44 not yet implemented");
     }
+
     /**
      * 
      */
+    @Test
     public void testObjectsForDifferentViews() {
         fail("INGRID-49 not yet implemented");
     }

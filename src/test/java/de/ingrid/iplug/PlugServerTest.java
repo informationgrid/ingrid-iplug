@@ -46,15 +46,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication.configuration.ServerConfiguration;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication.tcp.TcpCommunication;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+
 import de.ingrid.ibus.Bus;
 import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.PlugDescription;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test for {@link de.ingrid.iplug.PlugServer}.
@@ -66,13 +71,14 @@ import de.ingrid.utils.PlugDescription;
  * @author $Author: ${lastedit}
  * 
  */
-public class PlugServerTest extends TestCase {
+public class PlugServerTest {
 
     private List fCommunications = new ArrayList();
 
     private File _file = new File("src/conf/communication-test.xml");
 
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         Thread.sleep(500);
         for (Iterator iter = this.fCommunications.iterator(); iter.hasNext();) {
             ICommunication communication = (ICommunication) iter.next();
@@ -84,6 +90,7 @@ public class PlugServerTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void test2PlugsHeartBeat() throws Exception {
         IBus bus = createBus();
         PlugDescription plugDescription1 = createPlugDescription();

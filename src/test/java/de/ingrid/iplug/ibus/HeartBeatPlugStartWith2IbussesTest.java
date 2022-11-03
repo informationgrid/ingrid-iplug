@@ -24,10 +24,12 @@ package de.ingrid.iplug.ibus;
 
 import java.io.File;
 
-import junit.framework.TestCase;
 import net.weta.components.communication.configuration.ServerConfiguration;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication.tcp.TcpCommunication;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.mockito.MockitoAnnotations;
 
@@ -50,7 +52,10 @@ import de.ingrid.utils.processor.IPreProcessor;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.xml.PlugdescriptionSerializer;
 
-public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class HeartBeatPlugStartWith2IbussesTest {
 
     class TestPlug extends HeartBeatPlug {
 
@@ -90,8 +95,8 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
     private TcpCommunication iBusCom;
     private TcpCommunication iBusCom2;
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         assertTrue(_target.mkdirs());
         final PlugDescription plugDescription = new PlugDescription();
         plugDescription.setProxyServiceURL("/ingrid-group:iplug-test");
@@ -139,10 +144,10 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
         this.iBusCom2.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,
                 messageHandler);
     }
-    
-    
-    @Override
-    protected void tearDown() throws Exception {
+
+
+    @AfterEach
+    public void tearDown() throws Exception {
         System.out.println("Shut down server.");
         this.iBusCom.shutdown();
         this.iBusCom2.shutdown();
@@ -150,6 +155,7 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
         assertTrue(_target.delete());
     }
 
+    @Test
     public void testHeartBeats() throws Exception {
         final HeartBeatPlug plug = new TestPlug(1000);
 

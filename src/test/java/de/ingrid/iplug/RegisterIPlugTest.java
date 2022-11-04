@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import de.ingrid.ibus.service.SettingsService;
 import net.weta.components.communication.configuration.ClientConfiguration;
 import net.weta.components.communication.configuration.ServerConfiguration;
 import net.weta.components.communication.configuration.ClientConfiguration.ClientConnection;
@@ -38,8 +39,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.ingrid.ibus.Bus;
-import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
+import de.ingrid.ibus.comm.Bus;
+import de.ingrid.ibus.comm.net.IPlugProxyFactoryImpl;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.PlugDescription;
@@ -125,7 +126,7 @@ public class RegisterIPlugTest {
      */
     @Test
     public void testIPlugRegistration() throws SecurityException, Exception, Throwable {
-        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom));
+        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom), new SettingsService());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
         this.iBusCom.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,

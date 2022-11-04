@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import de.ingrid.ibus.service.SettingsService;
 import net.weta.components.communication.ICommunication;
 import net.weta.components.communication.configuration.ServerConfiguration;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
@@ -53,8 +54,8 @@ import net.weta.components.communication.tcp.TcpCommunication;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import de.ingrid.ibus.Bus;
-import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
+import de.ingrid.ibus.comm.Bus;
+import de.ingrid.ibus.comm.net.IPlugProxyFactoryImpl;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.PlugDescription;
 
@@ -116,7 +117,7 @@ public class PlugServerTest {
 
     private IBus createBus() throws IOException {
         ICommunication communication = createCommunication();
-        Bus bus = new Bus(new IPlugProxyFactoryImpl(communication));
+        Bus bus = new Bus(new IPlugProxyFactoryImpl(communication), new SettingsService());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
         communication.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,

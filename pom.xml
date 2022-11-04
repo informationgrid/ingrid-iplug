@@ -17,8 +17,8 @@
   <dependencies>
     <dependency>
       <groupId>de.ingrid</groupId>
-      <artifactId>ingrid-ibus</artifactId>
-      <version>4.2.0</version>
+      <artifactId>ingrid-ibus-backend</artifactId>
+      <version>5.15.0.3324-SNAPSHOT</version>
       <!-- EXCLUDE non released plugs to avoid problems during release -->
       <exclusions>
         <exclusion>
@@ -28,6 +28,10 @@
         <exclusion>
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>de.ingrid</groupId>
+          <artifactId>ingrid-ibus-frontend</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

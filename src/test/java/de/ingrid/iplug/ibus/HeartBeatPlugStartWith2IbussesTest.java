@@ -24,6 +24,7 @@ package de.ingrid.iplug.ibus;
 
 import java.io.File;
 
+import de.ingrid.ibus.service.SettingsService;
 import net.weta.components.communication.configuration.ServerConfiguration;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication.tcp.TcpCommunication;
@@ -33,9 +34,9 @@ import org.junit.jupiter.api.Test;
 
 import org.mockito.MockitoAnnotations;
 
-import de.ingrid.ibus.Bus;
+import de.ingrid.ibus.comm.Bus;
 import de.ingrid.ibus.client.BusClientFactory;
-import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
+import de.ingrid.ibus.comm.net.IPlugProxyFactoryImpl;
 import de.ingrid.iplug.DummyPlug;
 import de.ingrid.iplug.HeartBeatPlug;
 import de.ingrid.iplug.PlugDescriptionFieldFilters;
@@ -122,7 +123,7 @@ public class HeartBeatPlugStartWith2IbussesTest {
         this.iBusCom.configure(serverConfiguration);
         this.iBusCom.startup();
 
-        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom));
+        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom), new SettingsService());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
         this.iBusCom.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,
@@ -138,7 +139,7 @@ public class HeartBeatPlugStartWith2IbussesTest {
         this.iBusCom2.configure(serverConfiguration);
         this.iBusCom2.startup();
 
-        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom2));
+        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom2), new SettingsService());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
         this.iBusCom2.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,

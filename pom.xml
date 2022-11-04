@@ -43,17 +43,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>commons-betwixt</groupId>
-      <artifactId>commons-betwixt</artifactId>
-      <version>0.7</version>
-      <exclusions>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>opensymphony</groupId>
       <artifactId>quartz</artifactId>
       <version>1.6.5</version>

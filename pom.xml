@@ -43,7 +43,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus-client</artifactId>
-      <version>5.0.0</version>
+      <version>5.15.0.3324-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>junit</groupId>

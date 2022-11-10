@@ -7,12 +7,12 @@
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
  * EUPL (the "Licence");
- * 
+ *
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl5
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,36 +22,28 @@
  */
 package de.ingrid.iplug.ibus;
 
-import java.io.File;
-
+import de.ingrid.ibus.client.BusClientFactory;
+import de.ingrid.ibus.comm.Bus;
+import de.ingrid.ibus.comm.net.IPlugProxyFactoryImpl;
 import de.ingrid.ibus.service.SettingsService;
+import de.ingrid.iplug.DummyPlug;
+import de.ingrid.iplug.HeartBeatPlug;
+import de.ingrid.iplug.PlugDescriptionFieldFilters;
+import de.ingrid.utils.*;
+import de.ingrid.utils.metadata.IMetadataInjector;
+import de.ingrid.utils.processor.IPostProcessor;
+import de.ingrid.utils.processor.IPreProcessor;
+import de.ingrid.utils.query.IngridQuery;
+import de.ingrid.utils.xml.PlugdescriptionSerializer;
 import net.weta.components.communication.configuration.ServerConfiguration;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication.tcp.TcpCommunication;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.mockito.MockitoAnnotations;
 
-import de.ingrid.ibus.comm.Bus;
-import de.ingrid.ibus.client.BusClientFactory;
-import de.ingrid.ibus.comm.net.IPlugProxyFactoryImpl;
-import de.ingrid.iplug.DummyPlug;
-import de.ingrid.iplug.HeartBeatPlug;
-import de.ingrid.iplug.PlugDescriptionFieldFilters;
-import de.ingrid.utils.IBus;
-import de.ingrid.utils.IngridCall;
-import de.ingrid.utils.IngridDocument;
-import de.ingrid.utils.IngridHit;
-import de.ingrid.utils.IngridHitDetail;
-import de.ingrid.utils.IngridHits;
-import de.ingrid.utils.PlugDescription;
-import de.ingrid.utils.metadata.IMetadataInjector;
-import de.ingrid.utils.processor.IPostProcessor;
-import de.ingrid.utils.processor.IPreProcessor;
-import de.ingrid.utils.query.IngridQuery;
-import de.ingrid.utils.xml.PlugdescriptionSerializer;
+import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -61,8 +53,8 @@ public class HeartBeatPlugStartWith2IbussesTest {
     class TestPlug extends HeartBeatPlug {
 
         public TestPlug(final int period) throws Exception {
-            super(period, new PlugDescriptionFieldFilters(), new IMetadataInjector[] {}, new IPreProcessor[] {},
-                    new IPostProcessor[] {});
+            super(period, new PlugDescriptionFieldFilters(), new IMetadataInjector[]{}, new IPreProcessor[]{},
+                    new IPostProcessor[]{});
         }
 
         @Override
@@ -170,17 +162,17 @@ public class HeartBeatPlugStartWith2IbussesTest {
         System.out.println("Wait for 3 sec.");
         Thread.sleep(3000);
         assertFalse(plug.sendingAccurate());
-        
+
         System.out.println("Start iBus 2.");
         startIBus2();
         System.out.println("Wait for 3 sec.");
         Thread.sleep(3000);
         assertTrue(plug.sendingAccurate());
-        
+
         System.out.println("Restart bus client - Simulate connection problem");
         BusClientFactory.getBusClient().restart();
         plug.reconfigure();
-        
+
         Thread.sleep(3000);
         assertTrue(plug.sendingAccurate());
 

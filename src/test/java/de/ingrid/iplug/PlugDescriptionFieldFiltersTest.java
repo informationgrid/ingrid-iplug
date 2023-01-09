@@ -22,11 +22,16 @@
  */
 package de.ingrid.iplug;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
 import de.ingrid.utils.PlugDescription;
 
-public class PlugDescriptionFieldFiltersTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
+public class PlugDescriptionFieldFiltersTest {
+
+    @Test
     public void testFilter() throws Exception {
         IPlugdescriptionFieldFilter[] filters = new IPlugdescriptionFieldFilter[] { new IPlugdescriptionFieldFilter() {
             @Override

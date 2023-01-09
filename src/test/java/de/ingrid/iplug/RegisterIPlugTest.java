@@ -28,15 +28,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
+import de.ingrid.ibus.service.SettingsService;
 import net.weta.components.communication.configuration.ClientConfiguration;
 import net.weta.components.communication.configuration.ServerConfiguration;
 import net.weta.components.communication.configuration.ClientConfiguration.ClientConnection;
 import net.weta.components.communication.reflect.ProxyService;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication.tcp.TcpCommunication;
-import de.ingrid.ibus.Bus;
-import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import de.ingrid.ibus.comm.Bus;
+import de.ingrid.ibus.comm.net.IPlugProxyFactoryImpl;
 import de.ingrid.utils.IBus;
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.PlugDescription;
@@ -44,10 +48,12 @@ import de.ingrid.utils.metadata.ManifestMetadataInjector;
 import de.ingrid.utils.metadata.Metadata;
 import de.ingrid.utils.xml.XMLSerializer;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 /**
  * 
  */
-public class RegisterIPlugTest extends TestCase {
+public class RegisterIPlugTest {
 
     private File fSerFile = null;
 
@@ -59,7 +65,8 @@ public class RegisterIPlugTest extends TestCase {
 
     private PlugDescription fPlugDesc;
 
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         // remote proxy - start
         this.iBusCom = new TcpCommunication();
         this.iBusCom.setPeerName("/101tec-group:ibus");
@@ -103,20 +110,23 @@ public class RegisterIPlugTest extends TestCase {
         Thread.sleep(200);
     }
 
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         this.iBusCom.closeConnection("/101tec-group:iplug");
         this.iBusCom.shutdown();
         this.iPlugCom.closeConnection(null);
         this.iPlugCom.shutdown();
     }
+
     /**
      * @throws Throwable
      * @throws Exception
      * @throws SecurityException
      * 
      */
+    @Test
     public void testIPlugRegistration() throws SecurityException, Exception, Throwable {
-        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom));
+        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom), new SettingsService());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
         this.iBusCom.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,

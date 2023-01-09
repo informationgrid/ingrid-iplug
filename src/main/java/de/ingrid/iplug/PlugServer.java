@@ -228,7 +228,7 @@ public class PlugServer {
             throw new NullPointerException("iplug class in plugdescription not set");
         }
         Class plugClass = Thread.currentThread().getContextClassLoader().loadClass(plugClassStr);
-        IPlug plug = (IPlug) plugClass.newInstance();
+        IPlug plug = (IPlug) plugClass.getDeclaredConstructor().newInstance();
         plug.configure(plugDescription);
         return plug;
     }

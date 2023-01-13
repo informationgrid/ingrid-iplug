@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2021 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -228,7 +228,7 @@ public class PlugServer {
             throw new NullPointerException("iplug class in plugdescription not set");
         }
         Class plugClass = Thread.currentThread().getContextClassLoader().loadClass(plugClassStr);
-        IPlug plug = (IPlug) plugClass.newInstance();
+        IPlug plug = (IPlug) plugClass.getDeclaredConstructor().newInstance();
         plug.configure(plugDescription);
         return plug;
     }

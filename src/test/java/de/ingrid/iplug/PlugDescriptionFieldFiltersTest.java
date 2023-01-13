@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2021 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,11 +22,16 @@
  */
 package de.ingrid.iplug;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
 import de.ingrid.utils.PlugDescription;
 
-public class PlugDescriptionFieldFiltersTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
+public class PlugDescriptionFieldFiltersTest {
+
+    @Test
     public void testFilter() throws Exception {
         IPlugdescriptionFieldFilter[] filters = new IPlugdescriptionFieldFilter[] { new IPlugdescriptionFieldFilter() {
             @Override

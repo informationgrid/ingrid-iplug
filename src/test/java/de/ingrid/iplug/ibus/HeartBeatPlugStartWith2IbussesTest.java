@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2021 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,41 +22,39 @@
  */
 package de.ingrid.iplug.ibus;
 
-import java.io.File;
-
-import junit.framework.TestCase;
-import net.weta.components.communication.configuration.ServerConfiguration;
-import net.weta.components.communication.reflect.ReflectMessageHandler;
-import net.weta.components.communication.tcp.TcpCommunication;
-
-import org.mockito.MockitoAnnotations;
-
-import de.ingrid.ibus.Bus;
 import de.ingrid.ibus.client.BusClientFactory;
-import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
+import de.ingrid.ibus.comm.Bus;
+import de.ingrid.ibus.comm.net.IPlugProxyFactoryImpl;
+import de.ingrid.ibus.service.SettingsService;
 import de.ingrid.iplug.DummyPlug;
 import de.ingrid.iplug.HeartBeatPlug;
 import de.ingrid.iplug.PlugDescriptionFieldFilters;
-import de.ingrid.utils.IBus;
-import de.ingrid.utils.IngridCall;
-import de.ingrid.utils.IngridDocument;
-import de.ingrid.utils.IngridHit;
-import de.ingrid.utils.IngridHitDetail;
-import de.ingrid.utils.IngridHits;
-import de.ingrid.utils.PlugDescription;
+import de.ingrid.utils.*;
 import de.ingrid.utils.metadata.IMetadataInjector;
 import de.ingrid.utils.processor.IPostProcessor;
 import de.ingrid.utils.processor.IPreProcessor;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.xml.PlugdescriptionSerializer;
+import net.weta.components.communication.configuration.ServerConfiguration;
+import net.weta.components.communication.reflect.ReflectMessageHandler;
+import net.weta.components.communication.tcp.TcpCommunication;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockitoAnnotations;
 
-public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
+import java.io.File;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class HeartBeatPlugStartWith2IbussesTest {
 
     class TestPlug extends HeartBeatPlug {
 
         public TestPlug(final int period) throws Exception {
-            super(period, new PlugDescriptionFieldFilters(), new IMetadataInjector[] {}, new IPreProcessor[] {},
-                    new IPostProcessor[] {});
+            super(period, new PlugDescriptionFieldFilters(), new IMetadataInjector[]{}, new IPreProcessor[]{},
+                    new IPostProcessor[]{});
         }
 
         @Override
@@ -90,8 +88,8 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
     private TcpCommunication iBusCom;
     private TcpCommunication iBusCom2;
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         assertTrue(_target.mkdirs());
         final PlugDescription plugDescription = new PlugDescription();
         plugDescription.setProxyServiceURL("/ingrid-group:iplug-test");
@@ -117,7 +115,7 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
         this.iBusCom.configure(serverConfiguration);
         this.iBusCom.startup();
 
-        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom));
+        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom), new SettingsService());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
         this.iBusCom.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,
@@ -133,16 +131,16 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
         this.iBusCom2.configure(serverConfiguration);
         this.iBusCom2.startup();
 
-        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom2));
+        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom2), new SettingsService());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
         this.iBusCom2.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,
                 messageHandler);
     }
-    
-    
-    @Override
-    protected void tearDown() throws Exception {
+
+
+    @AfterEach
+    public void tearDown() throws Exception {
         System.out.println("Shut down server.");
         this.iBusCom.shutdown();
         this.iBusCom2.shutdown();
@@ -150,6 +148,7 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
         assertTrue(_target.delete());
     }
 
+    @Test
     public void testHeartBeats() throws Exception {
         final HeartBeatPlug plug = new TestPlug(1000);
 
@@ -163,17 +162,17 @@ public class HeartBeatPlugStartWith2IbussesTest extends TestCase {
         System.out.println("Wait for 3 sec.");
         Thread.sleep(3000);
         assertFalse(plug.sendingAccurate());
-        
+
         System.out.println("Start iBus 2.");
         startIBus2();
         System.out.println("Wait for 3 sec.");
         Thread.sleep(3000);
         assertTrue(plug.sendingAccurate());
-        
+
         System.out.println("Restart bus client - Simulate connection problem");
         BusClientFactory.getBusClient().restart();
         plug.reconfigure();
-        
+
         Thread.sleep(3000);
         assertTrue(plug.sendingAccurate());
 

@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2021 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -24,16 +24,19 @@ package de.ingrid.iplug.ibus;
 
 import java.io.File;
 
-import junit.framework.TestCase;
+import de.ingrid.ibus.service.SettingsService;
 import net.weta.components.communication.configuration.ServerConfiguration;
 import net.weta.components.communication.reflect.ReflectMessageHandler;
 import net.weta.components.communication.tcp.TcpCommunication;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.mockito.MockitoAnnotations;
 
-import de.ingrid.ibus.Bus;
+import de.ingrid.ibus.comm.Bus;
 import de.ingrid.ibus.client.BusClientFactory;
-import de.ingrid.ibus.net.IPlugProxyFactoryImpl;
+import de.ingrid.ibus.comm.net.IPlugProxyFactoryImpl;
 import de.ingrid.iplug.DummyPlug;
 import de.ingrid.iplug.HeartBeatPlug;
 import de.ingrid.iplug.PlugDescriptionFieldFilters;
@@ -50,7 +53,10 @@ import de.ingrid.utils.processor.IPreProcessor;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.xml.PlugdescriptionSerializer;
 
-public class HeartBeatPlugStartWithOneIbusTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class HeartBeatPlugStartWithOneIbusTest {
 
     class TestPlug extends HeartBeatPlug {
 
@@ -89,8 +95,8 @@ public class HeartBeatPlugStartWithOneIbusTest extends TestCase {
 
     private TcpCommunication iBusCom;
 
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         assertTrue(_target.mkdirs());
         final PlugDescription plugDescription = new PlugDescription();
         plugDescription.setProxyServiceURL("/ingrid-group:iplug-test");
@@ -116,15 +122,15 @@ public class HeartBeatPlugStartWithOneIbusTest extends TestCase {
         this.iBusCom.configure(serverConfiguration);
         this.iBusCom.startup();
 
-        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom));
+        Bus bus = new Bus(new IPlugProxyFactoryImpl(this.iBusCom), new SettingsService());
         ReflectMessageHandler messageHandler = new ReflectMessageHandler();
         messageHandler.addObjectToCall(IBus.class, bus);
         this.iBusCom.getMessageQueue().getProcessorRegistry().addMessageHandler(ReflectMessageHandler.MESSAGE_TYPE,
                 messageHandler);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @AfterEach
+    public void tearDown() throws Exception {
         System.out.println("Shut down server.");
         if (this.iBusCom != null) {
             this.iBusCom.shutdown();
@@ -133,6 +139,7 @@ public class HeartBeatPlugStartWithOneIbusTest extends TestCase {
         assertTrue(_target.delete());
     }
 
+    @Test
     public void testHeartBeats() throws Exception {
         final HeartBeatPlug plug = new TestPlug(1000);
 

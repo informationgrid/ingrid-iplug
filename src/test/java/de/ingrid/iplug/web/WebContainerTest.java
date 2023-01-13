@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2021 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -34,12 +34,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class WebContainerTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class WebContainerTest {
     private static final boolean WINDOWS = System.getProperty("os.name")
             .startsWith("Windows");
 
+    @Test
     public void testWebContainer() throws Exception {
         URL url = WebContainer.class.getClassLoader().getResource("info");
         String path = url.getPath();

@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2021 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2023 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.1 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -22,15 +22,18 @@
  */
 package de.ingrid.iplug;
 
-import junit.framework.TestCase;
 import net.weta.components.communication.messaging.IMessageHandler;
 import net.weta.components.communication.messaging.Message;
 import net.weta.components.communication.reflect.ReflectMessage;
+import org.junit.jupiter.api.Test;
+
 import de.ingrid.utils.IPlug;
 import de.ingrid.utils.query.IngridQuery;
 import de.ingrid.utils.queryparser.QueryStringParser;
 
-public class MessageHandlerCacheTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class MessageHandlerCacheTest {
 
     public class TestHandler implements IMessageHandler {
 
@@ -44,6 +47,7 @@ public class MessageHandlerCacheTest extends TestCase {
 
     }
 
+    @Test
     public void testReflectMessage() throws Exception {
 
         TestHandler testHandler = new TestHandler();

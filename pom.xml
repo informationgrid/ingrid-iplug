@@ -23,7 +23,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus-backend</artifactId>
-      <version>7.0.0-SNAPSHOT</version>
+      <version>6.3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

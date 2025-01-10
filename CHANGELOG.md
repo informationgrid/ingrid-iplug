@@ -1,4 +1,11 @@
 
+## 7.4.0 (10.01.2025)
+
+### Features
+
+* ingrid-iplug: Verbesserung der Fehlerprotokollierung für TimeoutException bei Heartbeats (#6970)
+
+    
 ## 7.0.0 (05.01.2024)
 
 ### Features

@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ingrid-iplug</artifactId>
   <packaging>jar</packaging>
-  <version>7.1.0-SNAPSHOT</version>
+  <version>7.5.0-SNAPSHOT</version>
   <name>ingrid-iplug</name>
   <scm>
     <connection>scm:git:git@github.com:informationgrid/ingrid-iplug.git</connection>

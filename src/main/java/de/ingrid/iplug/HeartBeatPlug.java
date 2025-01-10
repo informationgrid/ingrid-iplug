@@ -2,7 +2,7 @@
  * **************************************************-
  * ingrid-iplug
  * ==================================================
- * Copyright (C) 2014 - 2024 wemove digital solutions GmbH
+ * Copyright (C) 2014 - 2025 wemove digital solutions GmbH
  * ==================================================
  * Licensed under the EUPL, Version 1.2 or – as soon they will be
  * approved by the European Commission - subsequent versions of the
@@ -24,14 +24,9 @@ package de.ingrid.iplug;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
+import net.weta.components.communication.tcp.TimeoutException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -189,11 +184,22 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                         }
                     }
                     _accurate = true;
-                } catch (final Throwable e) {
-                    LOG.error("Can not send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "]. With plugdescription: " + _plugDescription, e);
+                } catch (final TimeoutException e) {
+                    LOG.error("Failed to send heartbeat [" + _heartBeatCount + "]  to bus [" + _busUrl + "] due to a TimeoutException. " +
+                            "Possible cause: The ibus may be unreachable.\n" +
+                            "Action: Verify port and other communication settings.\n" +
+                            "Error Details: \n" +
+                            " - Message: " + e.getMessage() + "\n" +
+                            " - Cause: " + e.getCause() + "\n" +
+                            " - Stack Trace: " + Arrays.toString(e.getStackTrace()));
                     _accurate = false;
+                } catch (final Throwable e) {
+                    LOG.error("Cannot send heartbeat [" + _heartBeatCount + "] to bus [" + _busUrl + "]. With plugdescription: " + _plugDescription, e);
+                    _accurate = false;
+
+                    // handle explicity no connection by communication client
                     //this._heartBeatFailed = true;
-                    
+
                     // try to reload plugdescription in case it was reseted
                     // suspicious Exception:
                     /*
@@ -202,8 +208,8 @@ public abstract class HeartBeatPlug implements IPlug, IConfigurable {
                                 at de.ingrid.iplug.HeartBeatPlug$HeartBeat.run(HeartBeatPlug.java:127)
                                 at java.util.TimerThread.mainLoop(Timer.java:512)
                                 at java.util.TimerThread.run(Timer.java:462)
-                     * 
                      */
+
                     if (_plugDescription == null || _plugDescription.getMetadata() == null) {
                         LOG.info("PlugDescription or metadata is null. Reload PlugDescription from file...");
                         try {

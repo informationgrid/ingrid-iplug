@@ -29,7 +29,7 @@
     <dependency>
       <groupId>de.ingrid</groupId>
       <artifactId>ingrid-ibus-client</artifactId>
-      <version>7.6.0-SNAPSHOT</version>
+      <version>8.0.0-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>junit</groupId>

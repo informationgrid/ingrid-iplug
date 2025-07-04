@@ -1,4 +1,11 @@
 
+## 8.0.0 (04.07.2025)
+
+### Features
+
+* Aktualisierung ehCache in iBus-Client (#7719)
+
+    
 ## 7.4.0 (10.01.2025)
 
 ### Features
